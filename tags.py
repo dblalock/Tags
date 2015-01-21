@@ -11,17 +11,15 @@
 # so basically what's hard is figuring out what to do about
 # the fact that we have to store both what type each field
 # is and the actual value of the field when we instantiate
-# a tag
+# a tags
 
-
-import uuid
+# import uuid
 
 class Typ:
 
 	# ================================================================
 	# Built-ins
 	# ================================================================
-	# TODO maybe add default value for this typ?
 	# TODO maybe add hidden fields
 		# or maybe just
 	def __init__(self, name, parents=None, fields=None, default=None):
@@ -34,9 +32,9 @@ class Typ:
 		self.default = default
 		# self.children = children	# not strictly necessary, but helpful
 		self._parents = parents
-		self._id = uuid.uuid4()
+		# self._id = uuid.uuid4()
 
-		# this avoids an insanely subtly error wherein everything gets
+		# this avoids an insanely subtle error wherein everything gets
 		# the same dict object passed in if we use {} as the default, and
 		# thus modifications to one type's fields affect every type
 		if fields:
@@ -44,22 +42,28 @@ class Typ:
 		else:
 			self._fields = {}
 
-	def __eq__(self, other):
-		if not isinstance(other, Typ):
-			return False
-		return self.__hash__() == other.__hash__()
+	# we don't need a unique id since the default implementations
+	# that just compare pointers will do the same thing...(well,
+	# unless maybe we're serializing things and, say, comparing
+	# a serialized and deserialized version, but not gonna worry
+	# about that at the moment)
+	# def __eq__(self, other):
+	# 	if not isinstance(other, Typ):
+	# 		return False
+	# 	return self.__hash__() == other.__hash__()
 
-	def __ne__(self, other):
-		return not self.__eq__(other)
+	# def __ne__(self, other):
+	# 	return not self.__eq__(other)
 
-	def __hash__(self):
-		return self._id
+	# def __hash__(self):
+	# 	return self._id
 
 	def __repr__(self):
-		s = self.name
-		if self._parents:
-			names = ', '.join([p.name for p in self._parents])
-			s += ' (' + str(names) + ')'  # + '\n'
+		s = self.fullName()
+		# s = self.name
+		# if self._parents:
+		# 	names = ', '.join([p.name for p in self._parents])
+		# 	s += ' (' + str(names) + ')'  # + '\n'
 		if self.allFields():
 			s += ": " + str(self.allFields().keys())  # + '(%d)' % (self._id)
 		return s
@@ -67,13 +71,23 @@ class Typ:
 	# ================================================================
 	# Public funcs
 	# ================================================================
+	def fullName(self):
+		if not self._parents:
+			return self.name
+
+		parentNames = map(lambda p: p.fullName(), self._parents)
+		parentNames = sorted(parentNames)
+		parentStr = ', '.join(parentNames)
+		if len(parentNames) > 1:
+			return "{%s}.%s" % (parentStr, self.name)
+		return "%s.%s" % (parentStr, self.name)
+
 	def defaultValue(self):
 		fields = self.allFields()
 		if fields:
 			vals = [(name, typ.defaultValue()) for name, typ in fields.items()]
 			return dict(vals)
-		else:
-			return self.default
+		return self.default
 
 	def allFields(self):
 		fields = {}
@@ -89,13 +103,20 @@ class Typ:
 		if fieldName[:2] == "__":
 			print("field names cannot begin with underscores")
 		fieldName = fieldName.strip("_")
-		self._fields[fieldName] = typ_ 	# this magically ruins everything
 
-	def getFieldTyp(self, fieldName):
-		return self._fields[fieldName]
+		# necessary if fullNames are hashes and separated by periods,
+		# as opposed to some other string (eg, "|")
+		if '.' in fieldName:
+			print("field names cannot contain periods")
+			fieldName = fieldName.replace('.', ';')
 
-	def getId(self):
-		return self._id
+		self._fields[fieldName] = typ_
+
+	# def getFieldTyp(self, fieldName):
+	# 	return self._fields[fieldName]
+
+	# def getId(self):
+	# 	return self._id
 
 	# -------------------------------
 	# instantiation
@@ -106,8 +127,6 @@ class Typ:
 		typDict = {'__typ__': self}
 		try:
 			obj.update(typDict)
-			# obj = {'__typ__': self}
-			# obj.update(default)
 		except:
 			# return a dict that only contains a type, rather
 			# than the raw value
@@ -151,14 +170,16 @@ if __name__ == '__main__':
 	genericExer['name'] = 'generic exercise'
 	print genericExer  # has name field, but only cuz we added it to the dict
 
-	lift = Typ('lift', parents=[exer])
+	male = Typ('male')
+	bro = Typ('bro', parents=[male])
+	lift = Typ('lift', parents=[exer, bro])
 	print(lift)
 	lift.addField('reps', COUNT)
 	lift.addField('failure', BOOL)
 	squats = lift.new()
 
 	squats['name'] = 'squats'
-	squats['reps'] = 1
+	squats['reps'] = 2
 	print(squats)
 
 	print(NUMBER.new())		# the default value
