@@ -12,10 +12,9 @@
 #include "Typ.h"
 
 int main(int argc, char * argv[]) {
-	testTyp();
-	
-	NSLog(@"Done with tests; not launching app");
-	return 0;
+//	testTyp();
+//	NSLog(@"Done with tests; not launching app");
+//	return 0;
 	
 	@autoreleasepool {
 	    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
