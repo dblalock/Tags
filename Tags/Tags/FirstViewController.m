@@ -47,7 +47,8 @@ CGRect fullScreenFrame() {
 	_treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
 	
 	// this just adds a background behind the status bar, because the treeview
-	// hasn't been resized to start below it yet
+	// hasn't been resized to start below it yet; it seems to stick around even
+	// after the treeview is resized
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
 	
 	// this gets the treeview to use our custom layout + cell class
@@ -56,30 +57,57 @@ CGRect fullScreenFrame() {
 	_data = defaultData();
 	[_treeView reloadData];
 	
-//	[self.navigationController setNavigationBarHidden:NO];
-//	self.navigationItem.title = NSLocalizedString(@"Things", nil);
+//	self.edgesForExtendedLayout = UIRectEdgeNone;
+//	[self setEdgesForExtendedLayout:UIRectEdgeNone];
 }
 
-//- (void) viewWillAppear:(BOOL)animated {
-////	self.treeView.frame = self.view.bounds;
-//	self.treeView.frame = CGRectMake(0,
-//									 0,
-//									 [[UIScreen mainScreen] applicationFrame].size.width,
-//									 [[UIScreen mainScreen] applicationFrame].size.height);
-//}
-
-- (void)viewWillAppear:(BOOL)animated
-{
+// this just makes it not be behind the status bar
+- (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	
-	if([[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."][0] intValue] >= 7) {
-		CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
-		float heightPadding = statusBarViewRect.size.height;
-		self.treeView.contentInset = UIEdgeInsetsMake(heightPadding, 0.0, 0.0, 0.0);
-		self.treeView.contentOffset = CGPointMake(0.0, -heightPadding);
-	}
+	// so this is the code block we actually want
+	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+	float statusBarHeight = statusBarViewRect.size.height;
+	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+	CGRect viewBounds = self.view.bounds;
+	viewBounds.origin.y = statusBarHeight;
+	viewBounds.size.height -= tabBarHeight + statusBarHeight;
+	self.treeView.frame = viewBounds;
 	
-	self.treeView.frame = self.view.bounds;
+	// make crap no be hidden behind the tab bar
+//	[self.tabBarController setEdgesForExtendedLayout:UIRectEdgeNone];	//doesn't work
+//	self.tabBarController.tabBar.translucent = NO;	// also doens't works
+	
+//	if([[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."][0] intValue] >= 7) {
+//	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+//	float statusBarHeight = statusBarViewRect.size.height;
+//	float tabBarHeight = self.tabBarController.view.frame.size.height; //like full screen height
+//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height; //correct
+//		NSLog(@"tab bar height: %f", tabBarHeight);
+//		self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0.0, 0.0, 0.0);
+//		self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0.0, tabBarHeight, 0.0);	// bottom is insanely low cuz tabBarHeight=480.0
+//		self.treeView.contentInset = UIEdgeInsetsMake([self.topLayoutGuide length], 0, [self.bottomLayoutGuide length], 0);	// behind status bar still
+//	self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0, [self.bottomLayoutGuide length], 0);	//works, but still scrolls under status bar
+//	self.treeView.contentInset = UIEdgeInsetsMake(0, 0, -[self.bottomLayoutGuide length], 0);	//only moves bottom up
+//		self.treeView.contentOffset = CGPointMake(0.0, -statusBarHeight);
+//	}
+
+//	NSLog(@"status bar height: %f", statusBarHeight);
+//	NSLog(@"tab bar height: %f", tabBarHeight);
+//	NSLog(@"bottom layout guide length: %g", self.bottomLayoutGuide.length); //0
+//	NSLog(@"bottom layout guide length: %g", self.topLayoutGuide.length);	 //0
+	
+	// has no effect
+//	CGRect viewBounds = self.view.bounds;
+//	CGFloat topBarOffset = self.topLayoutGuide.length;	// 0 for no reason
+//	viewBounds.origin.y = statusBarHeight;
+//	viewBounds.size.height -= self.bottomLayoutGuide.length;	//not tall enough
+////	viewBounds.size.height -= tabBarHeight;		// too tall
+//	viewBounds.size.height -= tabBarHeight + statusBarHeight; //this is right
+////	self.view.bounds = viewBounds;		//has no effect
+//	self.treeView.frame = viewBounds;
+
+//	self.treeView.frame = self.view.bounds;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -123,6 +151,11 @@ CGRect fullScreenFrame() {
 	if (editingStyle != UITableViewCellEditingStyleDelete) {
 		return;
 	}
+	// TODO there's probably a way to add the option to insert rows using
+	// the "edit" button at the top (in the original example), which would
+	// be way better than having the plus button, since you only want to
+	// edit pretty rarely; would prolly make this also do stuff in response
+	// to editing style UITableViewCellEditingStyleInsert
 	
 	RADataObject *parent = [self.treeView parentForItem:item];
 	NSInteger index = 0;

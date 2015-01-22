@@ -22,11 +22,13 @@
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-@interface RATableViewCell ()
+@interface RATableViewCell () <UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *detailedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *customTitleLabel;
 @property (weak, nonatomic) IBOutlet UIButton *additionButton;
+
+@property (weak, nonatomic) IBOutlet UITextField *titleText;
 
 @end
 
@@ -102,6 +104,16 @@
   if (self.additionButtonTapAction) {
     self.additionButtonTapAction(sender);
   }
+}
+
+//===============================================================
+#pragma mark UITextFieldDelegate
+//===============================================================
+
+// have "return" close the keyboard
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return NO;
 }
 
 @end
