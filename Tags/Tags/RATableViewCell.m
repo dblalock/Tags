@@ -24,8 +24,8 @@
 
 @interface RATableViewCell () <UITextFieldDelegate>
 
-@property (weak, nonatomic) IBOutlet UILabel *detailedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *customTitleLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *detailedLabel;
+//@property (weak, nonatomic) IBOutlet UILabel *customTitleLabel;
 @property (weak, nonatomic) IBOutlet UIButton *additionButton;
 
 @property (weak, nonatomic) IBOutlet UITextField *titleText;
@@ -53,14 +53,16 @@
 
 - (void)setupWithTitle:(NSString *)title detailText:(NSString *)detailText level:(NSInteger)level additionButtonHidden:(BOOL)additionButtonHidden
 {
-  self.customTitleLabel.text = title;
-  self.detailedLabel.text = detailText;
+//  self.customTitleLabel.text = title;
+//  self.detailedLabel.text = detailText;
+	self.titleText.text = title;
   self.additionButtonHidden = additionButtonHidden;
+	self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   
-  if (level == 0) {
-    self.detailTextLabel.textColor = [UIColor blackColor];
-  }
-  
+//  if (level == 0) {
+//    self.detailTextLabel.textColor = [UIColor blackColor];
+//  }
+	
   if (level == 0) {
     self.backgroundColor = UIColorFromRGB(0xF7F7F7);
   } else if (level == 1) {
@@ -69,15 +71,21 @@
     self.backgroundColor = UIColorFromRGB(0xE0F8D8);
   }
   
-  CGFloat left = 11 + 20 * level;
-  
-  CGRect titleFrame = self.customTitleLabel.frame;
-  titleFrame.origin.x = left;
-  self.customTitleLabel.frame = titleFrame;
-  
-  CGRect detailsFrame = self.detailedLabel.frame;
-  detailsFrame.origin.x = left;
-  self.detailedLabel.frame = detailsFrame;
+	CGFloat left = 11 + 20 * level;
+
+	CGRect titleFrame = self.titleText.frame;
+	titleFrame.origin.x = left;
+	self.titleText.frame = titleFrame;
+	
+	[self.titleText sizeToFit];
+	
+//  CGRect titleFrame = self.customTitleLabel.frame;
+//  titleFrame.origin.x = left;
+//  self.customTitleLabel.frame = titleFrame;
+	
+//  CGRect detailsFrame = self.detailedLabel.frame;
+//  detailsFrame.origin.x = left;
+//  self.detailedLabel.frame = detailsFrame;
 }
 
 

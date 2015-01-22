@@ -38,6 +38,8 @@ typedef NSMutableDictionary* instance_t;
 
 - (instancetype)initWithName:(NSString*)name;
 
+- (instancetype) init NS_UNAVAILABLE;
+
 // ================================================================
 #pragma mark Other methods
 // ================================================================

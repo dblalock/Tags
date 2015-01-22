@@ -20,6 +20,9 @@
 		72D3BFF21A7042F800648A67 /* RADataObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFEF1A7042F800648A67 /* RADataObject.m */; };
 		72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFF11A7042F800648A67 /* RATableViewCell.m */; };
 		72D3BFF61A704F0700648A67 /* RATableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3BFF51A704F0700648A67 /* RATableViewCell.xib */; };
+		72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFFB1A71749300648A67 /* DBTableItem.m */; };
+		72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFFF1A71774500648A67 /* DBTreeCell.m */; };
+		72D3C0021A7185AB00648A67 /* DBTreeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C0011A7185AB00648A67 /* DBTreeCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,11 @@
 		72D3BFF01A7042F800648A67 /* RATableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RATableViewCell.h; sourceTree = "<group>"; };
 		72D3BFF11A7042F800648A67 /* RATableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RATableViewCell.m; sourceTree = "<group>"; };
 		72D3BFF51A704F0700648A67 /* RATableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RATableViewCell.xib; sourceTree = "<group>"; };
+		72D3BFFA1A71749300648A67 /* DBTableItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTableItem.h; sourceTree = "<group>"; };
+		72D3BFFB1A71749300648A67 /* DBTableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTableItem.m; sourceTree = "<group>"; };
+		72D3BFFE1A71774500648A67 /* DBTreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeCell.h; sourceTree = "<group>"; };
+		72D3BFFF1A71774500648A67 /* DBTreeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeCell.m; sourceTree = "<group>"; };
+		72D3C0011A7185AB00648A67 /* DBTreeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTreeCell.xib; sourceTree = "<group>"; };
 		9AEB05530126F6F8C5CE903F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,8 +116,7 @@
 				72D3BFCA1A70053800648A67 /* FirstViewController.m */,
 				72D3BFCC1A70053800648A67 /* SecondViewController.h */,
 				72D3BFCD1A70053800648A67 /* SecondViewController.m */,
-				72D3BFEB1A7005A500648A67 /* Typ.h */,
-				72D3BFEC1A7005A500648A67 /* Typ.m */,
+				72D3BFFD1A71759600648A67 /* Typs */,
 				72D3BFF41A70431500648A67 /* TreeViewItems */,
 				72D3BFCF1A70053800648A67 /* Main.storyboard */,
 				72D3BFD21A70053800648A67 /* Images.xcassets */,
@@ -149,12 +156,26 @@
 			isa = PBXGroup;
 			children = (
 				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
+				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
+				72D3BFFA1A71749300648A67 /* DBTableItem.h */,
+				72D3BFFB1A71749300648A67 /* DBTableItem.m */,
+				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
+				72D3BFFF1A71774500648A67 /* DBTreeCell.m */,
 				72D3BFEE1A7042F800648A67 /* RADataObject.h */,
 				72D3BFEF1A7042F800648A67 /* RADataObject.m */,
 				72D3BFF01A7042F800648A67 /* RATableViewCell.h */,
 				72D3BFF11A7042F800648A67 /* RATableViewCell.m */,
 			);
 			name = TreeViewItems;
+			sourceTree = "<group>";
+		};
+		72D3BFFD1A71759600648A67 /* Typs */ = {
+			isa = PBXGroup;
+			children = (
+				72D3BFEB1A7005A500648A67 /* Typ.h */,
+				72D3BFEC1A7005A500648A67 /* Typ.m */,
+			);
+			name = Typs;
 			sourceTree = "<group>";
 		};
 		A0BA1AF16B07CE8A08102499 /* Frameworks */ = {
@@ -259,6 +280,7 @@
 				72D3BFD11A70053800648A67 /* Main.storyboard in Resources */,
 				72D3BFD61A70053800648A67 /* LaunchScreen.xib in Resources */,
 				72D3BFF61A704F0700648A67 /* RATableViewCell.xib in Resources */,
+				72D3C0021A7185AB00648A67 /* DBTreeCell.xib in Resources */,
 				72D3BFD31A70053800648A67 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +337,8 @@
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
+				72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */,
+				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
 				72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */,
 				72D3BFF21A7042F800648A67 /* RADataObject.m in Sources */,
 			);

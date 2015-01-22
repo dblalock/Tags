@@ -10,14 +10,19 @@
 
 #import <RATreeView.h>
 
-#import "RADataObject.h"
+#import "DBTableItem.h"
+#import "DBTreeCell.h"
 #import "RATableViewCell.h"
+
+NSString* reuseIdentifier(Class cls) {
+	return NSStringFromClass(cls);
+}
+
 
 @interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate>
 
 @property (strong, nonatomic) NSArray *data;
 
-//@property (weak, nonatomic) IBOutlet RATreeView *treeView;
 @property (weak, nonatomic) RATreeView *treeView;
 
 //@property (weak, nonatomic) id<RATreeViewDataSource> dataSource;
@@ -35,37 +40,35 @@ CGRect fullScreenFrame() {
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
+
 	// we create a temporary treeview object so that we don't assign
 	// directly to a weak property until it's been retained by self.view...I think
 	RATreeView* treeView = [[RATreeView alloc] initWithFrame:self.view.bounds];
 	[self.view insertSubview:treeView atIndex:0];
 	_treeView = treeView;
-	
+
 	_treeView.delegate = self;
 	_treeView.dataSource = self;
 	_treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
-	
+
 	// this just adds a background behind the status bar, because the treeview
 	// hasn't been resized to start below it yet; it seems to stick around even
 	// after the treeview is resized
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
-	
-	// this gets the treeview to use our custom layout + cell class
-	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([RATableViewCell class]) bundle:nil] forCellReuseIdentifier:NSStringFromClass([RATableViewCell class])];
-	
+
+	// my tableviewcell nib
+	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([DBTreeCell class]) bundle:nil] forCellReuseIdentifier:reuseIdentifier([DBTreeCell class])];
+	// example tableviewcell nib
+//	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([RATableViewCell class]) bundle:nil] forCellReuseIdentifier:reuseIdentifier([DBTreeCell class])];
+
 	_data = defaultData();
 	[_treeView reloadData];
-	
-//	self.edgesForExtendedLayout = UIRectEdgeNone;
-//	[self setEdgesForExtendedLayout:UIRectEdgeNone];
 }
 
-// this just makes it not be behind the status bar
+// this just makes it not be behind the status bar + tab bar
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	
-	// so this is the code block we actually want
+
 	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
 	float statusBarHeight = statusBarViewRect.size.height;
 	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
@@ -73,47 +76,18 @@ CGRect fullScreenFrame() {
 	viewBounds.origin.y = statusBarHeight;
 	viewBounds.size.height -= tabBarHeight + statusBarHeight;
 	self.treeView.frame = viewBounds;
-	
-	// make crap no be hidden behind the tab bar
-//	[self.tabBarController setEdgesForExtendedLayout:UIRectEdgeNone];	//doesn't work
-//	self.tabBarController.tabBar.translucent = NO;	// also doens't works
-	
-//	if([[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."][0] intValue] >= 7) {
-//	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
-//	float statusBarHeight = statusBarViewRect.size.height;
-//	float tabBarHeight = self.tabBarController.view.frame.size.height; //like full screen height
-//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height; //correct
-//		NSLog(@"tab bar height: %f", tabBarHeight);
-//		self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0.0, 0.0, 0.0);
-//		self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0.0, tabBarHeight, 0.0);	// bottom is insanely low cuz tabBarHeight=480.0
-//		self.treeView.contentInset = UIEdgeInsetsMake([self.topLayoutGuide length], 0, [self.bottomLayoutGuide length], 0);	// behind status bar still
-//	self.treeView.contentInset = UIEdgeInsetsMake(statusBarHeight, 0, [self.bottomLayoutGuide length], 0);	//works, but still scrolls under status bar
-//	self.treeView.contentInset = UIEdgeInsetsMake(0, 0, -[self.bottomLayoutGuide length], 0);	//only moves bottom up
-//		self.treeView.contentOffset = CGPointMake(0.0, -statusBarHeight);
-//	}
-
-//	NSLog(@"status bar height: %f", statusBarHeight);
-//	NSLog(@"tab bar height: %f", tabBarHeight);
-//	NSLog(@"bottom layout guide length: %g", self.bottomLayoutGuide.length); //0
-//	NSLog(@"bottom layout guide length: %g", self.topLayoutGuide.length);	 //0
-	
-	// has no effect
-//	CGRect viewBounds = self.view.bounds;
-//	CGFloat topBarOffset = self.topLayoutGuide.length;	// 0 for no reason
-//	viewBounds.origin.y = statusBarHeight;
-//	viewBounds.size.height -= self.bottomLayoutGuide.length;	//not tall enough
-////	viewBounds.size.height -= tabBarHeight;		// too tall
-//	viewBounds.size.height -= tabBarHeight + statusBarHeight; //this is right
-////	self.view.bounds = viewBounds;		//has no effect
-//	self.treeView.frame = viewBounds;
-
-//	self.treeView.frame = self.view.bounds;
 }
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 	// Dispose of any resources that can be recreated.
 }
+
+// hide keyboard on touch outside
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+////	[self.view endEditing:YES];		// no effect on cell text
+////	[self.treeView endEditing:YES]; // no effect on cell text
+//}
 
 // ================================================================
 #pragma mark TreeView Delegate methods
@@ -129,15 +103,15 @@ CGRect fullScreenFrame() {
 //--------------------------------
 // expanding/collapsing rows
 //--------------------------------
-- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
-	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
-	[cell setAdditionButtonHidden:NO animated:YES];
-}
-- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item
-{
-	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
-	[cell setAdditionButtonHidden:YES animated:YES];
-}
+//- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
+//	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
+//	[cell setAdditionButtonHidden:NO animated:YES];
+//}
+//- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item
+//{
+//	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
+//	[cell setAdditionButtonHidden:YES animated:YES];
+//}
 
 //--------------------------------
 // tree modification (deleting cells)
@@ -156,21 +130,21 @@ CGRect fullScreenFrame() {
 	// be way better than having the plus button, since you only want to
 	// edit pretty rarely; would prolly make this also do stuff in response
 	// to editing style UITableViewCellEditingStyleInsert
-	
-	RADataObject *parent = [self.treeView parentForItem:item];
+
+	DBTableItem *parent = [self.treeView parentForItem:item];
 	NSInteger index = 0;
-	
+
 	if (parent == nil) {
 		index = [self.data indexOfObject:item];
 		NSMutableArray *children = [self.data mutableCopy];
 		[children removeObject:item];
 		self.data = [children copy];
-		
+
 	} else {
 		index = [parent.children indexOfObject:item];
 		[parent removeChild:item];
 	}
-	
+
 	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
 	if (parent) {
 		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
@@ -182,64 +156,86 @@ CGRect fullScreenFrame() {
 // ================================================================
 
 - (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(id)item {
-	// so this hands us the actual object at the index; there are then utility
-	// methods (apparently designed to be called just from this delegate method)
-	// that tell us what level in the tree it is and whether the cell is expanded
-	//
-	// we get the number of children from the item itself, which is an instance
-	// of a custom class
-	//
-	// at the end of this block, we have the:
-	// -item object
-	// -how many children it has
-	// -whether it's expanded
-	// -its level in the tree
-	RADataObject *dataObject = item;
-	NSInteger level = [self.treeView levelForCellForItem:item];
-	NSInteger numberOfChildren = [dataObject.children count];
-	BOOL expanded = [self.treeView isCellForItemExpanded:item];
+	DBTableItem *dataObject = item;
+	NSInteger lvl = [self.treeView levelForCellForItem:item];
+//	NSInteger numberOfChildren = [dataObject.children count];
+//	BOOL expanded = [self.treeView isCellForItemExpanded:item];
 	
-	// create part of the text to show in the cell
-	NSString *detailText = [NSString localizedStringWithFormat:@"# of children %@", [@(numberOfChildren) stringValue]];
+	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:reuseIdentifier([DBTreeCell class])];
 	
-	// get the actual cell object (of our own custom class) by calling a handy
-	// treeview method
-	RATableViewCell *cell = [self.treeView dequeueReusableCellWithIdentifier:NSStringFromClass([RATableViewCell class])];
+	if (lvl) {
+		NSLog(@"lvl = %d", lvl);
+	}
 	
-	// set the cell's content using a method of our cell class; the class is
-	// linked to the actual UI elements via cocoa bindings in IB
-	[cell setupWithTitle:dataObject.name detailText:detailText level:level additionButtonHidden:!expanded];
+	[cell setupWithTitle:dataObject.name level:lvl];
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	
-	// set the callback for when the "+" button is clicked
-	__weak typeof(self) weakSelf = self;
-	cell.additionButtonTapAction = ^(id sender) {
-		// if not expanded or in the middle of editing, ignore button click
-		if (![weakSelf.treeView isCellForItemExpanded:dataObject] || weakSelf.treeView.isEditing) {
-			return;
-		}
-		
-		// otherwise, add a new value below this cell using cool treview methods
-		RADataObject *newDataObject = [[RADataObject alloc] initWithName:@"Added value" children:@[]];
-		[dataObject addChild:newDataObject];
-		[weakSelf.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:dataObject withAnimation:RATreeViewRowAnimationLeft];
-		[weakSelf.treeView reloadRowsForItems:@[dataObject] withRowAnimation:RATreeViewRowAnimationNone];
-	};
+//	NSLog(@"setup: titleTextFrame: %@", NSStringFromCGRect(cell.titleText.frame));
+//	cell.titleText.textColor = [UIColor blueColor];
+//	cell.autoresizesSubviews = YES;//NO; // neither helps
 	
 	return cell;
 }
+
+//- (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(id)item {
+//	// so this hands us the actual object at the index; there are then utility
+//	// methods (apparently designed to be called just from this delegate method)
+//	// that tell us what level in the tree it is and whether the cell is expanded
+//	//
+//	// we get the number of children from the item itself, which is an instance
+//	// of a custom class
+//	//
+//	// at the end of this block, we have the:
+//	// -item object
+//	// -how many children it has
+//	// -whether it's expanded
+//	// -its level in the tree
+//	DBTableItem *dataObject = item;
+//	NSInteger level = [self.treeView levelForCellForItem:item];
+//	NSInteger numberOfChildren = [dataObject.children count];
+//	BOOL expanded = [self.treeView isCellForItemExpanded:item];
+//
+//	// create part of the text to show in the cell
+//	NSString *detailText = [NSString localizedStringWithFormat:@"# of children %@", [@(numberOfChildren) stringValue]];
+//
+//	// get the actual cell object (of our own custom class) by calling a handy
+//	// treeview method
+//	RATableViewCell *cell = [self.treeView dequeueReusableCellWithIdentifier:NSStringFromClass([RATableViewCell class])];
+//
+//	// set the cell's content using a method of our cell class; the class is
+//	// linked to the actual UI elements via cocoa bindings in IB
+//	[cell setupWithTitle:dataObject.name detailText:detailText level:level additionButtonHidden:!expanded];
+//	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//
+//	// set the callback for when the "+" button is clicked
+//	__weak typeof(self) weakSelf = self;
+//	cell.additionButtonTapAction = ^(id sender) {
+//		// if not expanded or in the middle of editing, ignore button click
+//		if (![weakSelf.treeView isCellForItemExpanded:dataObject] || weakSelf.treeView.isEditing) {
+//			return;
+//		}
+//
+//		// otherwise, add a new value below this cell using cool treview methods
+//		DBTableItem *newDataObject = [[DBTableItem alloc] initWithName:@"Added value" children:@[]];
+//		[dataObject addChild:newDataObject];
+//		[weakSelf.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:dataObject withAnimation:RATreeViewRowAnimationLeft];
+//		[weakSelf.treeView reloadRowsForItems:@[dataObject] withRowAnimation:RATreeViewRowAnimationNone];
+//	};
+//
+//	return cell;
+//}
 
 - (NSInteger)treeView:(RATreeView *)treeView numberOfChildrenOfItem:(id)item {
 	if (item == nil) {
 		return [self.data count];
 	}
-	
-	RADataObject *data = item;
+
+	DBTableItem *data = item;
 	return [data.children count];
 }
 
 - (id)treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(id)item {
-	RADataObject *data = item;
+	DBTableItem *data = item;
 	if (item == nil) {
 		return [self.data objectAtIndex:index];
 	}
@@ -251,35 +247,35 @@ CGRect fullScreenFrame() {
 // ================================================================
 
 NSArray* defaultData() {
-	RADataObject *phone1 = [RADataObject dataObjectWithName:@"Phone 1" children:nil];
-	RADataObject *phone2 = [RADataObject dataObjectWithName:@"Phone 2" children:nil];
-	RADataObject *phone3 = [RADataObject dataObjectWithName:@"Phone 3" children:nil];
-	RADataObject *phone4 = [RADataObject dataObjectWithName:@"Phone 4" children:nil];
-	
-	RADataObject *phone = [RADataObject dataObjectWithName:@"Phones"
+	DBTableItem *phone1 = [DBTableItem itemWithName:@"Phone 1" children:nil];
+	DBTableItem *phone2 = [DBTableItem itemWithName:@"Phone 2" children:nil];
+	DBTableItem *phone3 = [DBTableItem itemWithName:@"Phone 3" children:nil];
+	DBTableItem *phone4 = [DBTableItem itemWithName:@"Phone 4" children:nil];
+
+	DBTableItem *phone = [DBTableItem itemWithName:@"Phones"
 												  children:[NSArray arrayWithObjects:phone1, phone2, phone3, phone4, nil]];
-	
-	RADataObject *notebook1 = [RADataObject dataObjectWithName:@"Notebook 1" children:nil];
-	RADataObject *notebook2 = [RADataObject dataObjectWithName:@"Notebook 2" children:nil];
-	
-	RADataObject *computer1 = [RADataObject dataObjectWithName:@"Computer 1"
+
+	DBTableItem *notebook1 = [DBTableItem itemWithName:@"Notebook 1" children:nil];
+	DBTableItem *notebook2 = [DBTableItem itemWithName:@"Notebook 2" children:nil];
+
+	DBTableItem *computer1 = [DBTableItem itemWithName:@"Computer 1"
 													  children:[NSArray arrayWithObjects:notebook1, notebook2, nil]];
-	RADataObject *computer2 = [RADataObject dataObjectWithName:@"Computer 2" children:nil];
-	RADataObject *computer3 = [RADataObject dataObjectWithName:@"Computer 3" children:nil];
-	
-	RADataObject *computer = [RADataObject dataObjectWithName:@"Computers"
+	DBTableItem *computer2 = [DBTableItem itemWithName:@"Computer 2" children:nil];
+	DBTableItem *computer3 = [DBTableItem itemWithName:@"Computer 3" children:nil];
+
+	DBTableItem *computer = [DBTableItem itemWithName:@"Computers"
 													 children:[NSArray arrayWithObjects:computer1, computer2, computer3, nil]];
-	RADataObject *car = [RADataObject dataObjectWithName:@"Cars" children:nil];
-	RADataObject *bike = [RADataObject dataObjectWithName:@"Bikes" children:nil];
-	RADataObject *house = [RADataObject dataObjectWithName:@"Houses" children:nil];
-	RADataObject *flats = [RADataObject dataObjectWithName:@"Flats" children:nil];
-	RADataObject *motorbike = [RADataObject dataObjectWithName:@"Motorbikes" children:nil];
-	RADataObject *drinks = [RADataObject dataObjectWithName:@"Drinks" children:nil];
-	RADataObject *food = [RADataObject dataObjectWithName:@"Food" children:nil];
-	RADataObject *sweets = [RADataObject dataObjectWithName:@"Sweets" children:nil];
-	RADataObject *watches = [RADataObject dataObjectWithName:@"Watches" children:nil];
-	RADataObject *walls = [RADataObject dataObjectWithName:@"Walls" children:nil];
-	
+	DBTableItem *car = [DBTableItem itemWithName:@"Cars" children:nil];
+	DBTableItem *bike = [DBTableItem itemWithName:@"Bikes" children:nil];
+	DBTableItem *house = [DBTableItem itemWithName:@"Houses" children:nil];
+	DBTableItem *flats = [DBTableItem itemWithName:@"Flats" children:nil];
+	DBTableItem *motorbike = [DBTableItem itemWithName:@"Motorbikes" children:nil];
+	DBTableItem *drinks = [DBTableItem itemWithName:@"Drinks" children:nil];
+	DBTableItem *food = [DBTableItem itemWithName:@"Food" children:nil];
+	DBTableItem *sweets = [DBTableItem itemWithName:@"Sweets" children:nil];
+	DBTableItem *watches = [DBTableItem itemWithName:@"Watches" children:nil];
+	DBTableItem *walls = [DBTableItem itemWithName:@"Walls" children:nil];
+
 	return @[phone, computer, car, bike, house, flats, motorbike, drinks, food, sweets, watches, walls];
 }
 
