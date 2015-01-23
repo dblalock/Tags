@@ -23,6 +23,9 @@
 		72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFFB1A71749300648A67 /* DBTableItem.m */; };
 		72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFFF1A71774500648A67 /* DBTreeCell.m */; };
 		72D3C0021A7185AB00648A67 /* DBTreeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C0011A7185AB00648A67 /* DBTreeCell.xib */; };
+		72D3C0051A71A85B00648A67 /* TypManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0041A71A85B00648A67 /* TypManager.m */; };
+		72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C0061A72A84500648A67 /* DBTimeCell.xib */; };
+		72D3C00A1A72B4BC00648A67 /* DBTypItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0091A72B4BC00648A67 /* DBTypItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +67,11 @@
 		72D3BFFE1A71774500648A67 /* DBTreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeCell.h; sourceTree = "<group>"; };
 		72D3BFFF1A71774500648A67 /* DBTreeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeCell.m; sourceTree = "<group>"; };
 		72D3C0011A7185AB00648A67 /* DBTreeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTreeCell.xib; sourceTree = "<group>"; };
+		72D3C0031A71A85B00648A67 /* TypManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypManager.h; sourceTree = "<group>"; };
+		72D3C0041A71A85B00648A67 /* TypManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TypManager.m; sourceTree = "<group>"; };
+		72D3C0061A72A84500648A67 /* DBTimeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTimeCell.xib; sourceTree = "<group>"; };
+		72D3C0081A72B4BC00648A67 /* DBTypItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTypItem.h; sourceTree = "<group>"; };
+		72D3C0091A72B4BC00648A67 /* DBTypItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTypItem.m; sourceTree = "<group>"; };
 		9AEB05530126F6F8C5CE903F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -157,8 +165,11 @@
 			children = (
 				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
 				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
+				72D3C0061A72A84500648A67 /* DBTimeCell.xib */,
 				72D3BFFA1A71749300648A67 /* DBTableItem.h */,
 				72D3BFFB1A71749300648A67 /* DBTableItem.m */,
+				72D3C0081A72B4BC00648A67 /* DBTypItem.h */,
+				72D3C0091A72B4BC00648A67 /* DBTypItem.m */,
 				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
 				72D3BFFF1A71774500648A67 /* DBTreeCell.m */,
 				72D3BFEE1A7042F800648A67 /* RADataObject.h */,
@@ -173,6 +184,8 @@
 			isa = PBXGroup;
 			children = (
 				72D3BFEB1A7005A500648A67 /* Typ.h */,
+				72D3C0031A71A85B00648A67 /* TypManager.h */,
+				72D3C0041A71A85B00648A67 /* TypManager.m */,
 				72D3BFEC1A7005A500648A67 /* Typ.m */,
 			);
 			name = Typs;
@@ -277,6 +290,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */,
 				72D3BFD11A70053800648A67 /* Main.storyboard in Resources */,
 				72D3BFD61A70053800648A67 /* LaunchScreen.xib in Resources */,
 				72D3BFF61A704F0700648A67 /* RATableViewCell.xib in Resources */,
@@ -332,11 +346,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72D3C00A1A72B4BC00648A67 /* DBTypItem.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
 				72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
+				72D3C0051A71A85B00648A67 /* TypManager.m in Sources */,
 				72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */,
 				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
 				72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */,

@@ -13,13 +13,14 @@ static NSString *const kReservedPrefixAndSuffixChar = @"_";
 static NSString *const kSubtypeSeparator = @".";
 static NSString *const kSubtypeSeparatorReplacement = @";";
 
-//static Typ * kStr = [[Typ alloc] initWithName:@"String"];
-
 #define DEFAULT_DEFAULT @(-1)
-#define TYP_BOOL   ([Typ typWithName:@"TypBool"])
-#define TYP_STRING ([Typ typWithName:@"TypString" parents:nil default:@""])
-#define TYP_RATING ([Typ typWithName:@"TypRating"])
-#define TYP_COUNT  ([Typ typWithName:@"TypCount"])
+#define TYP_DEFAULT_MUTABLE	([MutableTyp typWithName:@"TypDefaultMutable" parents:nil default:@""])
+#define TYP_DEFAULT	([Typ typWithName:@"TypDefault" parents:nil default:@""])
+#define TYP_BOOL	([Typ typWithName:@"TypBool"])
+#define TYP_RATING	([Typ typWithName:@"TypRating"])
+#define TYP_COUNT	([Typ typWithName:@"TypCount"])
+#define TYP_AMOUNT	([Typ typWithName:@"TypAmount"])
+#define TYP_STRING	([Typ typWithName:@"TypString" parents:nil default:@""])
 
 // no, this is crappy cuz we want default values, and maybe
 // other attributes later
@@ -32,7 +33,7 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 // ================================================================
 @interface Typ ()
 @property(strong, nonatomic) NSSet* parents;
-//@property(strong, nonatomic) NSUUID* ID;
+@property(strong, nonatomic) NSUUID* ID;
 @property(strong, nonatomic) NSMutableDictionary* fields;
 @end
 
@@ -49,16 +50,18 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 + (instancetype) typWithName:(NSString*)name
 					 parents:(NSArray*)parents
 					 default:(id)defaultVal {
-	return [[Typ alloc] initWithName:name parents:parents default:defaultVal];
+	// using self instead of the class name makes this automatically
+	// work for subclasses
+	return [[self alloc] initWithName:name parents:parents default:defaultVal];
 }
 
 + (instancetype) typWithName:(NSString*)name
 					 parents:(NSArray*)parents {
-	return [[Typ alloc] initWithName:name parents:parents];
+	return [[self alloc] initWithName:name parents:parents];
 }
 
 + (instancetype) typWithName:(NSString*)name {
-		return [[Typ alloc] initWithName:name];
+		return [[self alloc] initWithName:name];
 }
 
 // -------------------------------
@@ -66,20 +69,20 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 // -------------------------------
 
 - (instancetype)initWithName:(NSString*)name
-					 parents:(NSSet*)parents
+					 parents:(NSArray*)parents
 					 default:(id)defaultVal {
 	self = [super init];
 	if (self) {
 		_name = name;
 		_defaultVal = defaultVal;
-//		_ID = [[NSUUID alloc] init];
+		_ID = [[NSUUID alloc] init];
 		_fields = [NSMutableDictionary dictionary];
 		
 		// freak out if parents aren't also types
 		for (id p in parents) {
-			assert([p isMemberOfClass:[Typ class]]);
+			assert([p isKindOfClass:[Typ class]]);
 		}
-		_parents = parents;
+		_parents = [NSSet setWithArray:parents];
 		
 		// make sure default value isn't nil, cuz that can't
 		// go in an nsdictionary
@@ -105,19 +108,15 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 
 -(BOOL) isEqual:(id)object {
 	if (! [object isMemberOfClass:[self class]]) return NO;
-	return [object getFullName] == [self getFullName];
+	return [self.ID.UUIDString isEqualToString: ((Typ*)object).ID.UUIDString];
 }
 
 -(NSUInteger) hash {
-	return [[self getFullName] hash];
+	return [self.ID.UUIDString hash];
 }
 
 -(NSString*) description {
 	NSMutableString* s = [[self getFullName] mutableCopy];
-	//	NSMutableString* s = [self.name mutableCopy];
-	//	if ([self.parents count]) {
-	//		[s appendFormat:@"%@", [[self.parents allObjects] componentsJoinedByString:@", "]];
-	//	}
 	NSDictionary* allFields = [self getAllFields];
 	if ([allFields count]) {
 		NSString* fieldsStr = [[allFields allKeys] componentsJoinedByString:@", "];
@@ -140,6 +139,10 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 //	[allParents unionSet:self.parents];
 //	return allParents;
 //}
+
+-(typ_id_t) getUniqueID {
+	return self.ID.UUIDString;
+}
 
 -(NSString*) getFullName {
 	if (! [self.parents count]) return self.name;
@@ -182,6 +185,100 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	return self.defaultVal;
 }
 
+// -------------------------------
+// instantiation
+// -------------------------------
+
+-(TypInstance) new {
+	id obj = [self getDefaultValue];
+	if ([obj isKindOfClass:[NSMutableDictionary class]]) {
+		obj[@"__typ__"] = self;
+	}
+	return obj;
+}
+
+// ================================================================
+#pragma mark Basic Types
+// ================================================================
+
++(Typ*) typDefaultMutable {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_DEFAULT_MUTABLE;
+	});
+	return sharedInstance;
+}
+
++(Typ*) typDefault {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_DEFAULT;
+	});
+	return sharedInstance;
+}
+
++(Typ*) typBool {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_BOOL;
+	});
+	return sharedInstance;
+}
++(Typ*) typRating {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_RATING;
+	});
+	return sharedInstance;
+}
++(Typ*) typCount {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_COUNT;
+	});
+	return sharedInstance;
+}
++(Typ*) typAmount {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_AMOUNT;
+	});
+	return sharedInstance;
+}
+
++(Typ*) typString {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_STRING;
+	});
+	return sharedInstance;
+}
+
++(NSArray*) getBasicTyps {
+	return @[[self typDefault],
+			 [self typBool],
+			 [self typRating],
+			 [self typCount],
+			 [self typAmount],
+			 [self typString],
+			 ];
+}
+
+@end
+
+// ================================================================
+#pragma mark MutableTyp
+// ================================================================
+
+@implementation MutableTyp
+
 -(void) addField:(field_name_t)name typ:(Typ*)typ {
 	if ([typ isEqual:self]) return;		//recursion bad
 	if ([name hasPrefix:kReservedPrefixAndSuffixChar]) {
@@ -202,48 +299,45 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	}
 }
 
-// -------------------------------
-// instantiation
-// -------------------------------
+-(void) removeField:(field_name_t)name {
+	[self.fields removeObjectForKey:name];
+}
 
--(instance_t) new {
-	id obj = [self getDefaultValue];
-	if ([obj isKindOfClass:[NSMutableDictionary class]]) {
-		obj[@"__typ__"] = self;
+-(void) removeFields:(NSSet *)names {
+	for (field_name_t name in names) {
+		[self removeField:name];
 	}
-	return obj;
 }
 
 @end
-
-//TYP_NUMBER = Typ*
 
 // ================================================================
 #pragma mark Testing
 // ================================================================
 
 void testTyp() {
-	Typ* exer = [Typ typWithName:@"exercise"];
-	instance_t emptyExer = [exer new];
+	MutableTyp* exer = [MutableTyp typWithName:@"exercise"];
+	TypInstance emptyExer = [exer new];
 	NSLog(@"exer with no fields: %@", exer);
+	NSLog(@"exer class: %@", NSStringFromClass([exer class]));
 	[exer addField:@"name" typ:TYP_STRING];
 	NSLog(@"exer with name field: %@", exer);
 	
 	NSLog(@"emptyExer: %@", emptyExer);
 	
-	instance_t genericExer = [exer new];
+	TypInstance genericExer = [exer new];
 	NSLog(@"genericExer, no name: %@", genericExer);
 	genericExer[@"name"] = @"generic exercise";
 	NSLog(@"genericExer, no name: %@", genericExer);
 	
 	Typ* male = [Typ typWithName:@"male"];
 	Typ* bro = [Typ typWithName:@"bro" parents:@[male]];
-	Typ* lift = [Typ typWithName:@"lift" parents:@[bro, exer]];
+	MutableTyp* lift = [MutableTyp typWithName:@"lift" parents:@[bro, exer]];
 	
 	NSLog(@"%@", lift);
 	
 	[lift addFields:@{@"reps": TYP_COUNT, @"failure": TYP_BOOL}];
-	instance_t squats = [lift new];
+	TypInstance squats = [lift new];
 	squats[@"name"] = @"squats";
 	squats[@"reps"] = @(2);
 	

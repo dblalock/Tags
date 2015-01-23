@@ -7,12 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SWTableViewCell.h"
 
-@interface DBTreeCell : UITableViewCell
+@interface DBTreeCell : SWTableViewCell
 
 //+(NSString*) reuseIdentifier;
 
+//- (void)setupWithTitle:(NSString *)title
+//				 level:(NSInteger)level;
+
 - (void)setupWithTitle:(NSString *)title
-				 level:(NSInteger)level;
+				 level:(NSInteger)level
+		   numChildren:(NSUInteger)numChildren;
 
 @end

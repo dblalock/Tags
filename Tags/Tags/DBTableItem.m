@@ -17,22 +17,27 @@
 - (id)initWithName:(NSString *)name children:(NSArray *)children {
 	self = [super init];
 	if (self) {
-		self.children = [NSArray arrayWithArray:children];
-		self.name = name;
+		_name = name;
+		_parent = nil;
+		if ([children count]) {
+			_children = [NSMutableArray arrayWithArray:children];
+		} else {
+			_children = [NSMutableArray array];
+		}
 	}
 	return self;
 }
 
 - (void)addChild:(DBTableItem*)child {
-	NSMutableArray *children = [self.children mutableCopy];
-	[children insertObject:child atIndex:0];
-	self.children = [children copy];
+//	NSMutableArray *children = [self.children mutableCopy];
+	[_children insertObject:child atIndex:0];
+//	_children = [children copy];
 }
 
 - (void)removeChild:(DBTableItem*)child {
-	NSMutableArray *children = [self.children mutableCopy];
-	[children removeObject:child];
-	self.children = [children copy];
+//	NSMutableArray *children = [self.children mutableCopy];
+	[_children removeObject:child];
+//	_children = [children copy];
 }
 
 @end

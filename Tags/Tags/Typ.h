@@ -9,12 +9,27 @@
 #import <Foundation/Foundation.h>
 
 typedef NSString* field_name_t;
-typedef NSMutableDictionary* instance_t;
+typedef NSMutableDictionary* TypInstance;
+typedef NSString* typ_id_t;
 
 @interface Typ : NSObject
 
-@property(strong, nonatomic) NSString* name;
-@property(strong, nonatomic) id defaultVal;
+@property(strong, nonatomic, readonly) NSString* name;
+@property(strong, nonatomic, readonly) id defaultVal;
+
+// ================================================================
+#pragma mark Basic types
+// ================================================================
+
++(Typ*) typDefault;		// |2|, but acts as a label
++(Typ*) typBool;		// |2|
++(Typ*) typRating;		// |6|
++(Typ*) typCount;		// Z
++(Typ*) typAmount;		// R
++(Typ*) typString;		// Alphabet
++(NSArray*) getBasicTyps;
+
++(Typ*) typDefaultMutable;	// actually used for labeling stuff
 
 // ================================================================
 #pragma mark Initialization
@@ -44,12 +59,23 @@ typedef NSMutableDictionary* instance_t;
 #pragma mark Other methods
 // ================================================================
 
+-(typ_id_t) getUniqueID;
 -(id) getDefaultValue;
 -(NSDictionary*) getAllFields;
 -(NSString*) getFullName;
 
--(void) addFields:(NSDictionary*)names2types;
+@end
+
+// ================================================================
+#pragma mark MutableTyp
+// ================================================================
+
+@interface MutableTyp : Typ
+
 -(void) addField:(field_name_t)name typ:(Typ*)typ;
+-(void) addFields:(NSDictionary*)names2types;
+-(void) removeField:(field_name_t)name;
+-(void) removeFields:(NSSet *)names;
 
 @end
 

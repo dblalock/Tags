@@ -9,21 +9,27 @@
 #import "FirstViewController.h"
 
 #import <RATreeView.h>
+#import <SWTableViewCell.h>
 
 #import "DBTableItem.h"
+#import "DBTypItem.h"
 #import "DBTreeCell.h"
-#import "RATableViewCell.h"
+#import "TypManager.h"
+
+
+//#import "RATableViewCell.h"
 
 NSString* reuseIdentifier(Class cls) {
 	return NSStringFromClass(cls);
 }
 
 
-@interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate>
+@interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate,
+	SWTableViewCellDelegate, UIActionSheetDelegate>
 
-@property (strong, nonatomic) NSArray *data;
-
+@property (strong, nonatomic) NSMutableArray *data;
 @property (weak, nonatomic) RATreeView *treeView;
+@property (weak, nonatomic) SWTableViewCell *cellInQuestion; //for action sheets
 
 //@property (weak, nonatomic) id<RATreeViewDataSource> dataSource;
 //@property (weak, nonatomic) id<RATreeViewDelegate> delegate;
@@ -61,7 +67,8 @@ CGRect fullScreenFrame() {
 	// example tableviewcell nib
 //	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([RATableViewCell class]) bundle:nil] forCellReuseIdentifier:reuseIdentifier([DBTreeCell class])];
 
-	_data = defaultData();
+//	_data = defaultData();
+	_data = [defaultTypItems() mutableCopy];
 	[_treeView reloadData];
 }
 
@@ -116,114 +123,79 @@ CGRect fullScreenFrame() {
 //--------------------------------
 // tree modification (deleting cells)
 //--------------------------------
-- (BOOL)treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
-	return YES;
+-(BOOL) treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
+//	return YES;
+	return NO;
 }
 
-- (void)treeView:(RATreeView *)treeView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowForItem:(id)item {
-	// all we allow is deleting rows
-	if (editingStyle != UITableViewCellEditingStyleDelete) {
-		return;
-	}
-	// TODO there's probably a way to add the option to insert rows using
-	// the "edit" button at the top (in the original example), which would
-	// be way better than having the plus button, since you only want to
-	// edit pretty rarely; would prolly make this also do stuff in response
-	// to editing style UITableViewCellEditingStyleInsert
+//- (void) treeView:(RATreeView *)treeView
+//commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+//	forRowForItem:(id)item {
+//	// all we allow is deleting rows
+//	if (editingStyle != UITableViewCellEditingStyleDelete) {
+//		return;
+//	}
+//	// TODO there's probably a way to add the option to insert rows using
+//	// the "edit" button at the top (in the original example), which would
+//	// be way better than having the plus button, since you only want to
+//	// edit pretty rarely; would prolly make this also do stuff in response
+//	// to editing style UITableViewCellEditingStyleInsert
+//
+//	[self deleteItem:item];
+//}
 
-	DBTableItem *parent = [self.treeView parentForItem:item];
-	NSInteger index = 0;
-
-	if (parent == nil) {
-		index = [self.data indexOfObject:item];
-		NSMutableArray *children = [self.data mutableCopy];
-		[children removeObject:item];
-		self.data = [children copy];
-
-	} else {
-		index = [parent.children indexOfObject:item];
-		[parent removeChild:item];
-	}
-
-	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
-	if (parent) {
-		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
-	}
-}
+// can't tell if this does anything or not...
+//-(NSInteger) treeView:(RATreeView*)treeView indentationLevelForRowForItem:(id)item {
+//	return [treeView levelForCellForItem:item];
+//}
 
 // ================================================================
 #pragma mark TreeView Data Source methods
 // ================================================================
 
 - (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(id)item {
-	DBTableItem *dataObject = item;
+	DBTableItem *tableItem = item;
 	NSInteger lvl = [self.treeView levelForCellForItem:item];
 //	NSInteger numberOfChildren = [dataObject.children count];
 //	BOOL expanded = [self.treeView isCellForItemExpanded:item];
 	
 	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:reuseIdentifier([DBTreeCell class])];
 	
-	if (lvl) {
-		NSLog(@"lvl = %d", lvl);
-	}
-	
-	[cell setupWithTitle:dataObject.name level:lvl];
+	[cell setupWithTitle:tableItem.name level:lvl numChildren:[tableItem.children count]];
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	
-//	NSLog(@"setup: titleTextFrame: %@", NSStringFromCGRect(cell.titleText.frame));
-//	cell.titleText.textColor = [UIColor blueColor];
-//	cell.autoresizesSubviews = YES;//NO; // neither helps
+	
+	// SWTableViewCell wonderfulness
+	// from: www.appcoda.com/swipeable-uitableviewcell-tutorial/
+//	NSMutableArray *leftUtilityButtons = [NSMutableArray new];
+	NSMutableArray *rightUtilityButtons = [NSMutableArray new];
+	
+//	[leftUtilityButtons sw_addUtilityButtonWithColor:
+//	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
+//												icon:[UIImage imageNamed:@"like.png"]];
+//	[leftUtilityButtons sw_addUtilityButtonWithColor:
+//	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
+//												icon:[UIImage imageNamed:@"message.png"]];
+//	[leftUtilityButtons sw_addUtilityButtonWithColor:
+//	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
+//												icon:[UIImage imageNamed:@"facebook.png"]];
+//	[leftUtilityButtons sw_addUtilityButtonWithColor:
+//	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
+//												icon:[UIImage imageNamed:@"twitter.png"]];
+	
+	[rightUtilityButtons sw_addUtilityButtonWithColor:
+	 [UIColor colorWithRed:0.1f green:1.0f blue:0.0f alpha:1.0]
+												title:@"SubTag"];
+	[rightUtilityButtons sw_addUtilityButtonWithColor:
+	 [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f]
+												title:@"Delete"];
+	
+//	cell.leftUtilityButtons = leftUtilityButtons;
+	cell.rightUtilityButtons = rightUtilityButtons;
+	cell.delegate = self;
 	
 	return cell;
 }
-
-//- (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(id)item {
-//	// so this hands us the actual object at the index; there are then utility
-//	// methods (apparently designed to be called just from this delegate method)
-//	// that tell us what level in the tree it is and whether the cell is expanded
-//	//
-//	// we get the number of children from the item itself, which is an instance
-//	// of a custom class
-//	//
-//	// at the end of this block, we have the:
-//	// -item object
-//	// -how many children it has
-//	// -whether it's expanded
-//	// -its level in the tree
-//	DBTableItem *dataObject = item;
-//	NSInteger level = [self.treeView levelForCellForItem:item];
-//	NSInteger numberOfChildren = [dataObject.children count];
-//	BOOL expanded = [self.treeView isCellForItemExpanded:item];
-//
-//	// create part of the text to show in the cell
-//	NSString *detailText = [NSString localizedStringWithFormat:@"# of children %@", [@(numberOfChildren) stringValue]];
-//
-//	// get the actual cell object (of our own custom class) by calling a handy
-//	// treeview method
-//	RATableViewCell *cell = [self.treeView dequeueReusableCellWithIdentifier:NSStringFromClass([RATableViewCell class])];
-//
-//	// set the cell's content using a method of our cell class; the class is
-//	// linked to the actual UI elements via cocoa bindings in IB
-//	[cell setupWithTitle:dataObject.name detailText:detailText level:level additionButtonHidden:!expanded];
-//	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//
-//	// set the callback for when the "+" button is clicked
-//	__weak typeof(self) weakSelf = self;
-//	cell.additionButtonTapAction = ^(id sender) {
-//		// if not expanded or in the middle of editing, ignore button click
-//		if (![weakSelf.treeView isCellForItemExpanded:dataObject] || weakSelf.treeView.isEditing) {
-//			return;
-//		}
-//
-//		// otherwise, add a new value below this cell using cool treview methods
-//		DBTableItem *newDataObject = [[DBTableItem alloc] initWithName:@"Added value" children:@[]];
-//		[dataObject addChild:newDataObject];
-//		[weakSelf.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:dataObject withAnimation:RATreeViewRowAnimationLeft];
-//		[weakSelf.treeView reloadRowsForItems:@[dataObject] withRowAnimation:RATreeViewRowAnimationNone];
-//	};
-//
-//	return cell;
-//}
 
 - (NSInteger)treeView:(RATreeView *)treeView numberOfChildrenOfItem:(id)item {
 	if (item == nil) {
@@ -243,40 +215,141 @@ CGRect fullScreenFrame() {
 }
 
 // ================================================================
-#pragma mark Other funcs
+#pragma mark SWTableViewCellDelegate
 // ================================================================
 
-NSArray* defaultData() {
-	DBTableItem *phone1 = [DBTableItem itemWithName:@"Phone 1" children:nil];
-	DBTableItem *phone2 = [DBTableItem itemWithName:@"Phone 2" children:nil];
-	DBTableItem *phone3 = [DBTableItem itemWithName:@"Phone 3" children:nil];
-	DBTableItem *phone4 = [DBTableItem itemWithName:@"Phone 4" children:nil];
-
-	DBTableItem *phone = [DBTableItem itemWithName:@"Phones"
-												  children:[NSArray arrayWithObjects:phone1, phone2, phone3, phone4, nil]];
-
-	DBTableItem *notebook1 = [DBTableItem itemWithName:@"Notebook 1" children:nil];
-	DBTableItem *notebook2 = [DBTableItem itemWithName:@"Notebook 2" children:nil];
-
-	DBTableItem *computer1 = [DBTableItem itemWithName:@"Computer 1"
-													  children:[NSArray arrayWithObjects:notebook1, notebook2, nil]];
-	DBTableItem *computer2 = [DBTableItem itemWithName:@"Computer 2" children:nil];
-	DBTableItem *computer3 = [DBTableItem itemWithName:@"Computer 3" children:nil];
-
-	DBTableItem *computer = [DBTableItem itemWithName:@"Computers"
-													 children:[NSArray arrayWithObjects:computer1, computer2, computer3, nil]];
-	DBTableItem *car = [DBTableItem itemWithName:@"Cars" children:nil];
-	DBTableItem *bike = [DBTableItem itemWithName:@"Bikes" children:nil];
-	DBTableItem *house = [DBTableItem itemWithName:@"Houses" children:nil];
-	DBTableItem *flats = [DBTableItem itemWithName:@"Flats" children:nil];
-	DBTableItem *motorbike = [DBTableItem itemWithName:@"Motorbikes" children:nil];
-	DBTableItem *drinks = [DBTableItem itemWithName:@"Drinks" children:nil];
-	DBTableItem *food = [DBTableItem itemWithName:@"Food" children:nil];
-	DBTableItem *sweets = [DBTableItem itemWithName:@"Sweets" children:nil];
-	DBTableItem *watches = [DBTableItem itemWithName:@"Watches" children:nil];
-	DBTableItem *walls = [DBTableItem itemWithName:@"Walls" children:nil];
-
-	return @[phone, computer, car, bike, house, flats, motorbike, drinks, food, sweets, watches, walls];
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index {
+	
+	switch (index) {
+		case 0:
+		{
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Bookmark" message:@"Save to favorites successfully" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+			[alertView show];
+			break;
+		}
+		case 1:
+		{
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email sent" message:@"Just sent the image to your INBOX" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+			[alertView show];
+			break;
+		}
+		case 2:
+		{
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Facebook Sharing" message:@"Just shared the pattern image on Facebook" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+			[alertView show];
+			break;
+		}
+		case 3:
+		{
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Twitter Sharing" message:@"Just shared the pattern image on Twitter" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+			[alertView show];
+		}
+		default:
+			break;
+	}
 }
+
+static const int kTagDelete = 1;
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index {
+	switch (index) {
+		case 0:		// Sub-Tag Button
+		{
+			// More button is pressed
+
+			
+//			[cell hideUtilityButtonsAnimated:YES];
+			break;
+		}
+		case 1:		// Delete button
+		{
+			UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
+			[sheet showInView:self.view];
+			sheet.tag = kTagDelete;
+			sheet.delegate = self;
+			_cellInQuestion = cell;
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+// ================================================================
+#pragma mark UIActionSheetDelegate
+// ================================================================
+
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"action sheet: button idx = %d", buttonIndex);
+	switch (actionSheet.tag) {
+		case kTagDelete:
+			if (_cellInQuestion && buttonIndex == 0) {	// cancel = 1, do it = 0
+				[self deleteItem:[self.treeView itemForCell:_cellInQuestion]];
+			} else {
+				[_cellInQuestion hideUtilityButtonsAnimated:YES];
+			}
+			_cellInQuestion = nil;
+			break;
+		default:
+			break;
+	}
+}
+
+// ================================================================
+#pragma mark Helper Funcs
+// ================================================================
+
+-(void) deleteItem:(DBTableItem*)item {
+	DBTableItem *parent = [self.treeView parentForItem:item];
+	NSInteger index = 0;
+	
+	if (parent == nil) {
+		index = [self.data indexOfObject:item];
+		NSMutableArray *children = [self.data mutableCopy];
+		[children removeObject:item];
+		self.data = [children copy];
+		
+	} else {
+		index = [parent.children indexOfObject:item];
+		[parent removeChild:item];
+	}
+	
+	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
+	if (parent) {
+		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
+	}
+}
+
+//NSArray* defaultData() {
+//	DBTableItem *phone1 = [DBTableItem itemWithName:@"Phone 1" children:nil];
+//	DBTableItem *phone2 = [DBTableItem itemWithName:@"Phone 2" children:nil];
+//	DBTableItem *phone3 = [DBTableItem itemWithName:@"Phone 3" children:nil];
+//	DBTableItem *phone4 = [DBTableItem itemWithName:@"Phone 4" children:nil];
+//
+//	DBTableItem *phone = [DBTableItem itemWithName:@"Phones"
+//												  children:[NSArray arrayWithObjects:phone1, phone2, phone3, phone4, nil]];
+//
+//	DBTableItem *notebook1 = [DBTableItem itemWithName:@"Notebook 1" children:nil];
+//	DBTableItem *notebook2 = [DBTableItem itemWithName:@"Notebook 2" children:nil];
+//
+//	DBTableItem *computer1 = [DBTableItem itemWithName:@"Computer 1"
+//													  children:[NSArray arrayWithObjects:notebook1, notebook2, nil]];
+//	DBTableItem *computer2 = [DBTableItem itemWithName:@"Computer 2" children:nil];
+//	DBTableItem *computer3 = [DBTableItem itemWithName:@"Computer 3" children:nil];
+//
+//	DBTableItem *computer = [DBTableItem itemWithName:@"Computers"
+//													 children:[NSArray arrayWithObjects:computer1, computer2, computer3, nil]];
+//	DBTableItem *car = [DBTableItem itemWithName:@"Cars" children:nil];
+//	DBTableItem *bike = [DBTableItem itemWithName:@"Bikes" children:nil];
+//	DBTableItem *house = [DBTableItem itemWithName:@"Houses" children:nil];
+//	DBTableItem *flats = [DBTableItem itemWithName:@"Flats" children:nil];
+//	DBTableItem *motorbike = [DBTableItem itemWithName:@"Motorbikes" children:nil];
+//	DBTableItem *drinks = [DBTableItem itemWithName:@"Drinks" children:nil];
+//	DBTableItem *food = [DBTableItem itemWithName:@"Food" children:nil];
+//	DBTableItem *sweets = [DBTableItem itemWithName:@"Sweets" children:nil];
+//	DBTableItem *watches = [DBTableItem itemWithName:@"Watches" children:nil];
+//	DBTableItem *walls = [DBTableItem itemWithName:@"Walls" children:nil];
+//
+//	return @[phone, computer, car, bike, house, flats, motorbike, drinks, food, sweets, watches, walls];
+//}
 
 @end

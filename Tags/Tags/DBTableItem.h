@@ -11,7 +11,8 @@
 @interface DBTableItem : NSObject
 
 @property (strong, nonatomic) NSString *name;
-@property (strong, nonatomic) NSArray *children;
+@property (strong, nonatomic) DBTableItem *parent;
+@property (strong, nonatomic, readonly) NSMutableArray *children;
 
 +(id) itemWithName:(NSString *)name children:(NSArray *)children;
 

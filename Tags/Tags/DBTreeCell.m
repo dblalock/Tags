@@ -57,11 +57,16 @@
 //}
 
 - (void)setupWithTitle:(NSString *)title
-				 level:(NSInteger)level {
+				 level:(NSInteger)level
+		   numChildren:(NSUInteger)numChildren {
 //	self.contentView.frame = self.bounds;	// sometimes magically fixes stuff
 	
 	self.titleText.text = title;
-	self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	if (numChildren) {
+		self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	} else {
+		self.accessoryType = UITableViewCellAccessoryNone;
+	}
 	
 	if (level == 0) {
 		self.backgroundColor = UIColorFromRGB(0xF7F7F7);
