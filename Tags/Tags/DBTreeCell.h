@@ -9,15 +9,23 @@
 #import <UIKit/UIKit.h>
 #import "SWTableViewCell.h"
 
+#import "DBTableItem.h"	//ugh...somewhat tight coupling
+
 @interface DBTreeCell : SWTableViewCell
 
-//+(NSString*) reuseIdentifier;
+@property(nonatomic) BOOL wantsUtilityButtons;
+@property(nonatomic) NSUInteger preferredRowHeight;
+//@property(nonatomic) BOOL requiresSetup;
 
 //- (void)setupWithTitle:(NSString *)title
 //				 level:(NSInteger)level;
 
-- (void)setupWithTitle:(NSString *)title
-				 level:(NSInteger)level
-		   numChildren:(NSUInteger)numChildren;
+//- (void)setupWithTitle:(NSString *)title
+//				 level:(NSInteger)level
+//		   numChildren:(NSUInteger)numChildren;
+
+-(void) setupWithItem:(DBTableItem*)item
+			  atLevel:(NSUInteger)lvl
+			 expanded:(BOOL)expanded;
 
 @end

@@ -10,6 +10,11 @@
 
 @implementation DBTableItem
 
++(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child {
+	child.parent = parent;
+	[parent addChild:child];
+}
+
 + (id)itemWithName:(NSString *)name children:(NSArray *)children {
 	return [[self alloc] initWithName:name children:children];
 }
@@ -38,6 +43,13 @@
 //	NSMutableArray *children = [self.children mutableCopy];
 	[_children removeObject:child];
 //	_children = [children copy];
+}
+
++(NSString*) reuseIdentifier {
+	return NSStringFromClass([self class]);
+}
+-(NSString*) reuseIdentifier {
+	return [[self class] reuseIdentifier];
 }
 
 @end

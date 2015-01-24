@@ -8,6 +8,8 @@
 
 #import "DBTreeCell.h"
 
+static const NSUInteger kPreferredRowHeight = 44;
+
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @interface DBTreeCell ()
@@ -37,10 +39,6 @@
 //===============================================================
 #pragma mark Custom stuff
 //===============================================================
-
-//+(NSString*) reuseIdentifier {
-//	return NSStringFromClass([self class]);
-//}
 
 //- (void)layoutSubviews {
 //	[super layoutSubviews];
@@ -88,6 +86,21 @@
 	titleFrame.size = [self.titleText sizeThatFits:titleFrame.size];
 	self.titleText.frame = titleFrame;
 }
+
+-(void) setupWithItem:(DBTableItem*)item atLevel:(NSUInteger)lvl expanded:(BOOL)expanded {
+	[self setupWithTitle:item.name level:lvl numChildren:item.children.count];
+}
+
+-(BOOL) wantsUtilityButtons {
+	return YES;
+}
+-(NSUInteger) preferredRowHeight {
+	return kPreferredRowHeight;
+}
+
+//-(BOOL) requiresSetup {
+//	return YES;
+//}
 
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //	[self.titleText endEditing:YES];

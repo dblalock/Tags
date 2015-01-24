@@ -13,16 +13,12 @@
 
 #import "DBTableItem.h"
 #import "DBTypItem.h"
+#import "DBTreeItemAddNew.h"
 #import "DBTreeCell.h"
 #import "TypManager.h"
 
-
-//#import "RATableViewCell.h"
-
-NSString* reuseIdentifier(Class cls) {
-	return NSStringFromClass(cls);
-}
-
+static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
+static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 @interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate,
 	SWTableViewCellDelegate, UIActionSheetDelegate>
@@ -63,10 +59,13 @@ CGRect fullScreenFrame() {
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
 
 	// my tableviewcell nib
-	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([DBTreeCell class]) bundle:nil] forCellReuseIdentifier:reuseIdentifier([DBTreeCell class])];
-	// example tableviewcell nib
-//	[self.treeView registerNib:[UINib nibWithNibName:NSStringFromClass([RATableViewCell class]) bundle:nil] forCellReuseIdentifier:reuseIdentifier([DBTreeCell class])];
-
+	NSString* treeCellNibName = NSStringFromClass([DBTreeCell class]);
+	UINib* treeCellNib = [UINib nibWithNibName:treeCellNibName bundle:nil];
+	UINib* addNewNib = [UINib nibWithNibName:kCellNewButtonNibName bundle:nil];
+	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
+	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
+	[self.treeView registerNib:addNewNib forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
+	
 //	_data = defaultData();
 	_data = [defaultTypItems() mutableCopy];
 	[_treeView reloadData];
@@ -104,16 +103,18 @@ CGRect fullScreenFrame() {
 // row attributes
 //--------------------------------
 - (CGFloat)treeView:(RATreeView *)treeView heightForRowForItem:(id)item {
-	return 44;
+	DBTreeCell* cell = (DBTreeCell*)[treeView cellForItem:item];
+	return cell.preferredRowHeight ? cell.preferredRowHeight : 44;
 }
 
 //--------------------------------
 // expanding/collapsing rows
 //--------------------------------
-//- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
-//	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
-//	[cell setAdditionButtonHidden:NO animated:YES];
-//}
+- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
+	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
+		[self addRootItem];
+	}
+}
 //- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item
 //{
 //	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
@@ -157,13 +158,18 @@ CGRect fullScreenFrame() {
 	DBTableItem *tableItem = item;
 	NSInteger lvl = [self.treeView levelForCellForItem:item];
 //	NSInteger numberOfChildren = [dataObject.children count];
-//	BOOL expanded = [self.treeView isCellForItemExpanded:item];
+	BOOL expanded = [self.treeView isCellForItemExpanded:item];
 	
-	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:reuseIdentifier([DBTreeCell class])];
+	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
 	
-	[cell setupWithTitle:tableItem.name level:lvl numChildren:[tableItem.children count]];
+	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
+//	[cell setupWithTitle:tableItem.name level:lvl numChildren:[tableItem.children count]];
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	
+	// rest is just adding utility buttons
+	if (! cell.wantsUtilityButtons) {
+		return cell;
+	}
 	
 	// SWTableViewCell wonderfulness
 	// from: www.appcoda.com/swipeable-uitableviewcell-tutorial/
@@ -183,11 +189,11 @@ CGRect fullScreenFrame() {
 //	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
 //												icon:[UIImage imageNamed:@"twitter.png"]];
 	
-	[rightUtilityButtons sw_addUtilityButtonWithColor:
-	 [UIColor colorWithRed:0.1f green:1.0f blue:0.0f alpha:1.0]
-												title:@"SubTag"];
-	[rightUtilityButtons sw_addUtilityButtonWithColor:
-	 [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f]
+	[rightUtilityButtons sw_addUtilityButtonWithColor:[UIColor greenColor]
+//	 [UIColor colorWithRed:0.1f green:1.0f blue:0.0f alpha:1.0]
+												title:@"New"];
+	[rightUtilityButtons sw_addUtilityButtonWithColor:[UIColor redColor]
+//	 [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f]
 												title:@"Delete"];
 	
 //	cell.leftUtilityButtons = leftUtilityButtons;
@@ -199,7 +205,8 @@ CGRect fullScreenFrame() {
 
 - (NSInteger)treeView:(RATreeView *)treeView numberOfChildrenOfItem:(id)item {
 	if (item == nil) {
-		return [self.data count];
+//		return [self.data count];
+		return [self.data count] + 1;	// extra row for "add new"
 	}
 
 	DBTableItem *data = item;
@@ -209,7 +216,10 @@ CGRect fullScreenFrame() {
 - (id)treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(id)item {
 	DBTableItem *data = item;
 	if (item == nil) {
-		return [self.data objectAtIndex:index];
+		if (index < [self.data count]) {
+			return [self.data objectAtIndex:index];
+		}
+		return [DBTreeItemAddNew item];
 	}
 	return data.children[index];
 }
@@ -254,6 +264,7 @@ static const int kTagDelete = 1;
 	switch (index) {
 		case 0:		// Sub-Tag Button
 		{
+			[self addChildTo:[self.treeView itemForCell:cell]];
 			// More button is pressed
 
 			
@@ -297,6 +308,35 @@ static const int kTagDelete = 1;
 // ================================================================
 #pragma mark Helper Funcs
 // ================================================================
+
+static NSString *const kDefaultChildName = @"New Tag";
+
+
+-(void) addRootItem {
+	DBTableItem *newChild = [[DBTableItem alloc] initWithName:kDefaultChildName children:nil];
+	[self.data addObject:newChild];
+//	int idx = [self.data count] - 1;
+//	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:idx] inParent:nil withAnimation:RATreeViewRowAnimationLeft];
+//	[self.treeView reloadRowsForItems:nil withRowAnimation:RATreeViewRowAnimationNone];
+	[self.treeView reloadData];
+}
+
+
+-(void) addChildTo:(DBTableItem*)parent {
+	// This seems to look slightly better than no animation when
+	// there are a lot of children already
+	[self.treeView expandRowForItem:parent withRowAnimation:RATreeViewRowAnimationMiddle];
+	
+	// TODO make this be a DBTypItem, or even something else
+	
+	DBTableItem *newChild = [[DBTableItem alloc] initWithName:kDefaultChildName children:nil];
+	[DBTableItem joinParent:parent toChild:newChild];
+	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:parent withAnimation:RATreeViewRowAnimationLeft];
+	[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
+	
+	// TODO make this be a thing
+//	[[self.treeView cellForItem:newDataObject] editName];
+}
 
 -(void) deleteItem:(DBTableItem*)item {
 	DBTableItem *parent = [self.treeView parentForItem:item];

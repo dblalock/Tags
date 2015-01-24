@@ -26,6 +26,9 @@
 		72D3C0051A71A85B00648A67 /* TypManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0041A71A85B00648A67 /* TypManager.m */; };
 		72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C0061A72A84500648A67 /* DBTimeCell.xib */; };
 		72D3C00A1A72B4BC00648A67 /* DBTypItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0091A72B4BC00648A67 /* DBTypItem.m */; };
+		72D3C00C1A731AD600648A67 /* DBCellAddNew.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */; };
+		72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */; };
+		72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +75,11 @@
 		72D3C0061A72A84500648A67 /* DBTimeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTimeCell.xib; sourceTree = "<group>"; };
 		72D3C0081A72B4BC00648A67 /* DBTypItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTypItem.h; sourceTree = "<group>"; };
 		72D3C0091A72B4BC00648A67 /* DBTypItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTypItem.m; sourceTree = "<group>"; };
+		72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBCellAddNew.xib; sourceTree = "<group>"; };
+		72D3C00D1A7320C400648A67 /* DBTreeItemAddNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeItemAddNew.h; sourceTree = "<group>"; };
+		72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeItemAddNew.m; sourceTree = "<group>"; };
+		72D3C0101A7323DC00648A67 /* DBTreeCellAddNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeCellAddNew.h; sourceTree = "<group>"; };
+		72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeCellAddNew.m; sourceTree = "<group>"; };
 		9AEB05530126F6F8C5CE903F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -125,6 +133,7 @@
 				72D3BFCC1A70053800648A67 /* SecondViewController.h */,
 				72D3BFCD1A70053800648A67 /* SecondViewController.m */,
 				72D3BFFD1A71759600648A67 /* Typs */,
+				72D3C0131A7323F600648A67 /* TreeViewCells */,
 				72D3BFF41A70431500648A67 /* TreeViewItems */,
 				72D3BFCF1A70053800648A67 /* Main.storyboard */,
 				72D3BFD21A70053800648A67 /* Images.xcassets */,
@@ -163,15 +172,12 @@
 		72D3BFF41A70431500648A67 /* TreeViewItems */ = {
 			isa = PBXGroup;
 			children = (
-				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
-				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
-				72D3C0061A72A84500648A67 /* DBTimeCell.xib */,
+				72D3C00D1A7320C400648A67 /* DBTreeItemAddNew.h */,
+				72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */,
 				72D3BFFA1A71749300648A67 /* DBTableItem.h */,
 				72D3BFFB1A71749300648A67 /* DBTableItem.m */,
 				72D3C0081A72B4BC00648A67 /* DBTypItem.h */,
 				72D3C0091A72B4BC00648A67 /* DBTypItem.m */,
-				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
-				72D3BFFF1A71774500648A67 /* DBTreeCell.m */,
 				72D3BFEE1A7042F800648A67 /* RADataObject.h */,
 				72D3BFEF1A7042F800648A67 /* RADataObject.m */,
 				72D3BFF01A7042F800648A67 /* RATableViewCell.h */,
@@ -189,6 +195,21 @@
 				72D3BFEC1A7005A500648A67 /* Typ.m */,
 			);
 			name = Typs;
+			sourceTree = "<group>";
+		};
+		72D3C0131A7323F600648A67 /* TreeViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
+				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
+				72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */,
+				72D3C0061A72A84500648A67 /* DBTimeCell.xib */,
+				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
+				72D3BFFF1A71774500648A67 /* DBTreeCell.m */,
+				72D3C0101A7323DC00648A67 /* DBTreeCellAddNew.h */,
+				72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */,
+			);
+			name = TreeViewCells;
 			sourceTree = "<group>";
 		};
 		A0BA1AF16B07CE8A08102499 /* Frameworks */ = {
@@ -290,6 +311,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72D3C00C1A731AD600648A67 /* DBCellAddNew.xib in Resources */,
 				72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */,
 				72D3BFD11A70053800648A67 /* Main.storyboard in Resources */,
 				72D3BFD61A70053800648A67 /* LaunchScreen.xib in Resources */,
@@ -347,6 +369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				72D3C00A1A72B4BC00648A67 /* DBTypItem.m in Sources */,
+				72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
 				72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
@@ -357,6 +380,7 @@
 				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
 				72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */,
 				72D3BFF21A7042F800648A67 /* RADataObject.m in Sources */,
+				72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
