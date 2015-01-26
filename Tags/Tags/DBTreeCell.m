@@ -9,16 +9,12 @@
 #import "DBTreeCell.h"
 
 static const NSUInteger kPreferredRowHeight = 44;
+//static const float kLongPressSecs = 2.0;
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-@interface DBTreeCell ()
-
+@interface DBTreeCell () <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *titleText;
-
-// TODO remove
-//@property (weak, nonatomic) IBOutlet UIButton *additionButton;
-
 @end
 
 @implementation DBTreeCell
@@ -27,8 +23,16 @@ static const NSUInteger kPreferredRowHeight = 44;
 	[super awakeFromNib];
     // Initialization code
 	
+	self.titleText.delegate = self;
 	self.selectedBackgroundView = [UIView new];
 	self.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+	
+	// this never actually gets events, apparently
+//	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+//										  initWithTarget:self action:@selector(handleLongPress:)];
+//	lpgr.minimumPressDuration = kLongPressSecs;
+//	lpgr.delegate = self;
+//	[self addGestureRecognizer:lpgr];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -39,6 +43,12 @@ static const NSUInteger kPreferredRowHeight = 44;
 //===============================================================
 #pragma mark Custom stuff
 //===============================================================
+
+void shrinkTextFieldToFit(UITextField* field) {
+	CGRect titleFrame = field.frame;
+	titleFrame.size = [field sizeThatFits:titleFrame.size];
+	field.frame = titleFrame;
+}
 
 //- (void)layoutSubviews {
 //	[super layoutSubviews];
@@ -57,7 +67,6 @@ static const NSUInteger kPreferredRowHeight = 44;
 - (void)setupWithTitle:(NSString *)title
 				 level:(NSInteger)level
 		   numChildren:(NSUInteger)numChildren {
-//	self.contentView.frame = self.bounds;	// sometimes magically fixes stuff
 	
 	self.titleText.text = title;
 	if (numChildren) {
@@ -91,6 +100,21 @@ static const NSUInteger kPreferredRowHeight = 44;
 	[self setupWithTitle:item.name level:lvl numChildren:item.children.count];
 }
 
+-(void) startEditingName {
+	_titleText.enabled = YES;
+	
+	CGRect titleFrame = self.titleText.frame;
+	titleFrame.size.width += 100;
+	self.titleText.frame = titleFrame;
+	
+	[_titleText becomeFirstResponder];
+}
+-(void) stopEditingName {
+	[_titleText resignFirstResponder];
+	_titleText.enabled = NO;
+	shrinkTextFieldToFit(self.titleText);
+}
+
 -(BOOL) wantsUtilityButtons {
 	return YES;
 }
@@ -98,15 +122,24 @@ static const NSUInteger kPreferredRowHeight = 44;
 	return kPreferredRowHeight;
 }
 
+
+-(void) handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+	NSLog(@"tree cell got long press");
+	// only fire when long press first detected
+	if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+	[self startEditingName];
+}
+
 //-(BOOL) requiresSetup {
 //	return YES;
 //}
 
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	[self stopEditingName];
 //	[self.titleText endEditing:YES];
-	//	[self.view endEditing:YES];		// no effect on cell text
-	//	[self.treeView endEditing:YES]; // no effect on cell text
-	//	[self.treeView setF]
+//		[self.view endEditing:YES];		// no effect on cell text
+//		[self.treeView endEditing:YES]; // no effect on cell text
+//		[self.treeView setF]
 //}
 
 //===============================================================

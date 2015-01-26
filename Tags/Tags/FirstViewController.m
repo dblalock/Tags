@@ -19,13 +19,14 @@
 
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
+static const int kActionSheetTagDelete = 1;
 
 @interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate,
 	SWTableViewCellDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSMutableArray *data;
 @property (weak, nonatomic) RATreeView *treeView;
-@property (weak, nonatomic) SWTableViewCell *cellInQuestion; //for action sheets
+@property (weak, nonatomic) DBTreeCell *cellInQuestion; //for action sheets
 
 //@property (weak, nonatomic) id<RATreeViewDataSource> dataSource;
 //@property (weak, nonatomic) id<RATreeViewDelegate> delegate;
@@ -90,10 +91,12 @@ CGRect fullScreenFrame() {
 }
 
 // hide keyboard on touch outside
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-////	[self.view endEditing:YES];		// no effect on cell text
-////	[self.treeView endEditing:YES]; // no effect on cell text
-//}
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	NSLog(@"view controller touches began");
+	[_cellInQuestion stopEditingName];	// no effect
+//	[self.view endEditing:YES];		// no effect on cell text
+//	[self.treeView endEditing:YES]; // no effect on cell text
+}
 
 // ================================================================
 #pragma mark TreeView Delegate methods
@@ -114,20 +117,45 @@ CGRect fullScreenFrame() {
 	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
 		[self addRootItem];
 	}
+//	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
+//	[cell startEditingName];
 }
-//- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item
-//{
-//	RATableViewCell *cell = (RATableViewCell *)[treeView cellForItem:item];
-//	[cell setAdditionButtonHidden:YES animated:YES];
-//}
+
+- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
+	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
+	[cell stopEditingName];
+}
 
 //--------------------------------
-// tree modification (deleting cells)
+// tree / cell modification
 //--------------------------------
 -(BOOL) treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
 //	return YES;
 	return NO;
 }
+
+// returns yes if it stopped something, and no if it wasn't editing anyway
+-(BOOL) stopEditingCell {
+	if (_cellInQuestion) {
+		[_cellInQuestion stopEditingName];	//hack to close keyboard on touch outside
+		_cellInQuestion = nil;
+		return YES;
+	}
+	return NO;
+}
+
+// these two methods are basically a hack to get it to close the keyboard
+// when you click outside of the text view
+-(BOOL)treeView:(RATreeView *)treeView shouldCollapaseRowForItem:(id)item {
+	return ! [self stopEditingCell];
+}
+-(BOOL)treeView:(RATreeView *)treeView shouldExpandRowForItem:(id)item {
+	return ! [self stopEditingCell];
+}
+
+//- (BOOL)treeView:(RATreeView *)treeView shouldShowMenuForRowForItem:(id)item {
+//	return YES;	// no effect
+//}
 
 //- (void) treeView:(RATreeView *)treeView
 //commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
@@ -173,11 +201,12 @@ CGRect fullScreenFrame() {
 	
 	// SWTableViewCell wonderfulness
 	// from: www.appcoda.com/swipeable-uitableviewcell-tutorial/
-//	NSMutableArray *leftUtilityButtons = [NSMutableArray new];
+	NSMutableArray *leftUtilityButtons = [NSMutableArray new];
 	NSMutableArray *rightUtilityButtons = [NSMutableArray new];
 	
-//	[leftUtilityButtons sw_addUtilityButtonWithColor:
-//	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
+	[leftUtilityButtons sw_addUtilityButtonWithColor:
+	 [UIColor colorWithRed:0.1f green:0.0f blue:1.0f alpha:0.7]
+											   title:@"Edit"];
 //												icon:[UIImage imageNamed:@"like.png"]];
 //	[leftUtilityButtons sw_addUtilityButtonWithColor:
 //	 [UIColor colorWithRed:1.0f green:1.0f blue:0.35f alpha:0.7]
@@ -196,7 +225,7 @@ CGRect fullScreenFrame() {
 //	 [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f]
 												title:@"Delete"];
 	
-//	cell.leftUtilityButtons = leftUtilityButtons;
+	cell.leftUtilityButtons = leftUtilityButtons;
 	cell.rightUtilityButtons = rightUtilityButtons;
 	cell.delegate = self;
 	
@@ -228,56 +257,46 @@ CGRect fullScreenFrame() {
 #pragma mark SWTableViewCellDelegate
 // ================================================================
 
+-(void) clickedEditCell:(DBTreeCell*)cell {
+	[cell hideUtilityButtonsAnimated:NO];	// YES apparently doesn't work if we have it actually edit
+	_cellInQuestion = cell;
+	[(DBTreeCell*)cell startEditingName];
+}
+
+-(void) clickedAddChildToCell:(UITableViewCell*)cell {
+	[self addChildTo:[self.treeView itemForCell:cell]];
+}
+
+-(void) clickedDeleteCell:(DBTreeCell*)cell {
+	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
+	sheet.tag = kActionSheetTagDelete;
+	sheet.delegate = self;
+	_cellInQuestion = cell;
+	[sheet showInView:self.view];
+}
+
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index {
 	
 	switch (index) {
-		case 0:
+		case 0:			// edit button
 		{
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Bookmark" message:@"Save to favorites successfully" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-			[alertView show];
-			break;
-		}
-		case 1:
-		{
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email sent" message:@"Just sent the image to your INBOX" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-			[alertView show];
-			break;
-		}
-		case 2:
-		{
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Facebook Sharing" message:@"Just shared the pattern image on Facebook" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-			[alertView show];
-			break;
-		}
-		case 3:
-		{
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Twitter Sharing" message:@"Just shared the pattern image on Twitter" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-			[alertView show];
+			[self clickedEditCell:(DBTreeCell*)cell];
 		}
 		default:
 			break;
 	}
 }
 
-static const int kTagDelete = 1;
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index {
 	switch (index) {
 		case 0:		// Sub-Tag Button
 		{
-			[self addChildTo:[self.treeView itemForCell:cell]];
-			// More button is pressed
-
-			
-//			[cell hideUtilityButtonsAnimated:YES];
+			[self clickedAddChildToCell:cell];
 			break;
 		}
 		case 1:		// Delete button
 		{
-			UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
-			[sheet showInView:self.view];
-			sheet.tag = kTagDelete;
-			sheet.delegate = self;
-			_cellInQuestion = cell;
+			[self clickedDeleteCell:(DBTreeCell*)cell];
 			break;
 		}
 		default:
@@ -290,9 +309,8 @@ static const int kTagDelete = 1;
 // ================================================================
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	NSLog(@"action sheet: button idx = %d", buttonIndex);
 	switch (actionSheet.tag) {
-		case kTagDelete:
+		case kActionSheetTagDelete:
 			if (_cellInQuestion && buttonIndex == 0) {	// cancel = 1, do it = 0
 				[self deleteItem:[self.treeView itemForCell:_cellInQuestion]];
 			} else {
@@ -334,6 +352,9 @@ static NSString *const kDefaultChildName = @"New Tag";
 	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:parent withAnimation:RATreeViewRowAnimationLeft];
 	[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 	
+	// assume user doesn't want to keep the name "New Tag"
+	DBTreeCell* cell = (DBTreeCell*)[self.treeView cellForItem:newChild];
+	[cell startEditingName];
 	// TODO make this be a thing
 //	[[self.treeView cellForItem:newDataObject] editName];
 }

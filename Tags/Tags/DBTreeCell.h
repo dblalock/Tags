@@ -28,4 +28,7 @@
 			  atLevel:(NSUInteger)lvl
 			 expanded:(BOOL)expanded;
 
+-(void) startEditingName;
+-(void) stopEditingName;
+
 @end
