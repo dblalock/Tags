@@ -67,6 +67,14 @@ CGRect fullScreenFrame() {
 	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 	[self.treeView registerNib:addNewNib forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
 	
+	// dealing with keyboard covering crap
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(keyboardWillShow:)
+												 name: UIKeyboardWillShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(keyboardWillDisappear:)
+												 name: UIKeyboardWillHideNotification object:nil];
+	
 //	_data = defaultData();
 	_data = [defaultTypItems() mutableCopy];
 	[_treeView reloadData];
@@ -90,13 +98,20 @@ CGRect fullScreenFrame() {
 	// Dispose of any resources that can be recreated.
 }
 
+- (void) dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver: self
+													name: UIKeyboardWillShowNotification object: nil];
+	[[NSNotificationCenter defaultCenter] removeObserver: self
+													name: UIKeyboardWillHideNotification object: nil];
+}
+
 // hide keyboard on touch outside
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	NSLog(@"view controller touches began");
-	[_cellInQuestion stopEditingName];	// no effect
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	NSLog(@"view controller touches began");	// never runs
+//	[_cellInQuestion stopEditingName];	// no effect
 //	[self.view endEditing:YES];		// no effect on cell text
 //	[self.treeView endEditing:YES]; // no effect on cell text
-}
+//}
 
 // ================================================================
 #pragma mark TreeView Delegate methods
@@ -117,8 +132,6 @@ CGRect fullScreenFrame() {
 	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
 		[self addRootItem];
 	}
-//	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
-//	[cell startEditingName];
 }
 
 - (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
@@ -134,10 +147,11 @@ CGRect fullScreenFrame() {
 	return NO;
 }
 
-// returns yes if it stopped something, and no if it wasn't editing anyway
+// returns yes if it stopped something, and no if it wasn't editing anyway;
+// this is just a hack to close keyboard on touch outside
 -(BOOL) stopEditingCell {
 	if (_cellInQuestion) {
-		[_cellInQuestion stopEditingName];	//hack to close keyboard on touch outside
+		[_cellInQuestion stopEditingName];
 		_cellInQuestion = nil;
 		return YES;
 	}
@@ -258,7 +272,7 @@ CGRect fullScreenFrame() {
 // ================================================================
 
 -(void) clickedEditCell:(DBTreeCell*)cell {
-	[cell hideUtilityButtonsAnimated:NO];	// YES apparently doesn't work if we have it actually edit
+//	[cell hideUtilityButtonsAnimated:YES];	// YES apparently doesn't work if we have it actually edit
 	_cellInQuestion = cell;
 	[(DBTreeCell*)cell startEditingName];
 }
@@ -276,7 +290,6 @@ CGRect fullScreenFrame() {
 }
 
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index {
-	
 	switch (index) {
 		case 0:			// edit button
 		{
@@ -321,6 +334,48 @@ CGRect fullScreenFrame() {
 		default:
 			break;
 	}
+}
+
+// ================================================================
+#pragma mark Keyboard not covering tableview
+// ================================================================
+
+- (void) keyboardWillShow: (NSNotification*) aNotification {
+	[UIView animateWithDuration: [self keyboardAnimationDurationForNotification: aNotification] animations:^{
+		[_cellInQuestion hideUtilityButtonsAnimated:YES];
+		
+		CGSize kbSize = [[[aNotification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+		//		NSLog(@"%@", NSStringFromCGSize(kbSize));	// 320 x 216
+		CGRect treeFrame = _treeView.frame;
+		treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
+		[_treeView setFrame:treeFrame];
+		
+		SWTableViewCell *cell = _cellInQuestion;
+		[_treeView scrollToRowForItem:[_treeView itemForCell:cell] atScrollPosition:RATreeViewScrollPositionBottom animated:YES];
+
+	} completion:^(BOOL finished) {
+
+	}];
+}
+
+- (void) keyboardWillDisappear: (NSNotification*) aNotification {
+	[UIView animateWithDuration: [self keyboardAnimationDurationForNotification: aNotification] animations:^{
+		//restore your tableview
+		CGSize kbSize = [[[aNotification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+		
+		CGRect treeFrame = _treeView.frame;
+		treeFrame.size.height += kbSize.height - self.tabBarController.tabBar.frame.size.height;
+		[_treeView setFrame:treeFrame];
+	} completion:^(BOOL finished) {
+	}];
+}
+
+- (NSTimeInterval) keyboardAnimationDurationForNotification:(NSNotification*)notification {
+	NSDictionary* info = [notification userInfo];
+	NSValue* value = [info objectForKey: UIKeyboardAnimationDurationUserInfoKey];
+	NSTimeInterval duration = 0;
+	[value getValue: &duration];
+	return duration;
 }
 
 // ================================================================
