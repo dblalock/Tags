@@ -11,10 +11,30 @@
 
 #import "DBTableItem.h"	//ugh...somewhat tight coupling
 
+
+// ================================================================
+#pragma mark DBTreeCell Delegate
+// ================================================================
+
+@class DBTreeCell;
+
+@protocol DBTreeCellDelegate <NSObject>
+
+@optional
+-(void) treeCell:(DBTreeCell*)cell didSetNameTo:(NSString*)name;
+
+@end
+
+// ================================================================
+#pragma mark DBTreeCell
+// ================================================================
+
 @interface DBTreeCell : SWTableViewCell
 
 @property(nonatomic) BOOL wantsUtilityButtons;
 @property(nonatomic) NSUInteger preferredRowHeight;
+@property(weak, nonatomic) id<DBTreeCellDelegate> treeDelegate;
+
 //@property(nonatomic) BOOL requiresSetup;
 
 //- (void)setupWithTitle:(NSString *)title
@@ -28,6 +48,7 @@
 			  atLevel:(NSUInteger)lvl
 			 expanded:(BOOL)expanded;
 
+-(void) startEditingNameWithSelectAll:(BOOL)selectAll;
 -(void) startEditingName;
 -(void) stopEditingName;
 

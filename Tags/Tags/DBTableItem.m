@@ -10,10 +10,10 @@
 
 @implementation DBTableItem
 
-+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child {
-	child.parent = parent;
-	[parent addChild:child];
-}
+//+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child {
+//	child.parent = parent;
+//	[parent addChild:child];
+//}
 
 + (id)itemWithName:(NSString *)name children:(NSArray *)children {
 	return [[self alloc] initWithName:name children:children];
@@ -34,15 +34,19 @@
 }
 
 - (void)addChild:(DBTableItem*)child {
-//	NSMutableArray *children = [self.children mutableCopy];
+	if ([_children containsObject:child]) return;
+
 	[_children insertObject:child atIndex:0];
-//	_children = [children copy];
 }
 
 - (void)removeChild:(DBTableItem*)child {
-//	NSMutableArray *children = [self.children mutableCopy];
 	[_children removeObject:child];
-//	_children = [children copy];
+}
+
+-(void) setName:(NSString *)name {
+	NSLog(@"TableItem: setting name to %@", name);
+	if ([name isEqualToString:self.name]) return;
+	_name = name;
 }
 
 +(NSString*) reuseIdentifier {

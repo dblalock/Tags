@@ -26,6 +26,8 @@ static const NSUInteger kPreferredRowHeight = 44;
 	self.titleText.delegate = self;
 	self.selectedBackgroundView = [UIView new];
 	self.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+	self.titleText.autocapitalizationType = UITextAutocapitalizationTypeSentences;	// init cap
+	self.titleText.clearButtonMode = UITextFieldViewModeNever;	// no x button on right side
 	
 	// this never actually gets events, apparently
 //	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
@@ -35,10 +37,10 @@ static const NSUInteger kPreferredRowHeight = 44;
 //	[self addGestureRecognizer:lpgr];
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+//- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+//    [super setSelected:selected animated:animated];
     // Configure the view for the selected state
-}
+//}
 
 //===============================================================
 #pragma mark Custom stuff
@@ -100,16 +102,29 @@ void shrinkTextFieldToFit(UITextField* field) {
 	[self setupWithTitle:item.name level:lvl numChildren:item.children.count];
 }
 
--(void) startEditingName {
+-(void) startEditingNameWithSelectAll:(BOOL)selectAll {
+	NSLog(@"treeCell: startEditingName");
+	if (_titleText.enabled) return;	//already editing
 	_titleText.enabled = YES;
 	
 	CGRect titleFrame = self.titleText.frame;
-	titleFrame.size.width += 100;
+	titleFrame.size.width += 100;		// TODO prolly let subclasses override
 	self.titleText.frame = titleFrame;
 	
 	[_titleText becomeFirstResponder];
+	if (selectAll) {
+		[_titleText setSelectedTextRange:
+		 [_titleText textRangeFromPosition:_titleText.beginningOfDocument
+								toPosition:_titleText.endOfDocument]];
+	}
+	[self hideUtilityButtonsAnimated:YES];
 }
+-(void) startEditingName {
+	[self startEditingNameWithSelectAll:NO];
+}
+
 -(void) stopEditingName {
+	NSLog(@"treeCell: stopEditingName");
 	[_titleText resignFirstResponder];
 	_titleText.enabled = NO;
 	shrinkTextFieldToFit(self.titleText);
@@ -122,13 +137,12 @@ void shrinkTextFieldToFit(UITextField* field) {
 	return kPreferredRowHeight;
 }
 
-
--(void) handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-	NSLog(@"tree cell got long press");
-	// only fire when long press first detected
-	if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-	[self startEditingName];
-}
+//-(void) handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"tree cell got long press");
+//	// only fire when long press first detected
+//	if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+//	[self startEditingName];
+//}
 
 //-(BOOL) requiresSetup {
 //	return YES;
@@ -148,12 +162,17 @@ void shrinkTextFieldToFit(UITextField* field) {
 
 // have "return" close the keyboard
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-	
-	//TODO prolly send a notification here, or maybe in
-	//shouldFinishEditing
-	
+//	[textField resignFirstResponder];
+	[self stopEditingName];
 	return NO;
+}
+
+// if the user changed our name, tell the delegate
+-(void) textFieldDidEndEditing:(UITextField *)textField {
+	NSLog(@"treeCell: textFieldDidEndEditing");
+	if ([_treeDelegate respondsToSelector:@selector(treeCell:didSetNameTo:)]) {
+		[_treeDelegate treeCell:self didSetNameTo:textField.text];
+	}
 }
 
 @end

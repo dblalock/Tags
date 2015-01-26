@@ -13,7 +13,7 @@ static NSString *const kReservedPrefixAndSuffixChar = @"_";
 static NSString *const kSubtypeSeparator = @".";
 static NSString *const kSubtypeSeparatorReplacement = @";";
 
-#define DEFAULT_DEFAULT @(-1)
+#define DEFAULT_DEFAULT @(NAN)
 #define TYP_DEFAULT_MUTABLE	([MutableTyp typWithName:@"TypDefaultMutable" parents:nil default:@""])
 #define TYP_DEFAULT	([Typ typWithName:@"TypDefault" parents:nil default:@""])
 #define TYP_BOOL	([Typ typWithName:@"TypBool"])
@@ -185,6 +185,10 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	return self.defaultVal;
 }
 
+-(BOOL) isMutable {
+	return NO;
+}
+
 // -------------------------------
 // instantiation
 // -------------------------------
@@ -307,6 +311,10 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	for (field_name_t name in names) {
 		[self removeField:name];
 	}
+}
+
+-(BOOL) isMutable {
+	return YES;
 }
 
 @end

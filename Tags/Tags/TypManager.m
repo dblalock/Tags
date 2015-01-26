@@ -35,9 +35,9 @@ NSArray* typItemsFromDict(NSDictionary* dict) {
 		});
 		
 		// create the TypItems
-		DBTypItem* parentItem = [[DBTypItem alloc] initWithName:name children:nil typ:parentTyp];
+		DBTypItem* parentItem = [[DBTypItem alloc] initWithName:name typ:parentTyp];
 		for (Typ* childTyp in childTyps) {
-			DBTypItem* childItem = [[DBTypItem alloc] initWithName:childTyp.name children:nil typ:childTyp];
+			DBTypItem* childItem = [[DBTypItem alloc] initWithName:childTyp.name typ:childTyp];
 			[parentItem addChild:childItem];
 		}
 		

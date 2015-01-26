@@ -15,7 +15,7 @@
 @property (strong, nonatomic, readonly) NSMutableArray *children;
 
 +(id) itemWithName:(NSString *)name children:(NSArray *)children;
-+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child;
+//+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child;
 
 -(instancetype) init NS_UNAVAILABLE;
 -(instancetype) initWithName:(NSString *)name children:(NSArray *)array NS_DESIGNATED_INITIALIZER;

@@ -14,7 +14,17 @@
 
 @property(strong, nonatomic, readonly) Typ* typ;
 
--(instancetype) initWithName:(NSString *)name children:(NSArray *)array NS_UNAVAILABLE;
--(instancetype) initWithName:(NSString *)name children:(NSArray *)array typ:(Typ*)typ NS_DESIGNATED_INITIALIZER;
+-(instancetype) initWithName:(NSString *)name
+					children:(NSArray *)children NS_UNAVAILABLE;
+
+-(instancetype) initWithName:(NSString *)name
+					children:(NSArray *)children
+					  parent:(DBTableItem *)parent
+						 typ:(Typ*)typ NS_DESIGNATED_INITIALIZER;
+
+-(instancetype) initWithName:(NSString *)name
+					  parent:(DBTableItem*)parent;
+
+-(instancetype) initWithName:(NSString *)name typ:(Typ*)typ;
 
 @end

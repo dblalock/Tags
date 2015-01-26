@@ -14,8 +14,9 @@ typedef NSString* typ_id_t;
 
 @interface Typ : NSObject
 
-@property(strong, nonatomic, readonly) NSString* name;
+@property(strong, nonatomic) NSString* name;
 @property(strong, nonatomic, readonly) id defaultVal;
+@property(nonatomic, readonly, getter=isMutable) BOOL mutable;
 
 // ================================================================
 #pragma mark Basic types
@@ -59,6 +60,7 @@ typedef NSString* typ_id_t;
 #pragma mark Other methods
 // ================================================================
 
+-(BOOL) isMutable;
 -(typ_id_t) getUniqueID;
 -(id) getDefaultValue;
 -(NSDictionary*) getAllFields;
