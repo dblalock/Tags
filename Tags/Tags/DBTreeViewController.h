@@ -15,14 +15,23 @@
 
 #import <RATreeView.h>
 
-@interface DBTreeViewController : UIViewController <RATreeViewDelegate>
-@property (weak, nonatomic) RATreeView *treeView;
+@class DBTreeCell;
 
-// this is a hack to let this know where to scroll to when the keyboard
+@interface DBTreeViewController : UIViewController <RATreeViewDelegate, RATreeViewDataSource>
+@property (weak, nonatomic) RATreeView *treeView;
+@property (strong, nonatomic) NSMutableArray *data;
+
+// this is a hack to let this know where to scroll when the keyboard
 // shows up...it really should be an internal var in a subclass that
 // needs it; the reason it's necessary is this this class is agnostic
 // of what makes keyboards pop up, so subclasses have to make sure that
 // they set this for this class to automagically shrink the treeview
-// and scroll to the right place. Wow, that was rambling.
+// and scroll to the right place.
 @property(weak, nonatomic) UITableViewCell* cellInQuestion;
+
+-(BOOL) stopEditingCell;	// depends on cellInQuestion being set
+
+// utility method to get an initialized treeviewcell
+DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item);
+
 @end

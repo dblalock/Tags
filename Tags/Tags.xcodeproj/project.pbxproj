@@ -27,7 +27,7 @@
 		72D3C0051A71A85B00648A67 /* TypManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0041A71A85B00648A67 /* TypManager.m */; };
 		72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C0061A72A84500648A67 /* DBTimeCell.xib */; };
 		72D3C00A1A72B4BC00648A67 /* DBTypItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0091A72B4BC00648A67 /* DBTypItem.m */; };
-		72D3C00C1A731AD600648A67 /* DBCellAddNew.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */; };
+		72D3C00C1A731AD600648A67 /* DBTreeCellAddNew.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C00B1A731AD600648A67 /* DBTreeCellAddNew.xib */; };
 		72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */; };
 		72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */; };
 /* End PBXBuildFile section */
@@ -78,7 +78,7 @@
 		72D3C0061A72A84500648A67 /* DBTimeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTimeCell.xib; sourceTree = "<group>"; };
 		72D3C0081A72B4BC00648A67 /* DBTypItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTypItem.h; sourceTree = "<group>"; };
 		72D3C0091A72B4BC00648A67 /* DBTypItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTypItem.m; sourceTree = "<group>"; };
-		72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBCellAddNew.xib; sourceTree = "<group>"; };
+		72D3C00B1A731AD600648A67 /* DBTreeCellAddNew.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTreeCellAddNew.xib; sourceTree = "<group>"; };
 		72D3C00D1A7320C400648A67 /* DBTreeItemAddNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeItemAddNew.h; sourceTree = "<group>"; };
 		72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeItemAddNew.m; sourceTree = "<group>"; };
 		72D3C0101A7323DC00648A67 /* DBTreeCellAddNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeCellAddNew.h; sourceTree = "<group>"; };
@@ -135,6 +135,8 @@
 				72D3BFCA1A70053800648A67 /* FirstViewController.m */,
 				72D3BFCC1A70053800648A67 /* SecondViewController.h */,
 				72D3BFCD1A70053800648A67 /* SecondViewController.m */,
+				7275638C1A77421A00C31329 /* DBTreeViewController.h */,
+				7275638D1A77421A00C31329 /* DBTreeViewController.m */,
 				72D3BFFD1A71759600648A67 /* Typs */,
 				72D3C0131A7323F600648A67 /* TreeViewCells */,
 				72D3BFF41A70431500648A67 /* TreeViewItems */,
@@ -192,8 +194,6 @@
 		72D3BFFD1A71759600648A67 /* Typs */ = {
 			isa = PBXGroup;
 			children = (
-				7275638C1A77421A00C31329 /* DBTreeViewController.h */,
-				7275638D1A77421A00C31329 /* DBTreeViewController.m */,
 				72D3BFEB1A7005A500648A67 /* Typ.h */,
 				72D3C0031A71A85B00648A67 /* TypManager.h */,
 				72D3C0041A71A85B00648A67 /* TypManager.m */,
@@ -207,7 +207,7 @@
 			children = (
 				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
 				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
-				72D3C00B1A731AD600648A67 /* DBCellAddNew.xib */,
+				72D3C00B1A731AD600648A67 /* DBTreeCellAddNew.xib */,
 				72D3C0061A72A84500648A67 /* DBTimeCell.xib */,
 				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
 				72D3BFFF1A71774500648A67 /* DBTreeCell.m */,
@@ -316,7 +316,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72D3C00C1A731AD600648A67 /* DBCellAddNew.xib in Resources */,
+				72D3C00C1A731AD600648A67 /* DBTreeCellAddNew.xib in Resources */,
 				72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */,
 				72D3BFD11A70053800648A67 /* Main.storyboard in Resources */,
 				72D3BFD61A70053800648A67 /* LaunchScreen.xib in Resources */,

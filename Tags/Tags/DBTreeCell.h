@@ -44,6 +44,8 @@
 //				 level:(NSInteger)level
 //		   numChildren:(NSUInteger)numChildren;
 
++(UINib*) standardNib;
+
 -(void) setupWithItem:(DBTableItem*)item
 			  atLevel:(NSUInteger)lvl
 			 expanded:(BOOL)expanded;

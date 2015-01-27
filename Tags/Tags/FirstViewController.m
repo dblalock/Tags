@@ -17,20 +17,10 @@
 #import "DBTreeCell.h"
 #import "TypManager.h"
 
-static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
-static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
-//static NSString *const kDefaultChildName = @"New Tag";
 static NSString *const kDefaultChildName = @"";
 static const int kActionSheetTagDelete = 1;
 
-@interface FirstViewController () <RATreeViewDataSource, RATreeViewDelegate,
-	SWTableViewCellDelegate, UIActionSheetDelegate, DBTreeCellDelegate>
-
-@property (strong, nonatomic) NSMutableArray *data;
-//@property (weak, nonatomic) UITableViewCell *cellInQuestion;
-
-//@property (weak, nonatomic) id<RATreeViewDataSource> dataSource;
-//@property (weak, nonatomic) id<RATreeViewDelegate> delegate;
+@interface FirstViewController () <SWTableViewCellDelegate, UIActionSheetDelegate, DBTreeCellDelegate>
 
 @end
 
@@ -53,43 +43,17 @@ CGRect fullScreenFrame() {
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
 
 	// my tableviewcell nib
-	NSString* treeCellNibName = NSStringFromClass([DBTreeCell class]);
-	UINib* treeCellNib = [UINib nibWithNibName:treeCellNibName bundle:nil];
-	UINib* addNewNib = [UINib nibWithNibName:kCellNewButtonNibName bundle:nil];
-	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
-	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
-	[self.treeView registerNib:addNewNib forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
+	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 
 //	_data = defaultData();
-	_data = [getAllTypItems() mutableCopy];
+	self.data = [getAllTypItems() mutableCopy];
 	[self.treeView reloadData];
 }
-
-// this just makes it not be behind the status bar + tab bar
-//- (void)viewWillAppear:(BOOL)animated {
-//	[super viewWillAppear:animated];
-//
-//	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
-//	float statusBarHeight = statusBarViewRect.size.height;
-//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-//	CGRect viewBounds = self.view.bounds;
-//	viewBounds.origin.y = statusBarHeight;
-//	viewBounds.size.height -= tabBarHeight + statusBarHeight;
-//	self.treeView.frame = viewBounds;
-//}
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 	// Dispose of any resources that can be recreated.
 }
-
-// hide keyboard on touch outside
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	NSLog(@"view controller touches began");	// never runs
-//	[self.cellInQuestion stopEditingName];	// no effect
-//	[self.view endEditing:YES];		// no effect on cell text
-//	[self.treeView endEditing:YES]; // no effect on cell text
-//}
 
 // ================================================================
 #pragma mark TreeView Delegate methods
@@ -127,87 +91,13 @@ CGRect fullScreenFrame() {
 	return NO;
 }
 
-// returns yes if it stopped something, and no if it wasn't editing anyway;
-// this is just a hack to close keyboard on touch outside
--(BOOL) stopEditingCell {
-	NSLog(@"stopEditingCell");
-	if (self.cellInQuestion) {
-		[(DBTreeCell*)self.cellInQuestion stopEditingName];
-		self.cellInQuestion = nil;
-		return YES;
-	}
-	return NO;
-}
-
-// these two methods are basically a hack to get it to close the keyboard
-// when you click outside of the text view
--(BOOL)treeView:(RATreeView *)treeView shouldCollapaseRowForItem:(id)item {
-	NSLog(@"shouldCollapseRow");
-//	return YES;
-	return ! [self stopEditingCell];
-}
--(BOOL)treeView:(RATreeView *)treeView shouldExpandRowForItem:(id)item {
-	NSLog(@"shouldExpandRow");
-//	return YES;
-	return ! [self stopEditingCell];
-}
-
-//-(void) treeView:(RATreeView *)treeView didSelectRowForItem:(id)item {
-//	NSLog(@"didSelectRow");
-//}
-
-
-//SELF THIS IS THE PROBLEM ITS GETTING DESELECTED INSTEAD OF DOING WHAT WE WANT
-//-(void) treeView:(RATreeView *)treeView didDeselectRowForItem:(id)item {
-//	NSLog(@"didDeselectRow");
-//}
-
-//-(BOOL) treeView:(RATreeView *)treeView shouldHighlightRowForItem:(id)item {
-//	NSLog(@"shouldHighlightRow");
-//	return YES;		//needs to return yes for it to do anything else
-//}
-
-//- (BOOL)treeView:(RATreeView *)treeView shouldShowMenuForRowForItem:(id)item {
-//	return YES;	// no effect
-//}
-
-//- (void) treeView:(RATreeView *)treeView
-//commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-//	forRowForItem:(id)item {
-//	// all we allow is deleting rows
-//	if (editingStyle != UITableViewCellEditingStyleDelete) {
-//		return;
-//	}
-//	// TODO there's probably a way to add the option to insert rows using
-//	// the "edit" button at the top (in the original example), which would
-//	// be way better than having the plus button, since you only want to
-//	// edit pretty rarely; would prolly make this also do stuff in response
-//	// to editing style UITableViewCellEditingStyleInsert
-//
-//	[self deleteItem:item];
-//}
-
-// can't tell if this does anything or not...
-//-(NSInteger) treeView:(RATreeView*)treeView indentationLevelForRowForItem:(id)item {
-//	return [treeView levelForCellForItem:item];
-//}
-
 // ================================================================
 #pragma mark TreeView Data Source methods
 // ================================================================
 
 - (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(id)item {
-	DBTableItem *tableItem = item;
-	NSInteger lvl = [self.treeView levelForCellForItem:item];
-//	NSInteger numberOfChildren = [dataObject.children count];
-	BOOL expanded = [self.treeView isCellForItemExpanded:item];
-
-	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
-
-	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
-//	[cell setupWithTitle:tableItem.name level:lvl numChildren:[tableItem.children count]];
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
+	DBTreeCell* cell = dequeCellForTreeViewItem(treeView, item);
+	
 	// rest is just adding utility buttons
 	if (! cell.wantsUtilityButtons) {
 		return cell;
@@ -235,36 +125,13 @@ CGRect fullScreenFrame() {
 	return cell;
 }
 
-- (NSInteger)treeView:(RATreeView *)treeView numberOfChildrenOfItem:(id)item {
-	if (item == nil) {
-//		return [self.data count];
-		return [self.data count] + 1;	// extra row for "add new"
-	}
-
-	DBTableItem *data = item;
-	return [data.children count];
-}
-
-- (id)treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(id)item {
-	DBTableItem *data = item;
-	if (item == nil) {
-		if (index < [self.data count]) {
-			return [self.data objectAtIndex:index];
-		}
-		return [DBTreeItemAddNew item];
-	}
-	return data.children[index];
-}
-
 // ================================================================
 #pragma mark SWTableViewCellDelegate
 // ================================================================
 
 -(void) clickedEditCell:(DBTreeCell*)cell {
 	NSLog(@"clickedEditCell");
-	[self stopEditingCell];
-	
-//	[cell hideUtilityButtonsAnimated:YES];	// YES apparently doesn't work if we have it actually edit
+	[self stopEditingCell];		// if currently editing one, stop
 	self.cellInQuestion = cell;
 	[(DBTreeCell*)cell startEditingName];
 }
@@ -351,13 +218,10 @@ CGRect fullScreenFrame() {
 	DBTableItem *newChild = [[DBTableItem alloc] initWithName:kDefaultChildName children:nil];
 	NSLog(@"data: %@", self.data);
 	[self.data addObject:newChild];
-//	int idx = [self.data count] - 1;
-//	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:idx] inParent:nil withAnimation:RATreeViewRowAnimationLeft];
-//	[self.treeView reloadRowsForItems:nil withRowAnimation:RATreeViewRowAnimationNone];
 	[self.treeView reloadData];
 
 	[self editNameForItem:newChild];
-	saveTypItems(_data);
+	saveTypItems(self.data);
 }
 
 -(void) addChildTo:(DBTableItem*)parent {
@@ -372,7 +236,7 @@ CGRect fullScreenFrame() {
 
 	// assume user doesn't want to keep the name "New Tag"
 	[self editNameForItem:newChild];
-	saveTypItems(_data);
+	saveTypItems(self.data);
 }
 
 -(void) deleteItem:(DBTableItem*)item {
@@ -382,10 +246,6 @@ CGRect fullScreenFrame() {
 	if (parent == nil) {
 		index = [self.data indexOfObject:item];
 		[self.data removeObjectAtIndex:index];
-//		NSMutableArray *children = [self.data mutableCopy];
-//		[children removeObject:item];
-//		self.data = [children mutableCopy];
-
 	} else {
 		index = [parent.children indexOfObject:item];
 		[parent removeChild:item];
@@ -396,7 +256,7 @@ CGRect fullScreenFrame() {
 		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 	}
 
-	saveTypItems(_data);
+	saveTypItems(self.data);
 }
 
 @end

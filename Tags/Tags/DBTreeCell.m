@@ -19,6 +19,7 @@ static const NSUInteger kPreferredRowHeight = 44;
 
 @implementation DBTreeCell
 
+
 - (void)awakeFromNib {
 	[super awakeFromNib];
     // Initialization code
@@ -45,6 +46,10 @@ static const NSUInteger kPreferredRowHeight = 44;
 //===============================================================
 #pragma mark Custom stuff
 //===============================================================
+
++(UINib*) standardNib {
+	return [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
+}
 
 void shrinkTextFieldToFit(UITextField* field) {
 	CGRect titleFrame = field.frame;

@@ -16,4 +16,15 @@ X make it persist modifications to userdefaults
 
 X move easily shareable treeview code into common superclass
 
+// 135x162 = min timepicker dims; 165x162 = min datetime picker dims
+
 make tags table / screen
+	extend superclass
+	start it with a dummy/example datapoint
+	get it to have the "+" cell at the bottom
+	get it to pick a tag typ from the other viewcontroller
+	get it to actually create a new entry from that tag typ
+
+	ability to duplicate tags (but with default value)
+
+put in iOSense stuff

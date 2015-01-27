@@ -35,20 +35,6 @@
                     <view key="view" contentMode="scaleToFill" id="QS5-Rx-YEW">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="countDownTimer" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="nLq-Ng-hdn">
-                                <rect key="frame" x="0.0" y="0.0" width="165" height="162"/>
-                                <date key="date" timeIntervalSinceReferenceDate="443721946.61718798">
-                                    <!--2015-01-23 16:05:46 +0000-->
-                                </date>
-                            </datePicker>
-                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="QMe-ML-nAa">
-                                <rect key="frame" x="0.0" y="160" width="135" height="162"/>
-                                <date key="date" timeIntervalSinceReferenceDate="443721952.58165002">
-                                    <!--2015-01-23 16:05:52 +0000-->
-                                </date>
-                            </datePicker>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="History" image="second" id="cPa-gy-q4n"/>

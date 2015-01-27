@@ -10,6 +10,11 @@
 
 #import <RATreeView.h>
 
+#import "DBTreeCell.h"
+#import "DBTreeCellAddNew.h"
+#import "DBTableItem.h"
+#import "DBTreeItemAddNew.h"
+
 @interface DBTreeViewController ()
 @end
 
@@ -27,6 +32,11 @@
 	self.treeView.delegate = self;
 	self.treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
 	self.treeView.allowsSelection = NO;		// will only get every other collapse cmd otherwise
+	
+	// my tableviewcell nib
+	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
+	[self.treeView registerNib:[DBTreeCellAddNew standardNib] forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
+
 	
 	// dealing with keyboard covering crap
 	[[NSNotificationCenter defaultCenter] addObserver: self
@@ -71,6 +81,76 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+// ================================================================
+#pragma mark RATreeViewDelegate
+// ================================================================
+
+// returns yes if it stopped something, and no if it wasn't editing anyway;
+// this is just a hack to close keyboard on touch outside
+-(BOOL) stopEditingCell {
+	NSLog(@"stopEditingCell");
+	if (self.cellInQuestion) {
+		[(DBTreeCell*)self.cellInQuestion stopEditingName];
+		self.cellInQuestion = nil;
+		return YES;
+	}
+	return NO;
+}
+
+// these two methods are basically a hack to get it to close the keyboard
+// when you click outside of the text view
+-(BOOL)treeView:(RATreeView *)treeView shouldCollapaseRowForItem:(id)item {
+	NSLog(@"shouldCollapseRow");
+	//	return YES;
+	return ! [self stopEditingCell];
+}
+-(BOOL)treeView:(RATreeView *)treeView shouldExpandRowForItem:(id)item {
+	NSLog(@"shouldExpandRow");
+	//	return YES;
+	return ! [self stopEditingCell];
+}
+
+// ================================================================
+#pragma mark RATreeViewDatasource
+// ================================================================
+
+DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
+	DBTableItem *tableItem = item;
+	NSInteger lvl = [treeView levelForCellForItem:item];
+	BOOL expanded = [treeView isCellForItemExpanded:item];
+	
+	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
+	
+	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	
+	return cell;
+}
+
+-(UITableViewCell*) treeView:(RATreeView *)treeView cellForItem:(id)item {
+	return dequeCellForTreeViewItem(treeView, item);
+}
+
+-(NSInteger) treeView:(RATreeView *)treeView numberOfChildrenOfItem:(id)item {
+	if (item == nil) {
+		return [self.data count] + 1;	// extra row for "add new"
+	}
+	
+	DBTableItem *data = item;
+	return [data.children count];
+}
+
+-(id) treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(id)item {
+	DBTableItem *data = item;
+	if (item == nil) {
+		if (index < [self.data count]) {
+			return [self.data objectAtIndex:index];
+		}
+		return [DBTreeItemAddNew item];
+	}
+	return data.children[index];
+}
 
 // ================================================================
 #pragma mark Keyboard not covering tableview

@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SecondViewController : UIViewController
+#import "DBTreeViewController.h"
+
+@interface SecondViewController : DBTreeViewController
 
 
 @end
