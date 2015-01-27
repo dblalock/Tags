@@ -12,7 +12,8 @@ X make it actually modify types
 	X -when you add/delete stuff
 	X -when you rename stuff
 
-make it persist modifications to userdefaults
+X make it persist modifications to userdefaults
+
+X move easily shareable treeview code into common superclass
 
 make tags table / screen
-

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		682E4DADA75B68BF76F60D28 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AEB05530126F6F8C5CE903F /* libPods.a */; };
+		7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7275638D1A77421A00C31329 /* DBTreeViewController.m */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -43,6 +44,8 @@
 
 /* Begin PBXFileReference section */
 		3EF315C0E79D057FC745F48B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		7275638C1A77421A00C31329 /* DBTreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeViewController.h; sourceTree = "<group>"; };
+		7275638D1A77421A00C31329 /* DBTreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeViewController.m; sourceTree = "<group>"; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -189,6 +192,8 @@
 		72D3BFFD1A71759600648A67 /* Typs */ = {
 			isa = PBXGroup;
 			children = (
+				7275638C1A77421A00C31329 /* DBTreeViewController.h */,
+				7275638D1A77421A00C31329 /* DBTreeViewController.m */,
 				72D3BFEB1A7005A500648A67 /* Typ.h */,
 				72D3C0031A71A85B00648A67 /* TypManager.h */,
 				72D3C0041A71A85B00648A67 /* TypManager.m */,
@@ -372,6 +377,7 @@
 				72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
 				72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */,
+				7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,

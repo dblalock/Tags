@@ -27,8 +27,7 @@ static const int kActionSheetTagDelete = 1;
 	SWTableViewCellDelegate, UIActionSheetDelegate, DBTreeCellDelegate>
 
 @property (strong, nonatomic) NSMutableArray *data;
-@property (weak, nonatomic) RATreeView *treeView;
-@property (weak, nonatomic) DBTreeCell *cellInQuestion; //for action sheets
+//@property (weak, nonatomic) UITableViewCell *cellInQuestion;
 
 //@property (weak, nonatomic) id<RATreeViewDataSource> dataSource;
 //@property (weak, nonatomic) id<RATreeViewDelegate> delegate;
@@ -46,17 +45,8 @@ CGRect fullScreenFrame() {
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	// we create a temporary treeview object so that we don't assign
-	// directly to a weak property until it's been retained by self.view...I think
-	RATreeView* treeView = [[RATreeView alloc] initWithFrame:self.view.bounds];
-	[self.view insertSubview:treeView atIndex:0];
-	_treeView = treeView;
+	self.treeView.dataSource = self;
 
-	_treeView.delegate = self;
-	_treeView.dataSource = self;
-	_treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
-	_treeView.allowsSelection = NO;		// will only get every other collapse cmd otherwise
-	
 	// this just adds a background behind the status bar, because the treeview
 	// hasn't been resized to start below it yet; it seems to stick around even
 	// after the treeview is resized
@@ -70,47 +60,33 @@ CGRect fullScreenFrame() {
 	[self.treeView registerNib:treeCellNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 	[self.treeView registerNib:addNewNib forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
 
-	// dealing with keyboard covering crap
-	[[NSNotificationCenter defaultCenter] addObserver: self
-											 selector: @selector(keyboardWillShow:)
-												 name: UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver: self
-											 selector: @selector(keyboardWillDisappear:)
-												 name: UIKeyboardWillHideNotification object:nil];
 //	_data = defaultData();
 	_data = [getAllTypItems() mutableCopy];
-	[_treeView reloadData];
+	[self.treeView reloadData];
 }
 
 // this just makes it not be behind the status bar + tab bar
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-
-	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
-	float statusBarHeight = statusBarViewRect.size.height;
-	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-	CGRect viewBounds = self.view.bounds;
-	viewBounds.origin.y = statusBarHeight;
-	viewBounds.size.height -= tabBarHeight + statusBarHeight;
-	self.treeView.frame = viewBounds;
-}
+//- (void)viewWillAppear:(BOOL)animated {
+//	[super viewWillAppear:animated];
+//
+//	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+//	float statusBarHeight = statusBarViewRect.size.height;
+//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+//	CGRect viewBounds = self.view.bounds;
+//	viewBounds.origin.y = statusBarHeight;
+//	viewBounds.size.height -= tabBarHeight + statusBarHeight;
+//	self.treeView.frame = viewBounds;
+//}
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 	// Dispose of any resources that can be recreated.
 }
 
-- (void) dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver: self
-													name: UIKeyboardWillShowNotification object: nil];
-	[[NSNotificationCenter defaultCenter] removeObserver: self
-													name: UIKeyboardWillHideNotification object: nil];
-}
-
 // hide keyboard on touch outside
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //	NSLog(@"view controller touches began");	// never runs
-//	[_cellInQuestion stopEditingName];	// no effect
+//	[self.cellInQuestion stopEditingName];	// no effect
 //	[self.view endEditing:YES];		// no effect on cell text
 //	[self.treeView endEditing:YES]; // no effect on cell text
 //}
@@ -155,9 +131,9 @@ CGRect fullScreenFrame() {
 // this is just a hack to close keyboard on touch outside
 -(BOOL) stopEditingCell {
 	NSLog(@"stopEditingCell");
-	if (_cellInQuestion) {
-		[_cellInQuestion stopEditingName];
-		_cellInQuestion = nil;
+	if (self.cellInQuestion) {
+		[(DBTreeCell*)self.cellInQuestion stopEditingName];
+		self.cellInQuestion = nil;
 		return YES;
 	}
 	return NO;
@@ -286,8 +262,10 @@ CGRect fullScreenFrame() {
 
 -(void) clickedEditCell:(DBTreeCell*)cell {
 	NSLog(@"clickedEditCell");
+	[self stopEditingCell];
+	
 //	[cell hideUtilityButtonsAnimated:YES];	// YES apparently doesn't work if we have it actually edit
-	_cellInQuestion = cell;
+	self.cellInQuestion = cell;
 	[(DBTreeCell*)cell startEditingName];
 }
 
@@ -299,7 +277,7 @@ CGRect fullScreenFrame() {
 	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
 	sheet.tag = kActionSheetTagDelete;
 	sheet.delegate = self;
-	_cellInQuestion = cell;
+	self.cellInQuestion = cell;
 	[sheet showInView:self.view];
 }
 
@@ -338,12 +316,12 @@ CGRect fullScreenFrame() {
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	switch (actionSheet.tag) {
 		case kActionSheetTagDelete:
-			if (_cellInQuestion && buttonIndex == 0) {	// cancel = 1, do it = 0
-				[self deleteItem:[self.treeView itemForCell:_cellInQuestion]];
+			if (self.cellInQuestion && buttonIndex == 0) {	// cancel = 1, do it = 0
+				[self deleteItem:[self.treeView itemForCell:self.cellInQuestion]];
 			} else {
-				[_cellInQuestion hideUtilityButtonsAnimated:YES];
+				[(DBTreeCell*)self.cellInQuestion hideUtilityButtonsAnimated:YES];
 			}
-			_cellInQuestion = nil;
+			self.cellInQuestion = nil;
 			break;
 		default:
 			break;
@@ -351,51 +329,11 @@ CGRect fullScreenFrame() {
 }
 
 // ================================================================
-#pragma mark Keyboard not covering tableview
-// ================================================================
-
-- (void) keyboardWillShow: (NSNotification*) aNotification {
-	[UIView animateWithDuration: [self keyboardAnimationDurationForNotification: aNotification] animations:^{
-//		[_cellInQuestion hideUtilityButtonsAnimated:YES];
-
-		CGSize kbSize = [[[aNotification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-		//		NSLog(@"%@", NSStringFromCGSize(kbSize));	// 320 x 216
-		CGRect treeFrame = _treeView.frame;
-		treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
-		[_treeView setFrame:treeFrame];
-
-		[_treeView scrollToRowForItem:[_treeView itemForCell:_cellInQuestion] atScrollPosition:RATreeViewScrollPositionBottom animated:YES];
-
-	} completion:^(BOOL finished) {
-	}];
-}
-
-- (void) keyboardWillDisappear: (NSNotification*) aNotification {
-	[UIView animateWithDuration: [self keyboardAnimationDurationForNotification: aNotification] animations:^{
-		//restore your tableview
-		CGSize kbSize = [[[aNotification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-
-		CGRect treeFrame = _treeView.frame;
-		treeFrame.size.height += kbSize.height - self.tabBarController.tabBar.frame.size.height;
-		[_treeView setFrame:treeFrame];
-	} completion:^(BOOL finished) {
-	}];
-}
-
-- (NSTimeInterval) keyboardAnimationDurationForNotification:(NSNotification*)notification {
-	NSDictionary* info = [notification userInfo];
-	NSValue* value = [info objectForKey: UIKeyboardAnimationDurationUserInfoKey];
-	NSTimeInterval duration = 0;
-	[value getValue: &duration];
-	return duration;
-}
-
-// ================================================================
 #pragma mark DBTreeCell Delegate
 // ================================================================
 
 -(void) treeCell:(DBTreeCell *)cell didSetNameTo:(NSString *)name {
-	DBTableItem* item = [_treeView itemForCell:cell];
+	DBTableItem* item = [self.treeView itemForCell:cell];
 	item.name = name;
 }
 
@@ -405,7 +343,7 @@ CGRect fullScreenFrame() {
 
 -(void) editNameForItem:(id)item {
 	DBTreeCell* cell = (DBTreeCell*)[self.treeView cellForItem:item];
-	_cellInQuestion = cell;
+	self.cellInQuestion = cell;
 	[cell startEditingNameWithSelectAll:YES];
 }
 
@@ -417,7 +355,7 @@ CGRect fullScreenFrame() {
 //	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:idx] inParent:nil withAnimation:RATreeViewRowAnimationLeft];
 //	[self.treeView reloadRowsForItems:nil withRowAnimation:RATreeViewRowAnimationNone];
 	[self.treeView reloadData];
-	
+
 	[self editNameForItem:newChild];
 	saveTypItems(_data);
 }
@@ -457,7 +395,7 @@ CGRect fullScreenFrame() {
 	if (parent) {
 		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 	}
-	
+
 	saveTypItems(_data);
 }
 
