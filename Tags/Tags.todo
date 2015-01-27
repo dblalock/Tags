@@ -5,11 +5,12 @@ X add a "new" button at the bottom of the table / bottom of screen
 
 X edit names in some not-horrible way
 
-figure out why the 1st event gets lost when you collapse the same cell after opening it, but not when collapse a different cell
+X figure out why the 1st event gets lost when you collapse the same cell after opening it, but not when collapse a different cell
+	> was selecting stuff and missed event was deselecting it
 
-make it actually modify types
-	-when you add/delete stuff
-	-when you rename stuff
+X make it actually modify types
+	X -when you add/delete stuff
+	X -when you rename stuff
 
 make it persist modifications to userdefaults
 

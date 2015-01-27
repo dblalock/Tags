@@ -77,9 +77,8 @@ CGRect fullScreenFrame() {
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(keyboardWillDisappear:)
 												 name: UIKeyboardWillHideNotification object:nil];
-
 //	_data = defaultData();
-	_data = [defaultTypItems() mutableCopy];
+	_data = [getAllTypItems() mutableCopy];
 	[_treeView reloadData];
 }
 
@@ -140,8 +139,8 @@ CGRect fullScreenFrame() {
 
 - (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
 	NSLog(@"willCollapseRow");
-//	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
-//	[cell stopEditingName];
+	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
+	[cell stopEditingName];
 }
 
 
@@ -149,7 +148,6 @@ CGRect fullScreenFrame() {
 // tree / cell modification
 // --------------------------------
 -(BOOL) treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
-//	return YES;
 	return NO;
 }
 
@@ -165,18 +163,6 @@ CGRect fullScreenFrame() {
 	return NO;
 }
 
-
-// TODO self: the below stuff makes it silently not expand (with nothing
-// even getting logged, including the call to the func itself (wtf!))
-// when it calls stopEditingCell
-//	-so hopefully there's something weird in our state machine here that
-//	we can just fix that's also causing the breaking as far as collapsing
-//	things
-//	-wait, no, doesn't seem to be happening anymore...okay, I have no idea
-//	why this is failing at collapsing things, because no delegate method
-// is even getting called...
-
-
 // these two methods are basically a hack to get it to close the keyboard
 // when you click outside of the text view
 -(BOOL)treeView:(RATreeView *)treeView shouldCollapaseRowForItem:(id)item {
@@ -190,17 +176,15 @@ CGRect fullScreenFrame() {
 	return ! [self stopEditingCell];
 }
 
--(void) treeView:(RATreeView *)treeView didSelectRowForItem:(id)item {
-	NSLog(@"didSelectRow");
-}
+//-(void) treeView:(RATreeView *)treeView didSelectRowForItem:(id)item {
+//	NSLog(@"didSelectRow");
+//}
 
 
 //SELF THIS IS THE PROBLEM ITS GETTING DESELECTED INSTEAD OF DOING WHAT WE WANT
-
-
--(void) treeView:(RATreeView *)treeView didDeselectRowForItem:(id)item {
-	NSLog(@"didDeselectRow");
-}
+//-(void) treeView:(RATreeView *)treeView didDeselectRowForItem:(id)item {
+//	NSLog(@"didDeselectRow");
+//}
 
 //-(BOOL) treeView:(RATreeView *)treeView shouldHighlightRowForItem:(id)item {
 //	NSLog(@"shouldHighlightRow");
@@ -435,6 +419,7 @@ CGRect fullScreenFrame() {
 	[self.treeView reloadData];
 	
 	[self editNameForItem:newChild];
+	saveTypItems(_data);
 }
 
 -(void) addChildTo:(DBTableItem*)parent {
@@ -449,6 +434,7 @@ CGRect fullScreenFrame() {
 
 	// assume user doesn't want to keep the name "New Tag"
 	[self editNameForItem:newChild];
+	saveTypItems(_data);
 }
 
 -(void) deleteItem:(DBTableItem*)item {
@@ -471,6 +457,8 @@ CGRect fullScreenFrame() {
 	if (parent) {
 		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 	}
+	
+	saveTypItems(_data);
 }
 
 @end

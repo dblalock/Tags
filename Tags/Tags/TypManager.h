@@ -19,3 +19,5 @@
 @end
 
 NSArray* defaultTypItems();
+NSArray* getAllTypItems();
+void saveTypItems(NSArray* typItems);

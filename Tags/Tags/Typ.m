@@ -77,13 +77,13 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 		_defaultVal = defaultVal;
 		_ID = [[NSUUID alloc] init];
 		_fields = [NSMutableDictionary dictionary];
-		
+
 		// freak out if parents aren't also types
 		for (id p in parents) {
 			assert([p isKindOfClass:[Typ class]]);
 		}
 		_parents = [NSSet setWithArray:parents];
-		
+
 		// make sure default value isn't nil, cuz that can't
 		// go in an nsdictionary
 		if (_defaultVal == nil) {
@@ -125,6 +125,31 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	return s;
 }
 
+// Woot, RMMapper just does this for us
+//// ================================================================
+//#pragma mark NSCoding
+//// ================================================================
+//
+//-(instancetype) initWithCoder : (NSCoder *)decoder {
+////	if (self = [super initWithCoder) {
+//		NSString* name			= [decoder decodeObjectForKey:@"name"];
+//		NSDictionary* fields 	= [decoder decodeObjectForKey:@"fields"];
+//		NSSet* parents			= [decoder decodeObjectForKey:@"parents"];
+//		if ([self = ])
+//		_ID 		= [decoder decodeObjectForKey:@"id"];
+//		_defaultVal = [decoder decodeObjectForKey:@"defaultVal"];
+////	}
+//	return self;
+//}
+//
+//-(void) encodeWithCoder:(NSCoder *)coder {
+//	[coder encodeObject:self.name forKey:@"name"];
+//	[coder encodeObject:self.fields forKey:@"fields"];
+//	[coder encodeObject:self.parents forKey:@"parents"];
+//	[coder encodeObject:self.ID forKey:@"id"];
+//	[coder encodeObject:self.defaultVal forKey:@"defaultVal"];
+//}
+
 // ================================================================
 #pragma mark Public funcs
 // ================================================================
@@ -146,7 +171,7 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 
 -(NSString*) getFullName {
 	if (! [self.parents count]) return self.name;
-	
+
 	NSMutableArray* parentNames = [NSMutableArray array];
 	for (Typ* p in self.parents) {
 		[parentNames addObject:[p getFullName]];
@@ -330,26 +355,26 @@ void testTyp() {
 	NSLog(@"exer class: %@", NSStringFromClass([exer class]));
 	[exer addField:@"name" typ:TYP_STRING];
 	NSLog(@"exer with name field: %@", exer);
-	
+
 	NSLog(@"emptyExer: %@", emptyExer);
-	
+
 	TypInstance genericExer = [exer new];
 	NSLog(@"genericExer, no name: %@", genericExer);
 	genericExer[@"name"] = @"generic exercise";
 	NSLog(@"genericExer, no name: %@", genericExer);
-	
+
 	Typ* male = [Typ typWithName:@"male"];
 	Typ* bro = [Typ typWithName:@"bro" parents:@[male]];
 	MutableTyp* lift = [MutableTyp typWithName:@"lift" parents:@[bro, exer]];
-	
+
 	NSLog(@"%@", lift);
-	
+
 	[lift addFields:@{@"reps": TYP_COUNT, @"failure": TYP_BOOL}];
 	TypInstance squats = [lift new];
 	squats[@"name"] = @"squats";
 	squats[@"reps"] = @(2);
-	
+
 	NSLog(@"%@", squats);
-	
+
 	NSLog(@"new, unset rating: %@", [TYP_RATING new]);
 }

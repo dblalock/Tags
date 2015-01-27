@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NSObject+RMArchivable.h"	// automatically does encode/decode
+
 typedef NSString* field_name_t;
 typedef NSMutableDictionary* TypInstance;
 typedef NSString* typ_id_t;
@@ -16,7 +18,7 @@ typedef NSString* typ_id_t;
 
 @property(strong, nonatomic) NSString* name;
 @property(strong, nonatomic, readonly) id defaultVal;
-@property(nonatomic, readonly, getter=isMutable) BOOL mutable;
+//@property(nonatomic, readonly, getter=isMutable) BOOL mutable;
 
 // ================================================================
 #pragma mark Basic types
@@ -60,7 +62,7 @@ typedef NSString* typ_id_t;
 #pragma mark Other methods
 // ================================================================
 
--(BOOL) isMutable;
+//-(BOOL) isMutable;
 -(typ_id_t) getUniqueID;
 -(id) getDefaultValue;
 -(NSDictionary*) getAllFields;

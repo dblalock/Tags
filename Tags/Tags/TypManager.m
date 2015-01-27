@@ -8,18 +8,16 @@
 
 #import "TypManager.h"
 
+#import "NSUserDefaults+RMSaveCustomObject.h"
 #import "Underscore.h"
 #define _ Underscore
 
 #import "Typ.h"
 #import "DBTypItem.h"
 
+static NSString *const kKeyAllTypItems = @"allTypItems";
 
 @implementation TypManager
-
-
-
-
 @end
 
 // so ideally this would be recursive and we'd deal with {strings, arrays, dicts}
@@ -62,3 +60,24 @@ NSDictionary* defaultTypsDict() {
 NSArray* defaultTypItems() {
 	return typItemsFromDict(defaultTypsDict());
 }
+
+void saveTypItems(NSArray* typItems) {
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults rm_setCustomObject:typItems forKey:kKeyAllTypItems];
+//	[defaults synchronize];
+}
+
+NSArray* getAllTypItems() {
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSArray* typItems = [defaults rm_customObjectForKey:kKeyAllTypItems];
+	if (! typItems) {
+		typItems = defaultTypItems();
+	}
+	return typItems;
+}
+
+
+
+
+
+

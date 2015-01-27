@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NSObject+RMArchivable.h"	// automatically does encode/decode
+
 @interface DBTableItem : NSObject
 
 @property (strong, nonatomic) NSString *name;
