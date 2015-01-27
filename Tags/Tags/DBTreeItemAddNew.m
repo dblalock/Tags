@@ -11,11 +11,7 @@
 @implementation DBTreeItemAddNew
 
 +(instancetype) item {
-	return [[self alloc] initWithName:nil children:nil];
-}
-
--(instancetype)initWithName:(NSString *)name children:(NSArray *)array {
-	return [super initWithName:nil children:nil];
+	return [[DBTreeItemAddNew alloc] init];
 }
 
 @end

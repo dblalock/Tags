@@ -87,7 +87,6 @@ CGRect fullScreenFrame() {
 // ================================================================
 
 -(void) clickedEditCell:(DBTreeCell*)cell {
-	NSLog(@"clickedEditCell");
 	[self stopEditingCell];		// if currently editing one, stop
 	self.cellInQuestion = cell;
 	[(DBTreeCell*)cell startEditingName];
@@ -172,8 +171,7 @@ CGRect fullScreenFrame() {
 }
 
 -(void) addRootItem {
-	DBTableItem *newChild = [[DBTableItem alloc] initWithName:kDefaultChildName children:nil];
-	NSLog(@"data: %@", self.data);
+	DBTableItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:nil];
 	[self.data addObject:newChild];
 	[self.treeView reloadData];
 

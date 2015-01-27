@@ -96,7 +96,6 @@
 // returns yes if it stopped something, and no if it wasn't editing anyway;
 // this is just a hack to close keyboard on touch outside
 -(BOOL) stopEditingCell {
-	NSLog(@"stopEditingCell");
 	if (self.cellInQuestion) {
 		[(DBTreeCell*)self.cellInQuestion stopEditing];
 		self.cellInQuestion = nil;
@@ -140,12 +139,12 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 // these two methods are basically a hack to get it to close the keyboard
 // when you click outside of the text view
 -(BOOL)treeView:(RATreeView *)treeView shouldCollapaseRowForItem:(id)item {
-	NSLog(@"shouldCollapseRow");
+//	NSLog(@"shouldCollapseRow");
 	//	return YES;
 	return ! [self stopEditingCell];
 }
 -(BOOL)treeView:(RATreeView *)treeView shouldExpandRowForItem:(id)item {
-	NSLog(@"shouldExpandRow");
+//	NSLog(@"shouldExpandRow");
 	//	return YES;
 	return ! [self stopEditingCell];
 }
@@ -154,14 +153,14 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 
 // call our method to add a new item at the root level
 - (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
-	NSLog(@"willExpandRow");
+//	NSLog(@"willExpandRow");
 	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
 		[self addRootItem];
 	}
 }
 
 - (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
-	NSLog(@"willCollapseRow");
+//	NSLog(@"willCollapseRow");
 	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
 	[cell stopEditing];
 }

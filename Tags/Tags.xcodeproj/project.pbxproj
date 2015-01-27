@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		682E4DADA75B68BF76F60D28 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AEB05530126F6F8C5CE903F /* libPods.a */; };
 		7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7275638D1A77421A00C31329 /* DBTreeViewController.m */; };
+		727563961A7820A700C31329 /* DBTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563951A7820A700C31329 /* DBTagItem.m */; };
+		727563991A78293E00C31329 /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563981A78293E00C31329 /* Tag.m */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -46,6 +48,10 @@
 		3EF315C0E79D057FC745F48B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		7275638C1A77421A00C31329 /* DBTreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeViewController.h; sourceTree = "<group>"; };
 		7275638D1A77421A00C31329 /* DBTreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeViewController.m; sourceTree = "<group>"; };
+		727563941A7820A700C31329 /* DBTagItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTagItem.h; sourceTree = "<group>"; };
+		727563951A7820A700C31329 /* DBTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTagItem.m; sourceTree = "<group>"; };
+		727563971A78293E00C31329 /* Tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tag.h; sourceTree = "<group>"; };
+		727563981A78293E00C31329 /* Tag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tag.m; sourceTree = "<group>"; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -177,6 +183,8 @@
 		72D3BFF41A70431500648A67 /* TreeViewItems */ = {
 			isa = PBXGroup;
 			children = (
+				727563941A7820A700C31329 /* DBTagItem.h */,
+				727563951A7820A700C31329 /* DBTagItem.m */,
 				72D3C00D1A7320C400648A67 /* DBTreeItemAddNew.h */,
 				72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */,
 				72D3BFFA1A71749300648A67 /* DBTableItem.h */,
@@ -195,9 +203,11 @@
 			isa = PBXGroup;
 			children = (
 				72D3BFEB1A7005A500648A67 /* Typ.h */,
+				72D3BFEC1A7005A500648A67 /* Typ.m */,
+				727563971A78293E00C31329 /* Tag.h */,
+				727563981A78293E00C31329 /* Tag.m */,
 				72D3C0031A71A85B00648A67 /* TypManager.h */,
 				72D3C0041A71A85B00648A67 /* TypManager.m */,
-				72D3BFEC1A7005A500648A67 /* Typ.m */,
 			);
 			name = Typs;
 			sourceTree = "<group>";
@@ -381,9 +391,11 @@
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
+				727563961A7820A700C31329 /* DBTagItem.m in Sources */,
 				72D3C0051A71A85B00648A67 /* TypManager.m in Sources */,
 				72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */,
 				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
+				727563991A78293E00C31329 /* Tag.m in Sources */,
 				72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */,
 				72D3BFF21A7042F800648A67 /* RADataObject.m in Sources */,
 				72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */,

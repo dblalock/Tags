@@ -20,14 +20,21 @@ static NSString *const kKeyAllTypItems = @"allTypItems";
 @implementation TypManager
 @end
 
+// ================================================================
+#pragma mark List of typs
+// ================================================================
+
 // so ideally this would be recursive and we'd deal with {strings, arrays, dicts}
 // as {keys, array elements}, but not gonna code that unless I need it
 NSArray* typItemsFromDict(NSDictionary* dict) {
 	NSMutableArray* items = [NSMutableArray array];
 	
+	// the default typs are things we can record, so make them subtypes of datetime
+	Typ* defaultParentTyp = [Typ typDatetimeRange];
+	
 	for (NSString* name in [dict allKeys]) {
 		// create the Typs
-		MutableTyp* parentTyp = [MutableTyp typWithName:name];
+		MutableTyp* parentTyp = [MutableTyp typWithName:name parents:@[defaultParentTyp]];
 		NSArray* childTyps = _.arrayMap(dict[name], ^MutableTyp *(NSString *subtypName) {
 			return [MutableTyp typWithName:subtypName parents:@[parentTyp]];
 		});
@@ -40,7 +47,7 @@ NSArray* typItemsFromDict(NSDictionary* dict) {
 		}
 		
 		// only add the parent--we just want the top level, and the rest will
-		// still be accessible as the parents' children
+		// still be accessible as the parent's children
 		[items addObject:parentItem];
 	}
 	return items;
@@ -76,8 +83,14 @@ NSArray* getAllTypItems() {
 	return typItems;
 }
 
+// ================================================================
+#pragma mark List of tags
+// ================================================================
 
-
-
-
+NSArray* defaultTagItems() {
+	TypInstance bul = [[Typ typBool] newInstance];
+	return @[bul];
+}
+NSArray* getAllTags();
+void saveTagItems(NSArray* items);
 

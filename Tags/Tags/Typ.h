@@ -10,9 +10,24 @@
 
 #import "NSObject+RMArchivable.h"	// automatically does encode/decode
 
+// ================================================================
+// Typedefs
+// ================================================================
+
 typedef NSString* field_name_t;
-typedef NSMutableDictionary* TypInstance;
+//typedef NSMutableDictionary* TypInstance;
+typedef id TypInstance;
 typedef NSString* typ_id_t;
+
+// ================================================================
+// Constants
+// ================================================================
+
+static NSString *const kKeyTyp = @"__typ__";
+
+// ================================================================
+#pragma mark Typ
+// ================================================================
 
 @interface Typ : NSObject
 
@@ -20,23 +35,32 @@ typedef NSString* typ_id_t;
 @property(strong, nonatomic, readonly) id defaultVal;
 //@property(nonatomic, readonly, getter=isMutable) BOOL mutable;
 
-// ================================================================
-#pragma mark Basic types
-// ================================================================
+// ------------------------------------------------
+#pragma mark Basic typs
+// ------------------------------------------------
+// default types not needed cuz we can just init our own wherever
 
-+(Typ*) typDefault;		// |2|, but acts as a label
+//+(Typ*) typDefault;		// |2|, but acts as a label
 +(Typ*) typBool;		// |2|
 +(Typ*) typRating;		// |6|
 +(Typ*) typCount;		// Z
 +(Typ*) typAmount;		// R
++(Typ*) typTime;		// 24h
++(Typ*) typDatetime;	// whenever
 +(Typ*) typString;		// Alphabet
 +(NSArray*) getBasicTyps;
 
-+(Typ*) typDefaultMutable;	// actually used for labeling stuff
+//+(Typ*) typDefaultMutable;	// actually used for labeling stuff
 
-// ================================================================
+// ------------------------------------------------
+#pragma mark Other built-in typs
+// ------------------------------------------------
+
++(Typ*) typDatetimeRange;	//whenever to whenever
+
+// ------------------------------------------------
 #pragma mark Initialization
-// ================================================================
+// ------------------------------------------------
 
 + (instancetype) typWithName:(NSString*)name
 					 parents:(NSArray*)parents
@@ -58,15 +82,18 @@ typedef NSString* typ_id_t;
 
 - (instancetype) init NS_UNAVAILABLE;
 
-// ================================================================
+// ------------------------------------------------
 #pragma mark Other methods
-// ================================================================
+// ------------------------------------------------
+
+-(id) newInstance;
 
 //-(BOOL) isMutable;
--(typ_id_t) getUniqueID;
--(id) getDefaultValue;
--(NSDictionary*) getAllFields;
--(NSString*) getFullName;
+-(typ_id_t) uniqueID;
+-(NSString*) uniqueIDString;
+-(id) defaultValue;
+-(NSDictionary*) allFields;
+-(NSString*) fullName;
 
 @end
 

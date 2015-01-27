@@ -108,7 +108,6 @@ void shrinkTextFieldToFit(UITextField* field) {
 }
 
 -(void) startEditingNameWithSelectAll:(BOOL)selectAll {
-	NSLog(@"treeCell: startEditingName");
 	if (_titleText.enabled) return;	//already editing
 	_titleText.enabled = YES;
 	
@@ -138,7 +137,6 @@ void shrinkTextFieldToFit(UITextField* field) {
 }
 
 -(void) stopEditingName {
-	NSLog(@"treeCell: stopEditingName");
 	[_titleText resignFirstResponder];
 	_titleText.enabled = NO;
 	shrinkTextFieldToFit(self.titleText);
@@ -183,7 +181,6 @@ void shrinkTextFieldToFit(UITextField* field) {
 
 // if the user changed our name, tell the delegate
 -(void) textFieldDidEndEditing:(UITextField *)textField {
-	NSLog(@"treeCell: textFieldDidEndEditing");
 	if ([_treeDelegate respondsToSelector:@selector(treeCell:didSetNameTo:)]) {
 		[_treeDelegate treeCell:self didSetNameTo:textField.text];
 	}

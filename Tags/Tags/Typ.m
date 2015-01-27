@@ -13,14 +13,17 @@ static NSString *const kReservedPrefixAndSuffixChar = @"_";
 static NSString *const kSubtypeSeparator = @".";
 static NSString *const kSubtypeSeparatorReplacement = @";";
 
-#define DEFAULT_DEFAULT @(NAN)
+#define DEFAULT_DEFAULT @(NAN)	// it is *really* important that this != nil
 #define TYP_DEFAULT_MUTABLE	([MutableTyp typWithName:@"TypDefaultMutable" parents:nil default:@""])
 #define TYP_DEFAULT	([Typ typWithName:@"TypDefault" parents:nil default:@""])
 #define TYP_BOOL	([Typ typWithName:@"TypBool"])
 #define TYP_RATING	([Typ typWithName:@"TypRating"])
 #define TYP_COUNT	([Typ typWithName:@"TypCount"])
 #define TYP_AMOUNT	([Typ typWithName:@"TypAmount"])
+#define TYP_TIME	([Typ typWithName:@"TypTime"])
+#define TYP_DATETIME ([Typ typWithName:@"TypDatetime"])
 #define TYP_STRING	([Typ typWithName:@"TypString" parents:nil default:@""])
+
 
 // no, this is crappy cuz we want default values, and maybe
 // other attributes later
@@ -29,10 +32,20 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 //static NSString *const kTypNameBool = @"TypBool";
 
 // ================================================================
+#pragma mark Utility funcs
+// ================================================================
+
+NSArray* sortTyps(NSArray* typs) {
+	return [typs sortedArrayUsingComparator:^NSComparisonResult(Typ* p1, Typ* p2) {
+		return [p1.name compare:p2.name];
+	}];
+}
+
+// ================================================================
 #pragma mark Properties
 // ================================================================
 @interface Typ ()
-@property(strong, nonatomic) NSSet* parents;
+@property(strong, nonatomic) NSArray* parents;
 @property(strong, nonatomic) NSUUID* ID;
 @property(strong, nonatomic) NSMutableDictionary* fields;
 @end
@@ -82,7 +95,7 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 		for (id p in parents) {
 			assert([p isKindOfClass:[Typ class]]);
 		}
-		_parents = [NSSet setWithArray:parents];
+		_parents = sortTyps([[NSSet setWithArray:parents] allObjects]);
 
 		// make sure default value isn't nil, cuz that can't
 		// go in an nsdictionary
@@ -116,8 +129,8 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 }
 
 -(NSString*) description {
-	NSMutableString* s = [[self getFullName] mutableCopy];
-	NSDictionary* allFields = [self getAllFields];
+	NSMutableString* s = [[self fullName] mutableCopy];
+	NSDictionary* allFields = [self allFields];
 	if ([allFields count]) {
 		NSString* fieldsStr = [[allFields allKeys] componentsJoinedByString:@", "];
 		[s appendFormat:@" [%@]", fieldsStr];
@@ -125,56 +138,43 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	return s;
 }
 
-// Woot, RMMapper just does this for us
-//// ================================================================
-//#pragma mark NSCoding
-//// ================================================================
-//
-//-(instancetype) initWithCoder : (NSCoder *)decoder {
-////	if (self = [super initWithCoder) {
-//		NSString* name			= [decoder decodeObjectForKey:@"name"];
-//		NSDictionary* fields 	= [decoder decodeObjectForKey:@"fields"];
-//		NSSet* parents			= [decoder decodeObjectForKey:@"parents"];
-//		if ([self = ])
-//		_ID 		= [decoder decodeObjectForKey:@"id"];
-//		_defaultVal = [decoder decodeObjectForKey:@"defaultVal"];
-////	}
-//	return self;
-//}
-//
-//-(void) encodeWithCoder:(NSCoder *)coder {
-//	[coder encodeObject:self.name forKey:@"name"];
-//	[coder encodeObject:self.fields forKey:@"fields"];
-//	[coder encodeObject:self.parents forKey:@"parents"];
-//	[coder encodeObject:self.ID forKey:@"id"];
-//	[coder encodeObject:self.defaultVal forKey:@"defaultVal"];
-//}
-
 // ================================================================
 #pragma mark Public funcs
 // ================================================================
 
-//-(NSSet*) getAllParents {
-//	NSMutableSet* allParents = [NSMutableSet set];
-//	if ([self.parents count]) {
-//		for (Typ* p in self.parents) {
-//			[allParents unionSet:[p getAllParents]];
-//		}
-//	}
-//	[allParents unionSet:self.parents];
-//	return allParents;
-//}
+-(NSArray*) getAllParents {
+	NSMutableArray* allParents = [NSMutableArray array];
+	if ([self.parents count]) {
+		for (Typ* p in self.parents) {
+			for (Typ* grandP in [p getAllParents]) {
+				if (! [allParents containsObject:grandP]) {
+					[allParents addObject:grandP];
+				}
+			}
+		}
+	}
+	for (Typ* p in self.parents) {
+		if (![allParents containsObject:p]) {
+			[allParents addObject:p];
+		}
+	}
+	return sortTyps(allParents);
+}
 
--(typ_id_t) getUniqueID {
+-(typ_id_t) uniqueID {
 	return self.ID.UUIDString;
 }
 
--(NSString*) getFullName {
+-(NSString*) uniqueIDString {
+	return self.ID.UUIDString;
+}
+
+-(NSString*) fullName {
 	if (! [self.parents count]) return self.name;
 
 	NSMutableArray* parentNames = [NSMutableArray array];
 	for (Typ* p in self.parents) {
-		[parentNames addObject:[p getFullName]];
+		[parentNames addObject:[p fullName]];
 	}
 	NSArray* sortedNames = [parentNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	NSString* sortedStr = [sortedNames componentsJoinedByString:@", "];
@@ -186,24 +186,24 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 			sortedStr, kSubtypeSeparator, self.name];
 }
 
--(NSDictionary*) getAllFields {
+-(NSDictionary*) allFields {
 	NSMutableDictionary* allFields = [NSMutableDictionary dictionary];
 	if ([self.parents count]) {
 		for (Typ* p in self.parents) {
-			[allFields addEntriesFromDictionary:[p getAllFields]];
+			[allFields addEntriesFromDictionary:[p allFields]];
 		}
 	}
 	[allFields addEntriesFromDictionary:self.fields];
 	return allFields;
 }
 
--(id) getDefaultValue {
-	NSMutableDictionary* fields = [[self getAllFields] mutableCopy];
+-(id) defaultValue {
+	NSMutableDictionary* fields = [[self allFields] mutableCopy];
 	NSMutableDictionary* defaults = [NSMutableDictionary dictionary];
 	if ([fields count]) {
 		for (field_name_t name in [fields allKeys]) {
 			Typ* typ = fields[name];
-			defaults[name] = [typ getDefaultValue];
+			defaults[name] = [typ defaultValue];
 		}
 		return defaults;
 	}
@@ -218,16 +218,20 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 // instantiation
 // -------------------------------
 
--(TypInstance) new {
-	id obj = [self getDefaultValue];
+// so what makes this tricky is that some typs have values that
+// are other complex typs, and others have values that are just
+// constants. This makes life bad.
+
+-(id) newInstance {
+	id obj = [self defaultValue];
 	if ([obj isKindOfClass:[NSMutableDictionary class]]) {
-		obj[@"__typ__"] = self;
+		obj[kKeyTyp] = self;
 	}
 	return obj;
 }
 
 // ================================================================
-#pragma mark Basic Types
+#pragma mark Basic typs
 // ================================================================
 
 +(Typ*) typDefaultMutable {
@@ -280,7 +284,22 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 	});
 	return sharedInstance;
 }
-
++(Typ*) typTime {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_TIME;
+	});
+	return sharedInstance;
+}
++(Typ*) typDatetime {
+	static Typ* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = TYP_DATETIME;
+	});
+	return sharedInstance;
+}
 +(Typ*) typString {
 	static Typ* sharedInstance = nil;
 	static dispatch_once_t onceToken;
@@ -298,6 +317,22 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 			 [self typAmount],
 			 [self typString],
 			 ];
+}
+
+// ================================================================
+#pragma mark Other typs
+// ================================================================
+
++(Typ*) typDatetimeRange {
+	static MutableTyp* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = [MutableTyp typWithName:@"Time Range"];
+		[sharedInstance addField:@"Start" typ:[Typ typDatetime]];
+		[sharedInstance addField:@"End" typ:[Typ typDatetime]];
+		NSLog(@"typDateTimeRange: didn't freak out and die");
+	});
+	return sharedInstance;
 }
 
 @end
@@ -350,7 +385,7 @@ static NSString *const kSubtypeSeparatorReplacement = @";";
 
 void testTyp() {
 	MutableTyp* exer = [MutableTyp typWithName:@"exercise"];
-	TypInstance emptyExer = [exer new];
+	TypInstance emptyExer = [exer newInstance];
 	NSLog(@"exer with no fields: %@", exer);
 	NSLog(@"exer class: %@", NSStringFromClass([exer class]));
 	[exer addField:@"name" typ:TYP_STRING];
@@ -358,7 +393,7 @@ void testTyp() {
 
 	NSLog(@"emptyExer: %@", emptyExer);
 
-	TypInstance genericExer = [exer new];
+	TypInstance genericExer = [exer newInstance];
 	NSLog(@"genericExer, no name: %@", genericExer);
 	genericExer[@"name"] = @"generic exercise";
 	NSLog(@"genericExer, no name: %@", genericExer);
@@ -370,11 +405,11 @@ void testTyp() {
 	NSLog(@"%@", lift);
 
 	[lift addFields:@{@"reps": TYP_COUNT, @"failure": TYP_BOOL}];
-	TypInstance squats = [lift new];
+	TypInstance squats = [lift newInstance];
 	squats[@"name"] = @"squats";
 	squats[@"reps"] = @(2);
 
 	NSLog(@"%@", squats);
 
-	NSLog(@"new, unset rating: %@", [TYP_RATING new]);
+	NSLog(@"new, unset rating: %@", [TYP_RATING newInstance]);
 }

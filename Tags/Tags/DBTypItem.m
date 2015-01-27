@@ -21,8 +21,12 @@
 					children:(NSArray *)children
 					  parent:(DBTableItem *)parent
 						 typ:(Typ*)typ {
-	if (self = [super initWithName:name children:children]) {
-		
+//	if (self = [super initWithName:name children:children]) {
+	if (self = [super init]) {
+		self.name = name;
+		self.parent = parent;
+		self.children = [children mutableCopy];
+
 		// ensure that we have a valid type
 		if (! typ) {
 			if ([parent isKindOfClass:[DBTypItem class]]) {
@@ -37,8 +41,6 @@
 		// hook up parent
 		[parent addChild:self];
 		self.parent = parent;
-		
-		NSLog(@"created typItem with typ: %@", self.typ);
 	}
 	return self;
 }
@@ -53,7 +55,6 @@
 }
 
 -(void) setName:(NSString *)name {
-	NSLog(@"TypItem: setting name to %@", name);
 	if ([name isEqualToString:self.name]) return;
 	self.typ.name = name;
 	[super setName:name];

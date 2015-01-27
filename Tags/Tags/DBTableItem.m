@@ -10,32 +10,12 @@
 
 @implementation DBTableItem
 
-//+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child {
-//	child.parent = parent;
-//	[parent addChild:child];
-//}
-
-+ (id)itemWithName:(NSString *)name children:(NSArray *)children {
-	return [[self alloc] initWithName:name children:children];
-}
-
-- (id)initWithName:(NSString *)name children:(NSArray *)children {
-	self = [super init];
-	if (self) {
-		_name = name;
-		_parent = nil;
-		if ([children count]) {
-			_children = [NSMutableArray arrayWithArray:children];
-		} else {
-			_children = [NSMutableArray array];
-		}
-	}
-	return self;
+-(instancetype) init {
+	return (self = [super init]);
 }
 
 - (void)addChild:(DBTableItem*)child {
 	if ([_children containsObject:child]) return;
-
 	[_children insertObject:child atIndex:0];
 }
 
@@ -43,8 +23,15 @@
 	[_children removeObject:child];
 }
 
+-(void) setChildren:(NSMutableArray *)children {
+	if ([children count]) {
+		_children = [NSMutableArray arrayWithArray:children];
+	} else {
+		_children = [NSMutableArray array];
+	}
+}
+
 -(void) setName:(NSString *)name {
-	NSLog(@"TableItem: setting name to %@", name);
 	if ([name isEqualToString:self.name]) return;
 	_name = name;
 }

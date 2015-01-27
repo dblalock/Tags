@@ -21,3 +21,7 @@
 NSArray* defaultTypItems();
 NSArray* getAllTypItems();
 void saveTypItems(NSArray* typItems);
+
+NSArray* defaultTags();
+NSArray* getAllTags();
+void saveTagItems(NSArray* items);
