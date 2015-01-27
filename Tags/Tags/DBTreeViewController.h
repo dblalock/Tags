@@ -31,6 +31,8 @@
 
 -(BOOL) stopEditingCell;	// depends on cellInQuestion being set
 
+-(void) addRootItem;		//abstract--must be overridden
+
 // utility method to get an initialized treeviewcell
 DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item);
 

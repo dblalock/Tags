@@ -128,6 +128,15 @@ void shrinkTextFieldToFit(UITextField* field) {
 	[self startEditingNameWithSelectAll:NO];
 }
 
+
+-(void) startEditing {
+	[self startEditingName];
+}
+
+-(void) stopEditing {
+	[self stopEditingName];
+}
+
 -(void) stopEditingName {
 	NSLog(@"treeCell: stopEditingName");
 	[_titleText resignFirstResponder];

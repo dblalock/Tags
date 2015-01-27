@@ -50,6 +50,10 @@
 			  atLevel:(NSUInteger)lvl
 			 expanded:(BOOL)expanded;
 
+
+-(void) startEditing;
+-(void) stopEditing;
+
 -(void) startEditingNameWithSelectAll:(BOOL)selectAll;
 -(void) startEditingName;
 -(void) stopEditingName;

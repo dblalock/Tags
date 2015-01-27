@@ -13,7 +13,6 @@
 
 #import "DBTableItem.h"
 #import "DBTypItem.h"
-#import "DBTreeItemAddNew.h"
 #import "DBTreeCell.h"
 #import "TypManager.h"
 
@@ -35,17 +34,13 @@ CGRect fullScreenFrame() {
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	self.treeView.dataSource = self;
-
 	// this just adds a background behind the status bar, because the treeview
 	// hasn't been resized to start below it yet; it seems to stick around even
 	// after the treeview is resized
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
 
-	// my tableviewcell nib
 	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 
-//	_data = defaultData();
 	self.data = [getAllTypItems() mutableCopy];
 	[self.treeView reloadData];
 }
@@ -56,42 +51,6 @@ CGRect fullScreenFrame() {
 }
 
 // ================================================================
-#pragma mark TreeView Delegate methods
-// ================================================================
-
-// --------------------------------
-// row attributes
-// --------------------------------
-- (CGFloat)treeView:(RATreeView *)treeView heightForRowForItem:(id)item {
-	DBTreeCell* cell = (DBTreeCell*)[treeView cellForItem:item];
-	return cell.preferredRowHeight ? cell.preferredRowHeight : 44;
-}
-
-// --------------------------------
-// expanding/collapsing rows
-// --------------------------------
-- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
-	NSLog(@"willExpandRow");
-	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
-		[self addRootItem];
-	}
-}
-
-- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
-	NSLog(@"willCollapseRow");
-	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
-	[cell stopEditingName];
-}
-
-
-// --------------------------------
-// tree / cell modification
-// --------------------------------
--(BOOL) treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
-	return NO;
-}
-
-// ================================================================
 #pragma mark TreeView Data Source methods
 // ================================================================
 
@@ -99,9 +58,7 @@ CGRect fullScreenFrame() {
 	DBTreeCell* cell = dequeCellForTreeViewItem(treeView, item);
 	
 	// rest is just adding utility buttons
-	if (! cell.wantsUtilityButtons) {
-		return cell;
-	}
+	if (! cell.wantsUtilityButtons) return cell;
 
 	// SWTableViewCell wonderfulness
 	// from: www.appcoda.com/swipeable-uitableviewcell-tutorial/

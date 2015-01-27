@@ -22,22 +22,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+
 	// we create a temporary treeview object so that we don't assign
 	// directly to a weak property until it's been retained by self.view...I think
 	RATreeView* treeView = [[RATreeView alloc] initWithFrame:self.view.bounds];
 	[self.view insertSubview:treeView atIndex:0];
 	self.treeView = treeView;
-	
+
 	self.treeView.delegate = self;
+	self.treeView.dataSource = self;
 	self.treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
 	self.treeView.allowsSelection = NO;		// will only get every other collapse cmd otherwise
-	
+
 	// my tableviewcell nib
 	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
 	[self.treeView registerNib:[DBTreeCellAddNew standardNib] forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
 
-	
 	// dealing with keyboard covering crap
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(keyboardWillShow:)
@@ -50,7 +50,7 @@
 // this just makes it not be behind the status bar + tab bar
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	
+
 	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
 	float statusBarHeight = statusBarViewRect.size.height;
 	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
@@ -67,36 +67,75 @@
 
 - (void) dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver: self
-													name: UIKeyboardWillShowNotification object: nil];
+													name: UIKeyboardWillShowNotification
+												  object: nil];
 	[[NSNotificationCenter defaultCenter] removeObserver: self
-													name: UIKeyboardWillHideNotification object: nil];
+													name: UIKeyboardWillHideNotification
+												  object: nil];
 }
 
 /*
-#pragma mark - Navigation
+ #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
+
+// ================================================================
+#pragma mark Public methods
+// ================================================================
+
+-(void) addRootItem {
+	[NSException raise:NSInternalInconsistencyException
+				format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
 }
-*/
-
-// ================================================================
-#pragma mark RATreeViewDelegate
-// ================================================================
 
 // returns yes if it stopped something, and no if it wasn't editing anyway;
 // this is just a hack to close keyboard on touch outside
 -(BOOL) stopEditingCell {
 	NSLog(@"stopEditingCell");
 	if (self.cellInQuestion) {
-		[(DBTreeCell*)self.cellInQuestion stopEditingName];
+		[(DBTreeCell*)self.cellInQuestion stopEditing];
 		self.cellInQuestion = nil;
 		return YES;
 	}
 	return NO;
 }
+
+DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
+	DBTableItem *tableItem = item;
+	NSInteger lvl = [treeView levelForCellForItem:item];
+	BOOL expanded = [treeView isCellForItemExpanded:item];
+
+	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
+
+	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+	return cell;
+}
+
+// ================================================================
+#pragma mark RATreeViewDelegate
+// ================================================================
+
+//------------------------------------------------
+// row attributes
+//------------------------------------------------
+
+- (CGFloat)treeView:(RATreeView *)treeView heightForRowForItem:(id)item {
+	DBTreeCell* cell = (DBTreeCell*)[treeView cellForItem:item];
+	return cell.preferredRowHeight ? cell.preferredRowHeight : 44;
+}
+
+//------------------------------------------------
+// expanding/collapsing rows
+//------------------------------------------------
+
+//------------------------ should
 
 // these two methods are basically a hack to get it to close the keyboard
 // when you click outside of the text view
@@ -111,22 +150,33 @@
 	return ! [self stopEditingCell];
 }
 
+//------------------------ will
+
+// call our method to add a new item at the root level
+- (void)treeView:(RATreeView *)treeView willExpandRowForItem:(id)item {
+	NSLog(@"willExpandRow");
+	if ([item isKindOfClass:[DBTreeItemAddNew class]]) {
+		[self addRootItem];
+	}
+}
+
+- (void)treeView:(RATreeView *)treeView willCollapseRowForItem:(id)item {
+	NSLog(@"willCollapseRow");
+	DBTreeCell* cell = (DBTreeCell*) [treeView cellForItem:item];
+	[cell stopEditing];
+}
+
+//------------------------------------------------
+// tree / cell modification
+//------------------------------------------------
+
+-(BOOL) treeView:(RATreeView *)treeView canEditRowForItem:(id)item {
+	return NO;
+}
+
 // ================================================================
 #pragma mark RATreeViewDatasource
 // ================================================================
-
-DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
-	DBTableItem *tableItem = item;
-	NSInteger lvl = [treeView levelForCellForItem:item];
-	BOOL expanded = [treeView isCellForItemExpanded:item];
-	
-	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
-	
-	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-	
-	return cell;
-}
 
 -(UITableViewCell*) treeView:(RATreeView *)treeView cellForItem:(id)item {
 	return dequeCellForTreeViewItem(treeView, item);
@@ -136,7 +186,7 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 	if (item == nil) {
 		return [self.data count] + 1;	// extra row for "add new"
 	}
-	
+
 	DBTableItem *data = item;
 	return [data.children count];
 }
@@ -156,7 +206,7 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 #pragma mark Keyboard not covering tableview
 // ================================================================
 
-// -------------------------------- Helpers
+// ------------------------ Helpers
 
 NSTimeInterval keyboardAnimationDuration(NSNotification* notification) {
 	NSDictionary* info = [notification userInfo];
@@ -170,12 +220,12 @@ CGSize keyboardSize(NSNotification* notification) {
 	return [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
 }
 
-// -------------------------------- Notification callbacks
+// ------------------------ Notification callbacks
 
 - (void) keyboardWillShow:(NSNotification*)aNotification {
 	CGSize kbSize = keyboardSize(aNotification);
 	id item = [_treeView itemForCell:_cellInQuestion];
-	
+
 	CGRect treeFrame = _treeView.frame;
 	treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
 	[_treeView setFrame:treeFrame];
