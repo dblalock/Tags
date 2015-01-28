@@ -48,6 +48,7 @@ NSArray* sortTyps(NSArray* typs) {
 @property(strong, nonatomic) NSArray* parents;
 @property(strong, nonatomic) NSUUID* ID;
 @property(strong, nonatomic) NSMutableDictionary* fields;
+@property(strong, nonatomic, readonly) id defaultVal;
 @end
 
 @implementation Typ
@@ -142,11 +143,11 @@ NSArray* sortTyps(NSArray* typs) {
 #pragma mark Public funcs
 // ================================================================
 
--(NSArray*) getAllParents {
+-(NSArray*) allParents {
 	NSMutableArray* allParents = [NSMutableArray array];
 	if ([self.parents count]) {
 		for (Typ* p in self.parents) {
-			for (Typ* grandP in [p getAllParents]) {
+			for (Typ* grandP in [p allParents]) {
 				if (! [allParents containsObject:grandP]) {
 					[allParents addObject:grandP];
 				}
@@ -199,6 +200,7 @@ NSArray* sortTyps(NSArray* typs) {
 
 -(id) defaultValue {
 	NSMutableDictionary* fields = [[self allFields] mutableCopy];
+	NSLog(@"Typ: defaultValue: fields = %@", fields);
 	NSMutableDictionary* defaults = [NSMutableDictionary dictionary];
 	if ([fields count]) {
 		for (field_name_t name in [fields allKeys]) {
@@ -211,6 +213,21 @@ NSArray* sortTyps(NSArray* typs) {
 }
 
 -(BOOL) isMutable {
+	return NO;
+}
+
+-(BOOL) isMemberOfTyp:(Typ*)typ {
+	return [self isEqual:typ];
+}
+
+-(BOOL) isKindOfTyp:(Typ*)typ {
+	if ([self isMemberOfTyp:typ]) return YES;
+	
+	for (Typ* p in [self allParents]) {
+		if ([p isEqual:typ]) {
+			return YES;
+		}
+	}
 	return NO;
 }
 
@@ -323,6 +340,14 @@ NSArray* sortTyps(NSArray* typs) {
 #pragma mark Other typs
 // ================================================================
 
+//+(Typ*) typStartDateTime {
+//	static Typ* sharedInstance = nil;
+//	static dispatch_once_t onceToken;
+//	dispatch_once(&onceToken, ^{
+//		sharedInstance = [[Typ alloc] initWithName:@"Start" parents:@[[Typ typDatetime]]];
+//	});
+//	return sharedInstance;
+//}
 +(Typ*) typDatetimeRange {
 	static MutableTyp* sharedInstance = nil;
 	static dispatch_once_t onceToken;

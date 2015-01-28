@@ -27,10 +27,9 @@
 -(instancetype) initWithTag:(Tag*)tag parent:(DBTableItem*)parent {
 	if (self = [super init]) {
 		self.tag = tag;
-		self.name = tag.typ.name;
+		self.name = tag.name;
 		self.parent = parent;
 		
-		NSLog(@"tag childTags: %@", tag.childTags);
 		if (! [tag.childTags count]) {
 			self.children = nil;
 		} else {

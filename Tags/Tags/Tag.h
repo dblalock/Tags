@@ -13,6 +13,7 @@
 @class Typ;
 
 @interface Tag : NSObject
+@property(strong, nonatomic) NSString* name;
 @property(nonatomic, readonly) Typ* typ;
 @property(nonatomic, readonly) NSArray* childTags;
 

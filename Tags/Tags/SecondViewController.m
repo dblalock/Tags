@@ -52,8 +52,6 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 // ================================================================
 
 -(UITableViewCell*) treeView:(RATreeView *)treeView cellForItem:(id)item {
-	NSLog(@"called 2ndController treeView:cellForItem:");
-	
 	DBTreeCell* cell = dequeCellForTreeViewItem(treeView, item);
 
 	// rest is just adding utility buttons
@@ -93,6 +91,8 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 			DBTagItem* dup = [[DBTagItem alloc] initWithTyp:item.tag.typ];
 			[self.data addObject:dup];
 			[self.treeView reloadData];
+			[self.treeView scrollToRowForItem:dup
+						 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
 			break;
 		}
 		case 1:		// Delete button
@@ -150,9 +150,12 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
-	DBTagItem *newChild = [[DBTagItem alloc] initWithTyp:typ];
-	[self.data addObject:newChild];
+	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
+	[self.data addObject:item];
 	[self.treeView reloadData];
+	
+	[self.treeView scrollToRowForItem:item
+				 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
 	
 	[self saveItems];
 }

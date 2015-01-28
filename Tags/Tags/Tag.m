@@ -36,14 +36,16 @@
 //}
 
 -(instancetype) initWithTyp:(Typ*)typ {
-	return [self initWithTyp:typ value:[typ defaultVal]];
+	return [self initWithTyp:typ value:[typ defaultValue]];
 }
 
 -(instancetype) initWithTyp:(Typ*)typ value:(id)val {
 	if (self = [super init]) {
 		NSAssert(typ, @"typ must not be nil!");
+		_name = typ.name;
 		_typ = typ;
 		_attrs = val;
+		NSLog(@"creating typ with attrs: %@", _attrs);
 		_childTags = computeChildTags(_attrs, typ);
 	}
 	return self;
@@ -88,10 +90,11 @@ NSArray* computeChildTags(NSDictionary* attrsDict, Typ* myTyp) {
 	// for each field in our typ, create a tag with
 	// that field's typ and our value for that field
 	NSDictionary* fields = [myTyp allFields];
-	for (id key in [fields allKeys]) {
+	for (NSString* key in [fields allKeys]) {
 		Typ* typ = fields[key];
 		id val = attrsDict[key];
 		Tag* tag = [[Tag alloc] initWithTyp:typ value:val];
+		tag.name = key;
 		[tags addObject:tag];
 	}
 	return tags;

@@ -32,7 +32,6 @@ static NSString *const kKeyTyp = @"__typ__";
 @interface Typ : NSObject
 
 @property(strong, nonatomic) NSString* name;
-@property(strong, nonatomic, readonly) id defaultVal;
 //@property(nonatomic, readonly, getter=isMutable) BOOL mutable;
 
 // ------------------------------------------------
@@ -88,12 +87,16 @@ static NSString *const kKeyTyp = @"__typ__";
 
 -(id) newInstance;
 
-//-(BOOL) isMutable;
+-(BOOL) isMemberOfTyp:(Typ*)typ;
+-(BOOL) isKindOfTyp:(Typ*)typ;
+
 -(typ_id_t) uniqueID;
 -(NSString*) uniqueIDString;
 -(id) defaultValue;
+-(NSArray*) allParents;
 -(NSDictionary*) allFields;
 -(NSString*) fullName;
+
 
 @end
 

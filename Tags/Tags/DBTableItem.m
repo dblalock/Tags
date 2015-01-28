@@ -11,7 +11,10 @@
 @implementation DBTableItem
 
 -(instancetype) init {
-	return (self = [super init]);
+	if (self = [super init]) {
+		_children = [NSMutableArray array];
+	}
+	return self;
 }
 
 - (void)addChild:(DBTableItem*)child {

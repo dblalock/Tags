@@ -54,7 +54,7 @@
 	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
 	float statusBarHeight = statusBarViewRect.size.height;
 	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-	NSLog(@"tabBarHeight = %g", tabBarHeight);
+//	NSLog(@"tabBarHeight = %g", tabBarHeight);
 	CGRect viewBounds = self.view.bounds;
 	viewBounds.origin.y = statusBarHeight;
 	viewBounds.size.height -= tabBarHeight + statusBarHeight;
@@ -236,7 +236,7 @@ CGSize keyboardSize(NSNotification* notification) {
 	id item = [_treeView itemForCell:_cellInQuestion];
 
 	CGRect treeFrame = _treeView.frame;
-	NSLog(@"kbSize for class %@: tabBarHeight = %g", [self class], self.tabBarController.tabBar.frame.size.height);
+//	NSLog(@"kbSize for class %@: tabBarHeight = %g", [self class], self.tabBarController.tabBar.frame.size.height);
 	treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
 	[_treeView setFrame:treeFrame];
 	[_treeView scrollToRowForItem:item
