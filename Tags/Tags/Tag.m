@@ -28,11 +28,12 @@
 #pragma mark Initialization
 // ================================================================
 
--(instancetype) init {
-	[NSException raise:@"Cannot initialize Tag without Typ"
-				format:@"That wouldn't make any sense..."];
-	return nil;
-}
+// needs to not freak out cuz used by RMMapper to deserialize...I think
+//-(instancetype) init {
+//	[NSException raise:@"Tag init: this method unavailable."
+//				format:@"Cannot initialize Tag without Typ"];
+//	return nil;
+//}
 
 -(instancetype) initWithTyp:(Typ*)typ {
 	return [self initWithTyp:typ value:[typ defaultVal]];
@@ -79,6 +80,7 @@
 
 NSArray* computeChildTags(NSDictionary* attrsDict, Typ* myTyp) {
 	// no child attributes -> no child tags
+	if (! [attrsDict respondsToSelector:@selector(count)]) return nil;
 	if (! [attrsDict count]) return nil;
 	
 	NSMutableArray* tags = [NSMutableArray array];

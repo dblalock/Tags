@@ -15,7 +15,11 @@
 #import "Typ.h"
 #import "DBTypItem.h"
 
+#import "Tag.h"
+#import "DBTagItem.h"
+
 static NSString *const kKeyAllTypItems = @"allTypItems";
+static NSString *const kKeyAllTagItems = @"allTagItems";
 
 @implementation TypManager
 @end
@@ -68,9 +72,9 @@ NSArray* defaultTypItems() {
 	return typItemsFromDict(defaultTypsDict());
 }
 
-void saveTypItems(NSArray* typItems) {
+void saveTypItems(NSArray* items) {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	[defaults rm_setCustomObject:typItems forKey:kKeyAllTypItems];
+	[defaults rm_setCustomObject:items forKey:kKeyAllTypItems];
 //	[defaults synchronize];
 }
 
@@ -88,9 +92,18 @@ NSArray* getAllTypItems() {
 // ================================================================
 
 NSArray* defaultTagItems() {
-	TypInstance bul = [[Typ typBool] newInstance];
-	return @[bul];
+	return @[[[DBTagItem alloc] initWithTyp:[Typ typDatetimeRange]]];
 }
-NSArray* getAllTags();
-void saveTagItems(NSArray* items);
+NSArray* getAllTagItems() {
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSArray* typItems = [defaults rm_customObjectForKey:kKeyAllTagItems];
+	if (! typItems) {
+		typItems = defaultTagItems();
+	}
+	return typItems;
+}
+void saveTagItems(NSArray* items) {
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults rm_setCustomObject:items forKey:kKeyAllTagItems];
+}
 

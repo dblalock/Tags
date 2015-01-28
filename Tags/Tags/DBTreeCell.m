@@ -15,6 +15,7 @@ static const NSUInteger kPreferredRowHeight = 44;
 
 @interface DBTreeCell () <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *titleText;
+@property (weak, nonatomic) IBOutlet UIButton *mainButton;
 @end
 
 @implementation DBTreeCell
@@ -42,6 +43,16 @@ static const NSUInteger kPreferredRowHeight = 44;
 //    [super setSelected:selected animated:animated];
     // Configure the view for the selected state
 //}
+
+//===============================================================
+#pragma mark IBActions
+//===============================================================
+
+-(IBAction)tappedMainButton:(id)sender {
+	if ([_treeDelegate respondsToSelector:@selector(treeCelldidTapMainButton:)]) {
+		[_treeDelegate treeCelldidTapMainButton:self];
+	}
+}
 
 //===============================================================
 #pragma mark Custom stuff

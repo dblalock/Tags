@@ -11,6 +11,8 @@
 		7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7275638D1A77421A00C31329 /* DBTreeViewController.m */; };
 		727563961A7820A700C31329 /* DBTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563951A7820A700C31329 /* DBTagItem.m */; };
 		727563991A78293E00C31329 /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563981A78293E00C31329 /* Tag.m */; };
+		7275639B1A7881B800C31329 /* EmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7275639A1A7881B800C31329 /* EmptyView.xib */; };
+		7275639D1A788D3E00C31329 /* DBTypCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7275639C1A788D3E00C31329 /* DBTypCell.xib */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -52,6 +54,8 @@
 		727563951A7820A700C31329 /* DBTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTagItem.m; sourceTree = "<group>"; };
 		727563971A78293E00C31329 /* Tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tag.h; sourceTree = "<group>"; };
 		727563981A78293E00C31329 /* Tag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tag.m; sourceTree = "<group>"; };
+		7275639A1A7881B800C31329 /* EmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EmptyView.xib; sourceTree = "<group>"; };
+		7275639C1A788D3E00C31329 /* DBTypCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTypCell.xib; sourceTree = "<group>"; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -149,6 +153,7 @@
 				72D3BFCF1A70053800648A67 /* Main.storyboard */,
 				72D3BFD21A70053800648A67 /* Images.xcassets */,
 				72D3BFD41A70053800648A67 /* LaunchScreen.xib */,
+				7275639A1A7881B800C31329 /* EmptyView.xib */,
 				72D3BFC21A70053800648A67 /* Supporting Files */,
 			);
 			path = Tags;
@@ -217,6 +222,7 @@
 			children = (
 				72D3BFF51A704F0700648A67 /* RATableViewCell.xib */,
 				72D3C0011A7185AB00648A67 /* DBTreeCell.xib */,
+				7275639C1A788D3E00C31329 /* DBTypCell.xib */,
 				72D3C00B1A731AD600648A67 /* DBTreeCellAddNew.xib */,
 				72D3C0061A72A84500648A67 /* DBTimeCell.xib */,
 				72D3BFFE1A71774500648A67 /* DBTreeCell.h */,
@@ -326,6 +332,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7275639B1A7881B800C31329 /* EmptyView.xib in Resources */,
 				72D3C00C1A731AD600648A67 /* DBTreeCellAddNew.xib in Resources */,
 				72D3C0071A72A84500648A67 /* DBTimeCell.xib in Resources */,
 				72D3BFD11A70053800648A67 /* Main.storyboard in Resources */,
@@ -333,6 +340,7 @@
 				72D3BFF61A704F0700648A67 /* RATableViewCell.xib in Resources */,
 				72D3C0021A7185AB00648A67 /* DBTreeCell.xib in Resources */,
 				72D3BFD31A70053800648A67 /* Images.xcassets in Resources */,
+				7275639D1A788D3E00C31329 /* DBTypCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

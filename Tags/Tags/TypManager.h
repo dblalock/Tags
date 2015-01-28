@@ -6,22 +6,18 @@
 //  Copyright (c) 2015 D Blalock. All rights reserved.
 //
 
+// TODO rename this to PersistManager, since that's what it's actually doing
+
 #import <Foundation/Foundation.h>
 
-#import "Typ.h"
-
 @interface TypManager : NSObject
-
-// -so this class basically just needs to make sure that changes to types
-// get persisted
-// -it should probably also let you
 
 @end
 
 NSArray* defaultTypItems();
 NSArray* getAllTypItems();
-void saveTypItems(NSArray* typItems);
+void saveTypItems(NSArray* items);
 
-NSArray* defaultTags();
-NSArray* getAllTags();
+NSArray* defaultTagItems();
+NSArray* getAllTagItems();
 void saveTagItems(NSArray* items);

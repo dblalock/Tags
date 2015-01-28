@@ -15,9 +15,12 @@
 
 #import <RATreeView.h>
 
+static const int kActionSheetTagDelete = 1;
+
+@class DBTableItem;
 @class DBTreeCell;
 
-@interface DBTreeViewController : UIViewController <RATreeViewDelegate, RATreeViewDataSource>
+@interface DBTreeViewController : UIViewController <RATreeViewDelegate, RATreeViewDataSource, UIActionSheetDelegate>
 @property (weak, nonatomic) RATreeView *treeView;
 @property (strong, nonatomic) NSMutableArray *data;
 
@@ -31,7 +34,12 @@
 
 -(BOOL) stopEditingCell;	// depends on cellInQuestion being set
 
--(void) addRootItem;		//abstract--must be overridden
+-(void) addRootItem;		//abstract--required
+-(void) saveItems;			//abstract--optional
+
+// shared methods to keep code DRY
+-(void) deleteItem:(DBTableItem*)item;
+-(void) clickedDeleteCell:(DBTreeCell*)cell;
 
 // utility method to get an initialized treeviewcell
 DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item);

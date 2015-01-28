@@ -8,10 +8,13 @@
 
 #import "DBTableItem.h"
 
+#import "NSObject+RMArchivable.h"	// automatically does encode/decode
+
 @class Tag;
 @class Typ;
 
 @interface DBTagItem : DBTableItem
+@property(strong, nonatomic) Tag* tag;
 
 //-(instancetype)initWithName:(NSString *)name children:(NSArray *)array NS_UNAVAILABLE;
 -(instancetype) init NS_UNAVAILABLE;

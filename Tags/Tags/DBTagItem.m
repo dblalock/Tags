@@ -15,9 +15,8 @@
 #pragma mark Interface
 // ================================================================
 
-@interface DBTagItem ()
-@property(strong, nonatomic) Tag* tag;
-@end
+//@interface DBTagItem ()
+//@end
 
 // ================================================================
 #pragma mark Initialization
@@ -31,6 +30,7 @@
 		self.name = tag.typ.name;
 		self.parent = parent;
 		
+		NSLog(@"tag childTags: %@", tag.childTags);
 		if (! [tag.childTags count]) {
 			self.children = nil;
 		} else {
@@ -45,7 +45,7 @@
 
 -(instancetype) initWithTyp:(Typ*)typ parent:(DBTableItem*)parent {
 	Tag* tag = [[Tag alloc] initWithTyp:typ];
-	return [self initWithTag:tag];
+	return [self initWithTag:tag parent:parent];
 }
 
 -(instancetype) initWithTag:(Tag*)tag {

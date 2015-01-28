@@ -54,6 +54,7 @@
 	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
 	float statusBarHeight = statusBarViewRect.size.height;
 	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+	NSLog(@"tabBarHeight = %g", tabBarHeight);
 	CGRect viewBounds = self.view.bounds;
 	viewBounds.origin.y = statusBarHeight;
 	viewBounds.size.height -= tabBarHeight + statusBarHeight;
@@ -85,7 +86,16 @@
  */
 
 // ================================================================
-#pragma mark Public methods
+#pragma mark Accessors
+// ================================================================
+
+-(void) setData:(NSMutableArray*)data {
+	_data = data;
+	[_treeView reloadData];
+}
+
+// ================================================================
+#pragma mark Other public methods
 // ================================================================
 
 -(void) addRootItem {
@@ -226,6 +236,7 @@ CGSize keyboardSize(NSNotification* notification) {
 	id item = [_treeView itemForCell:_cellInQuestion];
 
 	CGRect treeFrame = _treeView.frame;
+	NSLog(@"kbSize for class %@: tabBarHeight = %g", [self class], self.tabBarController.tabBar.frame.size.height);
 	treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
 	[_treeView setFrame:treeFrame];
 	[_treeView scrollToRowForItem:item
@@ -241,6 +252,42 @@ CGSize keyboardSize(NSNotification* notification) {
 		[_treeView setFrame:treeFrame];
 	} completion:^(BOOL finished) {
 	}];
+}
+
+// ================================================================
+#pragma mark Item manipulations
+// ================================================================
+
+-(void) saveItems {
+//	NSLog(@"TreeViewController: saveItems: override this to persist data");
+}
+
+-(void) clickedDeleteCell:(DBTreeCell*)cell {
+	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
+	sheet.tag = kActionSheetTagDelete;
+	sheet.delegate = self;
+	self.cellInQuestion = cell;
+	[sheet showInView:self.view];
+}
+
+-(void) deleteItem:(DBTableItem*)item {
+	DBTableItem *parent = [self.treeView parentForItem:item];
+	NSInteger index = 0;
+	
+	if (parent == nil) {
+		index = [self.data indexOfObject:item];
+		[self.data removeObjectAtIndex:index];
+	} else {
+		index = [parent.children indexOfObject:item];
+		[parent removeChild:item];
+	}
+	
+	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
+	if (parent) {
+		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
+	}
+	
+	[self saveItems];
 }
 
 @end

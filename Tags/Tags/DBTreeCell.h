@@ -22,6 +22,7 @@
 
 @optional
 -(void) treeCell:(DBTreeCell*)cell didSetNameTo:(NSString*)name;
+-(void) treeCelldidTapMainButton:(DBTreeCell*)cell;
 
 @end
 

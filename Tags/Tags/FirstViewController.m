@@ -17,7 +17,6 @@
 #import "TypManager.h"
 
 static NSString *const kDefaultChildName = @"";
-static const int kActionSheetTagDelete = 1;
 
 @interface FirstViewController () <SWTableViewCellDelegate, UIActionSheetDelegate, DBTreeCellDelegate>
 
@@ -39,10 +38,11 @@ CGRect fullScreenFrame() {
 	// after the treeview is resized
 //	[_treeView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1 alpha:.6]];
 
-	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
+	UINib* typNib = [UINib nibWithNibName:@"DBTypCell" bundle:nil];
+	[self.treeView registerNib:typNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 
-	self.data = [getAllTypItems() mutableCopy];
-	[self.treeView reloadData];
+//	self.data = [getAllTypItems() mutableCopy];
+	self.data = [defaultTypItems() mutableCopy];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -96,13 +96,13 @@ CGRect fullScreenFrame() {
 	[self addChildTo:[self.treeView itemForCell:cell]];
 }
 
--(void) clickedDeleteCell:(DBTreeCell*)cell {
-	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
-	sheet.tag = kActionSheetTagDelete;
-	sheet.delegate = self;
-	self.cellInQuestion = cell;
-	[sheet showInView:self.view];
-}
+//-(void) clickedDeleteCell:(DBTreeCell*)cell {
+//	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
+//	sheet.tag = kActionSheetTagDelete;
+//	sheet.delegate = self;
+//	self.cellInQuestion = cell;
+//	[sheet showInView:self.view];
+//}
 
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index {
 	switch (index) {
@@ -160,9 +160,17 @@ CGRect fullScreenFrame() {
 	item.name = name;
 }
 
+-(void) treeCelldidTapMainButton:(DBTreeCell*)cell {
+	notifyItemSelected([self.treeView itemForCell:cell]);
+}
+
 // ================================================================
-#pragma mark Helper Funcs
+#pragma mark Item manipulation
 // ================================================================
+
+-(void) saveItems {
+	saveTypItems(self.data);
+}
 
 -(void) editNameForItem:(id)item {
 	DBTreeCell* cell = (DBTreeCell*)[self.treeView cellForItem:item];
@@ -176,7 +184,7 @@ CGRect fullScreenFrame() {
 	[self.treeView reloadData];
 
 	[self editNameForItem:newChild];
-	saveTypItems(self.data);
+	[self saveItems];
 }
 
 -(void) addChildTo:(DBTableItem*)parent {
@@ -184,34 +192,50 @@ CGRect fullScreenFrame() {
 	// there are a lot of children already
 	[self.treeView expandRowForItem:parent withRowAnimation:RATreeViewRowAnimationMiddle];
 
-	// TODO this class probably shouldn't know about DBTypItem
 	DBTypItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:parent];
 	[self.treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:parent withAnimation:RATreeViewRowAnimationLeft];
 	[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 
 	// assume user doesn't want to keep the name "New Tag"
 	[self editNameForItem:newChild];
-	saveTypItems(self.data);
+	[self saveItems];
 }
 
--(void) deleteItem:(DBTableItem*)item {
-	DBTableItem *parent = [self.treeView parentForItem:item];
-	NSInteger index = 0;
+// ================================================================
+#pragma mark Typ Selection
+// ================================================================
 
-	if (parent == nil) {
-		index = [self.data indexOfObject:item];
-		[self.data removeObjectAtIndex:index];
-	} else {
-		index = [parent.children indexOfObject:item];
-		[parent removeChild:item];
-	}
-
-	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
-	if (parent) {
-		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
-	}
-
-	saveTypItems(self.data);
+Typ* extractTypFromNotification(NSNotification* notification) {
+	if (! [notification.name isEqualToString:kNotificationTypSelected]) return nil;
+	return notification.userInfo[kKeyNotificationTyp];
 }
+
+void notifyItemSelected(DBTypItem* item) {
+	[[NSNotificationCenter defaultCenter] postNotificationName:kNotificationTypSelected
+														object:nil
+													  userInfo:@{kKeyNotificationTyp: item.typ}];
+}
+
+//NSString *const kNotificationTypSelected = @"TypSelected";
+
+//-(void) deleteItem:(DBTableItem*)item {
+//	DBTableItem *parent = [self.treeView parentForItem:item];
+//	NSInteger index = 0;
+//
+//	if (parent == nil) {
+//		index = [self.data indexOfObject:item];
+//		[self.data removeObjectAtIndex:index];
+//	} else {
+//		index = [parent.children indexOfObject:item];
+//		[parent removeChild:item];
+//	}
+//
+//	[self.treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:index] inParent:parent withAnimation:RATreeViewRowAnimationRight];
+//	if (parent) {
+//		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
+//	}
+//
+//	saveTypItems(self.data);
+//}
 
 @end
