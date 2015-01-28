@@ -119,6 +119,7 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 	NSInteger lvl = [treeView levelForCellForItem:item];
 	BOOL expanded = [treeView isCellForItemExpanded:item];
 
+	NSLog(@"TreeViewController: item reuseID = %@", [item reuseIdentifier]);
 	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
 
 	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];

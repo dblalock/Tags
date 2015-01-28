@@ -45,7 +45,6 @@
 		_name = typ.name;
 		_typ = typ;
 		_attrs = val;
-		NSLog(@"creating typ with attrs: %@", _attrs);
 		_childTags = computeChildTags(_attrs, typ);
 	}
 	return self;

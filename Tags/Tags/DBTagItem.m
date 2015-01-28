@@ -11,6 +11,8 @@
 #import "Typ.h"
 #import "Tag.h"
 
+#import "DBCellManager.h"	// for reuseIdentifierForTyp()
+
 // ================================================================
 #pragma mark Interface
 // ================================================================
@@ -53,6 +55,17 @@
 
 -(instancetype) initWithTyp:(Typ*)typ {
 	return [self initWithTyp:typ parent:nil];
+}
+
+// ================================================================
+#pragma mark Overrides
+// ================================================================
+
+// different reuse identifiers for different tag types
+-(NSString*) reuseIdentifier {
+	NSLog(@"tag typ: %@", self.tag.typ);
+//	return [super reuseIdentifier];
+	return reuseIdentifierForTyp(self.tag.typ);
 }
 
 @end

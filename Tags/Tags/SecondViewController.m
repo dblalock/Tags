@@ -16,6 +16,7 @@
 //#import "DBTableItem.h"
 #import "DBTagItem.h"
 #import "DBTreeCell.h"
+#import "DBCellManager.h"
 #import "TypManager.h"
 #import "Typ.h"
 #import "Tag.h"
@@ -31,7 +32,19 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) viewDidLoad {
 	[super viewDidLoad];
 	
-	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTagItem reuseIdentifier]];		// typItem
+	NSLog(@"called secondVC viewDidLoad");
+	// register all the nibs we might use
+	NSDictionary* ids2nibs = reuseIdsToNibs();
+	for (NSString* Id in [ids2nibs allKeys]) {
+		NSLog(@"secondVC: actually registering a nib");
+		[self.treeView registerNib:ids2nibs[Id] forCellReuseIdentifier:Id];
+	}
+	
+	// TEST: now that these are in the manager dict, will it work?
+		// apparently not...
+		// ah, that makes sense because this is using [DBTagItem reuseIdentifier], which is != [DBTableItem reuseIdenitfier]
+			// the question is why this identifier is needed...
+//	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTagItem reuseIdentifier]];		// tagItem
 
 //	self.data = [getAllTagItems() mutableCopy];
 	self.data = [defaultTagItems() mutableCopy];

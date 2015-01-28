@@ -23,7 +23,8 @@
 @optional
 -(void) treeCell:(DBTreeCell*)cell didSetNameTo:(NSString*)name;
 -(void) treeCelldidTapMainButton:(DBTreeCell*)cell;
-
+-(void) treeCell:(DBTreeCell*)cell didSetDateTo:(NSDate*)date;
+-(void) treeCell:(DBTreeCell*)cell didSetNumTo:(NSNumber*)date;
 @end
 
 // ================================================================
