@@ -21,6 +21,11 @@
 		727563AD1A79627800C31329 /* DBTagCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727563AC1A79627800C31329 /* DBTagCell.xib */; };
 		727563B01A79D20300C31329 /* DBItemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563AF1A79D20300C31329 /* DBItemManager.m */; };
 		727563B31A79D5AA00C31329 /* DBTimeRangeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B21A79D5AA00C31329 /* DBTimeRangeItem.m */; };
+		727563BA1A7A9FCF00C31329 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B51A7A9FCF00C31329 /* FileUtils.m */; };
+		727563BB1A7A9FCF00C31329 /* MiscUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B71A7A9FCF00C31329 /* MiscUtils.m */; };
+		727563BC1A7A9FCF00C31329 /* TimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B91A7A9FCF00C31329 /* TimeUtils.m */; };
+		727563C11A7AA3A100C31329 /* DropboxUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563C01A7AA3A100C31329 /* DropboxUploader.m */; };
+		727563C51A7AA41C00C31329 /* DropboxInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563C41A7AA41C00C31329 /* DropboxInfo.m */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -75,6 +80,16 @@
 		727563AF1A79D20300C31329 /* DBItemManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBItemManager.m; sourceTree = "<group>"; };
 		727563B11A79D5AA00C31329 /* DBTimeRangeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTimeRangeItem.h; sourceTree = "<group>"; };
 		727563B21A79D5AA00C31329 /* DBTimeRangeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTimeRangeItem.m; sourceTree = "<group>"; };
+		727563B41A7A9FCF00C31329 /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
+		727563B51A7A9FCF00C31329 /* FileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtils.m; sourceTree = "<group>"; };
+		727563B61A7A9FCF00C31329 /* MiscUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MiscUtils.h; sourceTree = "<group>"; };
+		727563B71A7A9FCF00C31329 /* MiscUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiscUtils.m; sourceTree = "<group>"; };
+		727563B81A7A9FCF00C31329 /* TimeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeUtils.h; sourceTree = "<group>"; };
+		727563B91A7A9FCF00C31329 /* TimeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeUtils.m; sourceTree = "<group>"; };
+		727563BF1A7AA3A100C31329 /* DropboxUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxUploader.h; sourceTree = "<group>"; };
+		727563C01A7AA3A100C31329 /* DropboxUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxUploader.m; sourceTree = "<group>"; };
+		727563C31A7AA41C00C31329 /* DropboxInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxInfo.h; sourceTree = "<group>"; };
+		727563C41A7AA41C00C31329 /* DropboxInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxInfo.m; sourceTree = "<group>"; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -130,6 +145,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		727563BD1A7A9FDC00C31329 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				727563B41A7A9FCF00C31329 /* FileUtils.h */,
+				727563B51A7A9FCF00C31329 /* FileUtils.m */,
+				727563B61A7A9FCF00C31329 /* MiscUtils.h */,
+				727563B71A7A9FCF00C31329 /* MiscUtils.m */,
+				727563B81A7A9FCF00C31329 /* TimeUtils.h */,
+				727563B91A7A9FCF00C31329 /* TimeUtils.m */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		727563BE1A7AA07800C31329 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				72D3BFC91A70053800648A67 /* FirstViewController.h */,
+				72D3BFCA1A70053800648A67 /* FirstViewController.m */,
+				72D3BFCC1A70053800648A67 /* SecondViewController.h */,
+				72D3BFCD1A70053800648A67 /* SecondViewController.m */,
+				7275638C1A77421A00C31329 /* DBTreeViewController.h */,
+				7275638D1A77421A00C31329 /* DBTreeViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		727563C21A7AA3B100C31329 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				727563C31A7AA41C00C31329 /* DropboxInfo.h */,
+				727563C41A7AA41C00C31329 /* DropboxInfo.m */,
+				727563BF1A7AA3A100C31329 /* DropboxUploader.h */,
+				727563C01A7AA3A100C31329 /* DropboxUploader.m */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
 		72D3BFB61A70053800648A67 = {
 			isa = PBXGroup;
 			children = (
@@ -155,15 +207,12 @@
 			children = (
 				72D3BFC61A70053800648A67 /* AppDelegate.h */,
 				72D3BFC71A70053800648A67 /* AppDelegate.m */,
-				72D3BFC91A70053800648A67 /* FirstViewController.h */,
-				72D3BFCA1A70053800648A67 /* FirstViewController.m */,
-				72D3BFCC1A70053800648A67 /* SecondViewController.h */,
-				72D3BFCD1A70053800648A67 /* SecondViewController.m */,
-				7275638C1A77421A00C31329 /* DBTreeViewController.h */,
-				7275638D1A77421A00C31329 /* DBTreeViewController.m */,
+				727563C21A7AA3B100C31329 /* Logging */,
+				727563BE1A7AA07800C31329 /* ViewControllers */,
 				72D3BFFD1A71759600648A67 /* Typs */,
 				72D3C0131A7323F600648A67 /* TreeViewCells */,
 				72D3BFF41A70431500648A67 /* TreeViewItems */,
+				727563BD1A7A9FDC00C31329 /* Utils */,
 				72D3BFCF1A70053800648A67 /* Main.storyboard */,
 				72D3BFD21A70053800648A67 /* Images.xcassets */,
 				72D3BFD41A70053800648A67 /* LaunchScreen.xib */,
@@ -420,10 +469,14 @@
 				727563A91A79530000C31329 /* DBTimeRangeCell.m in Sources */,
 				72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
+				727563BC1A7A9FCF00C31329 /* TimeUtils.m in Sources */,
+				727563C11A7AA3A100C31329 /* DropboxUploader.m in Sources */,
 				72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */,
 				7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */,
+				727563C51A7AA41C00C31329 /* DropboxInfo.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
+				727563BA1A7A9FCF00C31329 /* FileUtils.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
 				727563961A7820A700C31329 /* DBTagItem.m in Sources */,
 				72D3C0051A71A85B00648A67 /* TypManager.m in Sources */,
@@ -431,6 +484,7 @@
 				727563B31A79D5AA00C31329 /* DBTimeRangeItem.m in Sources */,
 				727563A31A79496E00C31329 /* DBCellManager.m in Sources */,
 				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
+				727563BB1A7A9FCF00C31329 /* MiscUtils.m in Sources */,
 				727563991A78293E00C31329 /* Tag.m in Sources */,
 				727563A01A79354F00C31329 /* DBTagCell.m in Sources */,
 				727563B01A79D20300C31329 /* DBItemManager.m in Sources */,

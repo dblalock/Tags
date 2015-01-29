@@ -14,11 +14,15 @@
 
 #import "Typ.h"
 #import "DBTypItem.h"
-
 #import "Tag.h"
 #import "DBTagItem.h"
 
 #import "DBItemManager.h"
+
+#import "FileUtils.h"
+#import "TimeUtils.h"
+#import "MiscUtils.h"
+#import "DropboxUploader.h"
 
 static NSString *const kKeyAllTypItems = @"allTypItems";
 static NSString *const kKeyAllTagItems = @"allTagItems";
@@ -109,5 +113,37 @@ NSArray* getAllTagItems() {
 void saveTagItems(NSArray* items) {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	[defaults rm_setCustomObject:items forKey:kKeyAllTagItems];
+	
+	logTagItems(items);		//TODO maybe don't do this automatically here
 }
 
+// ================================================================
+#pragma mark List of tags
+// ================================================================
+
+NSString* tagItemsToJSONString(NSArray* items) {
+	NSMutableArray* tagVals = [NSMutableArray array];
+	for (DBTagItem* item in items) {
+		[tagVals addObject:[item.tag toDictOrValue]];
+	}
+	BOOL pretty = YES;
+	return toJSONString(tagVals, pretty);
+}
+
+void logTagItems(NSArray* items) {
+	NSString* jsonStr = tagItemsToJSONString(items);
+	NSLog(@"saving items as JSON str: %@", jsonStr);
+	NSString* baseFileName = @"tagItems";
+	NSString* dateStr = currentTimeStrForFileName();
+	NSString* fileName = [baseFileName stringByAppendingFormat:@"__%@.json", dateStr];
+	NSString* dir = @"users";
+	NSString* user = getUniqueDeviceIdentifierAsString();
+	
+	NSString* localPath = [FileUtils getFullFileName:fileName];
+	NSString* destPath = [NSString pathWithComponents:@[dir, user, fileName]];
+	NSLog(@"saving local file %@", localPath);
+	NSLog(@"uploading file to %@", destPath);
+	
+	[FileUtils writeString:jsonStr toFile:localPath];
+	[[DropboxUploader sharedUploader] addFileToUpload:localPath toPath:destPath];
+}

@@ -177,7 +177,9 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
 //	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
+	NSLog(@"2ndVC: adding item of typ: %@", typ);
 	DBTagItem* item = createTagItemForTyp(typ);
+	NSLog(@"2ndVC: created item %@ has typ: %@", item, item.tag.typ);
 	item.tagDelegate = self;
 	[self.data addObject:item];
 	[self.treeView reloadData];

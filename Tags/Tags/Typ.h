@@ -100,6 +100,7 @@ static NSString *const kEndTimeFieldName = @"End";
 -(NSDictionary*) allFields;
 -(NSString*) fullName;
 
+-(NSString*) toLabelStr;
 
 @end
 

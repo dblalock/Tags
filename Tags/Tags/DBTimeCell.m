@@ -36,4 +36,8 @@
 	[self.tagItm notifyChildChanged:self.tagObj];
 }
 
+//-(NSUInteger) preferredRowHeight {
+//	return 50;
+//}
+
 @end

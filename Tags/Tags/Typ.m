@@ -211,6 +211,19 @@ NSArray* sortTyps(NSArray* typs) {
 	return self.defaultVal;
 }
 
+-(NSArray*) allParentNames {
+	NSMutableArray* names = [NSMutableArray array];
+	for (Typ* p in [self allParents]) {
+		[names addObject:p.name];
+	}
+	return names;
+}
+
+-(NSString*) toLabelStr {
+	NSArray* allNames = [[self allParentNames] arrayByAddingObject:self.name];
+	return [allNames componentsJoinedByString:@" | "];
+}
+
 -(BOOL) isMutable {
 	return NO;
 }

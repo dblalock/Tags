@@ -27,6 +27,6 @@
 
 -(NSArray*) childTags;
 
-id tagToDictOrValue(Tag* tag);
+-(id) toDictOrValue;
 
 @end

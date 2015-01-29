@@ -28,13 +28,17 @@ make tags table / screen
 	X subtag cells based on typ
 	X initing tag cells with correct values
 	X editing subtag values so they affect the actual tag
-	recording crap
+	X recording crap
 		X subclasses to match cell subclasses where necessary
 		X factory method in something to create the appropriate one
-		make item start/stop recording
-	make changes in child tags alter duration in parent tag
-	storing tag history
-		have it convert whole history to a big array of stuff in json
+		X make item start/stop recording
+	X make changes in child tags alter duration in parent tag
+	store tag history
+		convert to a big array of stuff in json
+		datetimes as unix timestamps
+		write out a file
+		upload it to dropbox
+	integrate iosense stuff
 
 //	SELF: make DBTagItem::reuseIdentifier use the func that searches for an appropriate parent typ identifier
 	// if it isn't already

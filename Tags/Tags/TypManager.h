@@ -21,3 +21,5 @@ void saveTypItems(NSArray* items);
 NSArray* defaultTagItems();
 NSArray* getAllTagItems();
 void saveTagItems(NSArray* items);
+
+void logTagItems(NSArray* items);

@@ -11,9 +11,8 @@
 #import "Tag.h"
 #import "Typ.h"
 
-static const int kIncrementDurationEverySecs = 1;
+static const int kIncrementDurationEverySecs = 15;	//TODO 1s, but don't kill swiped-over-ness
 static const BOOL kStartRecordingWhenCreated = YES;
-
 
 @interface DBTimeRangeItem ()
 @property(strong, nonatomic) Tag* startTag;

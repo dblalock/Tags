@@ -23,18 +23,27 @@ NSDictionary* typIdsToClasses() {
 		dict =
 		@{
 		  kKeyTypDefault:								[DBTagItem class],
-		  [[Typ typDatetimeRange] uniqueIDString]:	[DBTimeRangeItem class],
+		  [Typ typDatetimeRange].uniqueIDString:	[DBTimeRangeItem class],
 		  };
 	});
 	return dict;
 }
 
-Class classForTyp(Typ* typ) {
+Class rawClassForTyp(Typ* typ) {
 	NSDictionary* dict = typIdsToClasses();
 	NSString* identifier = typ.uniqueIDString;
-	Class cls = dict[identifier];
+	return dict[identifier];
+}
+
+Class classForTyp(Typ* typ) {
+	Class cls = rawClassForTyp(typ);
+	if (cls) return cls;
 	
-	return cls ? cls : dict[kKeyTypDefault];
+	for (Typ* p in [typ allParents]) {
+		cls = rawClassForTyp(p);
+		if (cls) return cls;
+	}
+	return typIdsToClasses()[kKeyTypDefault];
 }
 
 DBTagItem* createTagItemForTypWithParent(Typ* typ, DBTagItem* parent) {

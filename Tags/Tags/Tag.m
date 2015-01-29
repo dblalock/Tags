@@ -14,6 +14,8 @@
 
 #import "Typ.h"
 
+#import "TimeUtils.h" // for timeStampFromDate()
+
 // ================================================================
 #pragma mark Interface
 // ================================================================
@@ -93,12 +95,19 @@
 //------------------------------------------------
 
 -(id) toDictOrValue {
-	if (! [self.childTags count]) return [self value];
+	if (! [self.childTags count]) {
+		if ([[self value] isKindOfClass:[NSDate class]]) {
+			NSDate* date = (NSDate*)[self value];
+			return @(timeStampFromDate(date));	//JSON write can't do dates
+		}
+		return [self value];
+	}
 	
 	NSMutableDictionary* dict = [NSMutableDictionary dictionary];
 	for (Tag* child in self.childTags) {
 		dict[child.name] = [child toDictOrValue];
 	}
+	dict[@"__typ__"] = [self.typ toLabelStr];
 	return dict;
 }
 
