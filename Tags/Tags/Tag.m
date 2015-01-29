@@ -100,6 +100,7 @@
 			NSDate* date = (NSDate*)[self value];
 			return @(timeStampFromDate(date));	//JSON write can't do dates
 		}
+		if ([[self value]  isEqual: @(NAN)]) return @"nan";	//TODO make JSON deal with this
 		return [self value];
 	}
 	

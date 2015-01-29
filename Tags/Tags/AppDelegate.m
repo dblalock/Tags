@@ -6,17 +6,23 @@
 //  Copyright (c) 2015 D Blalock. All rights reserved.
 //
 
+// TODO have it write out history both like every 10min while in foreground
+// and upon entering background
+
 #import "AppDelegate.h"
 
-@interface AppDelegate ()
+#import "DBLoggingManager.h"
 
+@interface AppDelegate ()
 @end
 
 @implementation AppDelegate
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Override point for customization after application launch.
+	
+	[DBLoggingManager sharedInstance].recording = YES;
+	
 	return YES;
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import "DBTypItem.h"
+#import "Typ.h"
 
 @implementation DBTypItem
 
@@ -33,7 +34,8 @@
 				Typ* parentTyp = ((DBTypItem*)parent).typ;
 				typ = [Typ typWithName:name parents:@[parentTyp]];
 			} else {
-				typ = [Typ typWithName:name];
+//				typ = [Typ typWithName:name];
+				typ = [Typ typDatetimeRange];	// datetimeRange by default
 			}
 		}
 		_typ = typ;

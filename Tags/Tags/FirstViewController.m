@@ -179,8 +179,10 @@ CGRect fullScreenFrame() {
 }
 
 -(void) addRootItem {
+//	DBTableItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:nil];
 	DBTableItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:nil];
 	[self.data addObject:newChild];
+	
 	[self.treeView reloadData];
 
 	[self editNameForItem:newChild];

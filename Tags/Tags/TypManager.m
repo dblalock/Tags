@@ -135,15 +135,21 @@ void logTagItems(NSArray* items) {
 	NSLog(@"saving items as JSON str: %@", jsonStr);
 	NSString* baseFileName = @"tagItems";
 	NSString* dateStr = currentTimeStrForFileName();
-	NSString* fileName = [baseFileName stringByAppendingFormat:@"__%@.json", dateStr];
+	NSString* fileName1 = [baseFileName stringByAppendingFormat:@"__%@.json", dateStr];
+	NSString* fileName2 = [baseFileName stringByAppendingString:@".json"];
 	NSString* dir = @"users";
 	NSString* user = getUniqueDeviceIdentifierAsString();
 	
-	NSString* localPath = [FileUtils getFullFileName:fileName];
-	NSString* destPath = [NSString pathWithComponents:@[dir, user, fileName]];
-	NSLog(@"saving local file %@", localPath);
-	NSLog(@"uploading file to %@", destPath);
+	NSString* localPath1 = [FileUtils getFullFileName:fileName1];
+	NSString* localPath2 = [FileUtils getFullFileName:fileName2];
+	NSString* destPath1 = [NSString pathWithComponents:@[dir, user, fileName1]];
+	NSString* destPath2 = [NSString pathWithComponents:@[dir, user, fileName2]];
+	NSLog(@"saving local file %@", localPath1);
+	NSLog(@"uploading file to %@", destPath1);
+	NSLog(@"uploading file to %@", destPath2);
 	
-	[FileUtils writeString:jsonStr toFile:localPath];
-	[[DropboxUploader sharedUploader] addFileToUpload:localPath toPath:destPath];
+	[FileUtils writeString:jsonStr toFile:localPath1];
+	[FileUtils writeString:jsonStr toFile:localPath2];
+	[[DropboxUploader sharedUploader] addFileToUpload:localPath1 toPath:destPath1];
+	[[DropboxUploader sharedUploader] addFileToUpload:localPath2 toPath:destPath2];
 }

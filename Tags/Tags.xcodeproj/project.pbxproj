@@ -26,6 +26,15 @@
 		727563BC1A7A9FCF00C31329 /* TimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B91A7A9FCF00C31329 /* TimeUtils.m */; };
 		727563C11A7AA3A100C31329 /* DropboxUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563C01A7AA3A100C31329 /* DropboxUploader.m */; };
 		727563C51A7AA41C00C31329 /* DropboxInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563C41A7AA41C00C31329 /* DropboxInfo.m */; };
+		727563C81A7AB79300C31329 /* DBLoggingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563C71A7AB79300C31329 /* DBLoggingManager.m */; };
+		727563CB1A7AB7CB00C31329 /* DBDataLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563CA1A7AB7CB00C31329 /* DBDataLogger.m */; };
+		727563D01A7AB83800C31329 /* DBPebbleMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563CD1A7AB83800C31329 /* DBPebbleMonitor.m */; };
+		727563D11A7AB83800C31329 /* DBSensorMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563CF1A7AB83800C31329 /* DBSensorMonitor.m */; };
+		727563D41A7ABCA200C31329 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727563D31A7ABCA200C31329 /* ExternalAccessory.framework */; };
+		727563D71A7ABCCD00C31329 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727563D61A7ABCCD00C31329 /* CoreMotion.framework */; };
+		727563D91A7ABCDD00C31329 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727563D81A7ABCDD00C31329 /* CoreBluetooth.framework */; };
+		727563DB1A7ABCFB00C31329 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727563DA1A7ABCFB00C31329 /* Security.framework */; };
+		727563DD1A7ABD2600C31329 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727563DC1A7ABD2600C31329 /* CFNetwork.framework */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -90,6 +99,20 @@
 		727563C01A7AA3A100C31329 /* DropboxUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxUploader.m; sourceTree = "<group>"; };
 		727563C31A7AA41C00C31329 /* DropboxInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxInfo.h; sourceTree = "<group>"; };
 		727563C41A7AA41C00C31329 /* DropboxInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxInfo.m; sourceTree = "<group>"; };
+		727563C61A7AB79300C31329 /* DBLoggingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBLoggingManager.h; sourceTree = "<group>"; };
+		727563C71A7AB79300C31329 /* DBLoggingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBLoggingManager.m; sourceTree = "<group>"; };
+		727563C91A7AB7CB00C31329 /* DBDataLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBDataLogger.h; sourceTree = "<group>"; };
+		727563CA1A7AB7CB00C31329 /* DBDataLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBDataLogger.m; sourceTree = "<group>"; };
+		727563CC1A7AB83800C31329 /* DBPebbleMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPebbleMonitor.h; sourceTree = "<group>"; };
+		727563CD1A7AB83800C31329 /* DBPebbleMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPebbleMonitor.m; sourceTree = "<group>"; };
+		727563CE1A7AB83800C31329 /* DBSensorMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBSensorMonitor.h; sourceTree = "<group>"; };
+		727563CF1A7AB83800C31329 /* DBSensorMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBSensorMonitor.m; sourceTree = "<group>"; };
+		727563D31A7ABCA200C31329 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
+		727563D51A7ABCA200C31329 /* Tags.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Tags.entitlements; sourceTree = "<group>"; };
+		727563D61A7ABCCD00C31329 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		727563D81A7ABCDD00C31329 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		727563DA1A7ABCFB00C31329 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		727563DC1A7ABD2600C31329 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -131,6 +154,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				727563DD1A7ABD2600C31329 /* CFNetwork.framework in Frameworks */,
+				727563DB1A7ABCFB00C31329 /* Security.framework in Frameworks */,
+				727563D91A7ABCDD00C31329 /* CoreBluetooth.framework in Frameworks */,
+				727563D71A7ABCCD00C31329 /* CoreMotion.framework in Frameworks */,
+				727563D41A7ABCA200C31329 /* ExternalAccessory.framework in Frameworks */,
 				682E4DADA75B68BF76F60D28 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,12 +202,27 @@
 		727563C21A7AA3B100C31329 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
+				727563C91A7AB7CB00C31329 /* DBDataLogger.h */,
+				727563CA1A7AB7CB00C31329 /* DBDataLogger.m */,
 				727563C31A7AA41C00C31329 /* DropboxInfo.h */,
 				727563C41A7AA41C00C31329 /* DropboxInfo.m */,
 				727563BF1A7AA3A100C31329 /* DropboxUploader.h */,
 				727563C01A7AA3A100C31329 /* DropboxUploader.m */,
+				727563C61A7AB79300C31329 /* DBLoggingManager.h */,
+				727563C71A7AB79300C31329 /* DBLoggingManager.m */,
 			);
 			name = Logging;
+			sourceTree = "<group>";
+		};
+		727563D21A7AB83D00C31329 /* Monitors */ = {
+			isa = PBXGroup;
+			children = (
+				727563CC1A7AB83800C31329 /* DBPebbleMonitor.h */,
+				727563CD1A7AB83800C31329 /* DBPebbleMonitor.m */,
+				727563CE1A7AB83800C31329 /* DBSensorMonitor.h */,
+				727563CF1A7AB83800C31329 /* DBSensorMonitor.m */,
+			);
+			name = Monitors;
 			sourceTree = "<group>";
 		};
 		72D3BFB61A70053800648A67 = {
@@ -205,8 +248,10 @@
 		72D3BFC11A70053800648A67 /* Tags */ = {
 			isa = PBXGroup;
 			children = (
+				727563D51A7ABCA200C31329 /* Tags.entitlements */,
 				72D3BFC61A70053800648A67 /* AppDelegate.h */,
 				72D3BFC71A70053800648A67 /* AppDelegate.m */,
+				727563D21A7AB83D00C31329 /* Monitors */,
 				727563C21A7AA3B100C31329 /* Logging */,
 				727563BE1A7AA07800C31329 /* ViewControllers */,
 				72D3BFFD1A71759600648A67 /* Typs */,
@@ -308,6 +353,11 @@
 		A0BA1AF16B07CE8A08102499 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				727563DC1A7ABD2600C31329 /* CFNetwork.framework */,
+				727563DA1A7ABCFB00C31329 /* Security.framework */,
+				727563D81A7ABCDD00C31329 /* CoreBluetooth.framework */,
+				727563D61A7ABCCD00C31329 /* CoreMotion.framework */,
+				727563D31A7ABCA200C31329 /* ExternalAccessory.framework */,
 				9AEB05530126F6F8C5CE903F /* libPods.a */,
 			);
 			name = Frameworks;
@@ -373,6 +423,15 @@
 				TargetAttributes = {
 					72D3BFBE1A70053800648A67 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = DZDSDMCUYH;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.WAC = {
+								enabled = 1;
+							};
+						};
 					};
 					72D3BFDA1A70053800648A67 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -468,6 +527,8 @@
 				727563A61A7952E800C31329 /* DBTimeCell.m in Sources */,
 				727563A91A79530000C31329 /* DBTimeRangeCell.m in Sources */,
 				72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */,
+				727563D01A7AB83800C31329 /* DBPebbleMonitor.m in Sources */,
+				727563D11A7AB83800C31329 /* DBSensorMonitor.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
 				727563BC1A7A9FCF00C31329 /* TimeUtils.m in Sources */,
 				727563C11A7AA3A100C31329 /* DropboxUploader.m in Sources */,
@@ -479,6 +540,7 @@
 				727563BA1A7A9FCF00C31329 /* FileUtils.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
 				727563961A7820A700C31329 /* DBTagItem.m in Sources */,
+				727563CB1A7AB7CB00C31329 /* DBDataLogger.m in Sources */,
 				72D3C0051A71A85B00648A67 /* TypManager.m in Sources */,
 				72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */,
 				727563B31A79D5AA00C31329 /* DBTimeRangeItem.m in Sources */,
@@ -487,6 +549,7 @@
 				727563BB1A7A9FCF00C31329 /* MiscUtils.m in Sources */,
 				727563991A78293E00C31329 /* Tag.m in Sources */,
 				727563A01A79354F00C31329 /* DBTagCell.m in Sources */,
+				727563C81A7AB79300C31329 /* DBLoggingManager.m in Sources */,
 				727563B01A79D20300C31329 /* DBItemManager.m in Sources */,
 				72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */,
 			);
@@ -613,9 +676,13 @@
 			baseConfigurationReference = F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tags/Tags.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Tags/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -624,9 +691,13 @@
 			baseConfigurationReference = 3EF315C0E79D057FC745F48B /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tags/Tags.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Tags/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
