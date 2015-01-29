@@ -8,18 +8,27 @@
 
 #import "DBTagCell.h"
 
+#import "Tag.h"
+#import "DBTagItem.h"	// TODO would be better to just need something that conforms to a protocol
+
 @implementation DBTagCell
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+
+BOOL itemHasTag(DBTableItem* item) {
+//	return [item respondsToSelector:@selector(tag)];
+//	return [item respondsToSelector:@selector(tag)] && [[item tag] isKindOfClass:[Tag class]];
+	return [item isKindOfClass:[DBTagItem class]];
 }
-*/
+
+-(void) setupWithItem:(DBTableItem*)item atLevel:(NSUInteger)lvl expanded:(BOOL)expanded {
+	[super setupWithItem:item atLevel:lvl expanded:expanded];
+	NSAssert(itemHasTag(item), @"DBTagCell: setupWithItem: item must have a Tag");
+	self.tagObj = ((DBTagItem*)item).tag;
+	self.treeLvl = lvl;
+}
 
 -(BOOL) wantsUtilityButtons {
-	return NO;
+	return self.treeLvl == 0;	// TODO treeview delegate should prolly know this rule, not the cell
 }
 
 @end

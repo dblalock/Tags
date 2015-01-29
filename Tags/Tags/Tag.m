@@ -20,6 +20,10 @@
 
 @interface Tag ()
 @property(strong, nonatomic) id attrs;
+
+// exactly one of these two will be non-nil
+@property(strong, nonatomic) NSDictionary* dict;
+
 @end
 
 @implementation Tag
@@ -45,13 +49,13 @@
 		_name = typ.name;
 		_typ = typ;
 		_attrs = val;
-		_childTags = computeChildTags(_attrs, typ);
+		_childTags = computeChildTags(_attrs, _typ);
 	}
 	return self;
 }
 
 //------------------------------------------------
-// Attribute parsing
+// Attributes
 //------------------------------------------------
 // these two methods basically implement the rule that this tag is
 // *either* a whole bunch of child values, or just one value with
@@ -62,17 +66,40 @@
 //	probably be better to do something sensible with arrays, but at
 //	present no typ takes on an array value, so it doesn't matter
 
--(NSDictionary*) dict {
-	if (! [_attrs isKindOfClass:[NSDictionary class]]) return nil;
-	return _attrs;
-}
+//-(NSDictionary*) dict {
+//	if (! [_attrs isKindOfClass:[NSDictionary class]]) return nil;
+//	return _attrs;
+//}
 
 -(id) value {
 	// this is based on the somewhat hack-ish (but true) assumption that
 	// if our attributes are a dictionary, our value is expressed as a
 	// collection of children (the dict's keys), rather than a single entity
-	if ([self dict]) return nil;
+//	if ([self dict]) return nil;
 	return _attrs;
+}
+
+//-(void) setDict:(NSDictionary *)dict {
+//	_attrs = dict;
+//}
+//
+-(void) setValue:(id)value {
+	_attrs = value;
+	_childTags = computeChildTags(_attrs, _typ);
+}
+
+//------------------------------------------------
+// Tag un-creation
+//------------------------------------------------
+
+-(id) toDictOrValue {
+	if (! [self.childTags count]) return [self value];
+	
+	NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+	for (Tag* child in self.childTags) {
+		dict[child.name] = [child toDictOrValue];
+	}
+	return dict;
 }
 
 //------------------------------------------------

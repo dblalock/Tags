@@ -17,14 +17,16 @@
 @property(nonatomic, readonly) Typ* typ;
 @property(nonatomic, readonly) NSArray* childTags;
 
-// exactly one of these two will be non-nil
-@property(strong, nonatomic, readonly) NSDictionary* dict;
-@property(strong, nonatomic, readonly) id value;
+// // exactly one of these two will be non-nil
+//@property(strong, nonatomic, readonly) NSDictionary* dict;
+@property(strong, nonatomic) id value;
 
 -(instancetype) init NS_UNAVAILABLE;
 -(instancetype) initWithTyp:(Typ*)typ;
 -(instancetype) initWithTyp:(Typ*)typ value:(id)val NS_DESIGNATED_INITIALIZER;
 
 -(NSArray*) childTags;
+
+id tagToDictOrValue(Tag* tag);
 
 @end

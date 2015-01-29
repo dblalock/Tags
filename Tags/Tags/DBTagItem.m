@@ -63,8 +63,6 @@
 
 // different reuse identifiers for different tag types
 -(NSString*) reuseIdentifier {
-	NSLog(@"tag typ: %@", self.tag.typ);
-//	return [super reuseIdentifier];
 	return reuseIdentifierForTyp(self.tag.typ);
 }
 

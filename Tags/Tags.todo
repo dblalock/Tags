@@ -25,19 +25,25 @@ make tags table / screen
 	X get it to pick a tag typ from the other viewcontroller
 	X get it to actually create a new entry from that tag typ
 	X actually showing subtags
-	subtag cells based on typ
-	editing subtags
+	X subtag cells based on typ
+	X initing tag cells with correct values
+	X editing subtag values so they affect the actual tag
+	storing tag history
+		have it convert whole history to a big array of stuff in json
+
+//	SELF: make DBTagItem::reuseIdentifier use the func that searches for an appropriate parent typ identifier
+	// if it isn't already
+
 	ability to duplicate tags
 		X copy tag typ
 		with default value
 	make everything a child of a day row
-		-or, alternatively, make each table a day and have some kind of horizontal switching between days
-
-have it convert whole history to a big array of stuff in json
-maybe untangle and write labels somehow for easier data crunching
+		or, alternatively, make each table a day and have some kind of horizontal switching between days
 
 put in iOSense stuff
 	add creationTimeMs to all DBTableItems
+
+maybe untangle and write labels somehow for easier data crunching
 
 ------------------------------------------------
 Refinements

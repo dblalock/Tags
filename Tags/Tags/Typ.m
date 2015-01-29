@@ -200,7 +200,6 @@ NSArray* sortTyps(NSArray* typs) {
 
 -(id) defaultValue {
 	NSMutableDictionary* fields = [[self allFields] mutableCopy];
-	NSLog(@"Typ: defaultValue: fields = %@", fields);
 	NSMutableDictionary* defaults = [NSMutableDictionary dictionary];
 	if ([fields count]) {
 		for (field_name_t name in [fields allKeys]) {
@@ -355,7 +354,6 @@ NSArray* sortTyps(NSArray* typs) {
 		sharedInstance = [MutableTyp typWithName:@"Time Range"];
 		[sharedInstance addField:@"Start" typ:[Typ typDatetime]];
 		[sharedInstance addField:@"End" typ:[Typ typDatetime]];
-		NSLog(@"typDateTimeRange: didn't freak out and die");
 	});
 	return sharedInstance;
 }

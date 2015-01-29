@@ -8,6 +8,9 @@
 
 #import "DBTreeCell.h"
 
-@interface DBTagCell : DBTreeCell
+@class Tag;
 
+@interface DBTagCell : DBTreeCell
+@property(weak, nonatomic) Tag* tagObj;
+@property(nonatomic) NSUInteger treeLvl;
 @end
