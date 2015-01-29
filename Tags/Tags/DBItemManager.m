@@ -42,6 +42,7 @@ DBTagItem* createTagItemForTypWithParent(Typ* typ, DBTagItem* parent) {
 	// block here; will probably change to this if any subclass ever needs
 	// a different initializer
 	Class cls = classForTyp(typ);
+	NSLog(@"ItemManager: using class %@ for Typ %@", cls, typ);
 	return [[cls alloc] initWithTyp:typ parent:parent];
 }
 

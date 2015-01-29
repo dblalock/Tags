@@ -26,7 +26,7 @@
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
-@interface SecondViewController () <SWTableViewCellDelegate>
+@interface SecondViewController () <SWTableViewCellDelegate, DBTagItemDelegate>
 @end
 
 @implementation SecondViewController
@@ -34,11 +34,9 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) viewDidLoad {
 	[super viewDidLoad];
 	
-	NSLog(@"called secondVC viewDidLoad");
 	// register all the nibs we might use
 	NSDictionary* ids2nibs = reuseIdsToNibs();
 	for (NSString* Id in [ids2nibs allKeys]) {
-		NSLog(@"secondVC: actually registering a nib");
 		[self.treeView registerNib:ids2nibs[Id] forCellReuseIdentifier:Id];
 	}
 	
@@ -50,6 +48,9 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 //	self.data = [getAllTagItems() mutableCopy];
 	self.data = [defaultTagItems() mutableCopy];
+	for (DBTagItem* item in self.data) {
+		item.tagDelegate = self;
+	}
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(notifiedTypSelected:)
@@ -105,6 +106,7 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 			DBTagItem* item = [self.treeView itemForCell:cell];
 //			DBTagItem* dup = [[DBTagItem alloc] initWithTyp:item.tag.typ];
 			DBTagItem* dup = createTagItemForTyp(item.tag.typ);
+			dup.tagDelegate = self;
 			[self.data addObject:dup];
 			[self.treeView reloadData];
 			[self.treeView scrollToRowForItem:dup
@@ -119,6 +121,14 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 		default:
 			break;
 	}
+}
+
+// ================================================================
+#pragma mark DBTagItem Delegate
+// ================================================================
+
+-(void) itemDidChange:(DBTagItem*)item {
+	[self.treeView reloadRowsForItems:@[item] withRowAnimation:RATreeViewRowAnimationNone];
 }
 
 // ================================================================
@@ -168,6 +178,7 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	if (! typ) return;
 //	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
 	DBTagItem* item = createTagItemForTyp(typ);
+	item.tagDelegate = self;
 	[self.data addObject:item];
 	[self.treeView reloadData];
 	

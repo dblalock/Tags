@@ -67,7 +67,6 @@ NSDictionary* reuseIdsToNibs() {
 	NSDictionary* ids2names = reuseIdsToNibNames();
 	NSMutableDictionary* ids2nibs = [NSMutableDictionary dictionary];
 	for (NSString* Id in [ids2names allKeys]) {
-		NSLog(@"reuseIdsToNibs: adding nib with name: %@", ids2names[Id]);
 		ids2nibs[Id] = [UINib nibWithNibName:ids2names[Id] bundle:nil];
 		assert(ids2nibs[Id]);
 	}

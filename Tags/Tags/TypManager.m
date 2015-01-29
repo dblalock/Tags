@@ -18,6 +18,8 @@
 #import "Tag.h"
 #import "DBTagItem.h"
 
+#import "DBItemManager.h"
+
 static NSString *const kKeyAllTypItems = @"allTypItems";
 static NSString *const kKeyAllTagItems = @"allTagItems";
 
@@ -92,7 +94,9 @@ NSArray* getAllTypItems() {
 // ================================================================
 
 NSArray* defaultTagItems() {
-	return @[[[DBTagItem alloc] initWithTyp:[Typ typDatetimeRange]]];
+	DBTagItem* item = createTagItemForTyp([Typ typDatetimeRange]);
+	item.name = NSLocalizedString(@"Example Entry", 0);
+	return @[item];
 }
 NSArray* getAllTagItems() {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];

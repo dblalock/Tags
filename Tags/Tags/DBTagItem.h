@@ -12,9 +12,19 @@
 
 @class Tag;
 @class Typ;
+@class DBTagItem;
+
+@protocol DBTagItemDelegate <NSObject>
+
+@required
+-(void) itemDidChange:(DBTagItem*)item;
+
+@end
+
 
 @interface DBTagItem : DBTableItem
 @property(strong, nonatomic) Tag* tag;
+@property(weak, nonatomic) id<DBTagItemDelegate> tagDelegate;
 
 //-(instancetype)initWithName:(NSString *)name children:(NSArray *)array NS_UNAVAILABLE;
 -(instancetype) init NS_UNAVAILABLE;
@@ -23,5 +33,7 @@
 -(instancetype) initWithTyp:(Typ*)typ parent:(DBTableItem*)parent;
 -(instancetype) initWithTag:(Tag*)tag;
 -(instancetype) initWithTyp:(Typ*)typ;
+
+-(void) notifyChildChanged:(Tag*)tag;
 
 @end

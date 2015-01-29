@@ -25,6 +25,9 @@ typedef NSString* typ_id_t;
 
 static NSString *const kKeyTyp = @"__typ__";
 
+static NSString *const kStartTimeFieldName = @"Start";
+static NSString *const kEndTimeFieldName = @"End";
+
 // ================================================================
 #pragma mark Typ
 // ================================================================

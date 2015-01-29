@@ -68,4 +68,23 @@
 	return reuseIdentifierForTyp(self.tag.typ);
 }
 
+// ================================================================
+#pragma mark Public methods
+// ================================================================
+
+-(void) notifyChildChanged:(Tag*)tag {
+	// propogate the notification up if there's a parent tag; if
+	// there is no parent tag, we're the root, and so need to be
+	// reloaded; if intermediate tags need to be reloaded as well,
+	// they can override this and notify the delegate that they,
+	// too, need to be updated
+	if ([self.parent isKindOfClass:[DBTagItem class]]) {
+		[(DBTagItem*)self.parent notifyChildChanged:self.tag];
+	} else {
+		if ([self.tagDelegate respondsToSelector:@selector(itemDidChange:)]) {
+			[self.tagDelegate itemDidChange:self];
+		}
+	}
+}
+
 @end

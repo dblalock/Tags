@@ -9,5 +9,8 @@
 #import "DBTagItem.h"
 
 @interface DBTimeRangeItem : DBTagItem
+@property(nonatomic) BOOL recording;
+
+-(NSDateComponents*) duration;
 
 @end

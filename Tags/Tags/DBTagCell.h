@@ -9,7 +9,10 @@
 #import "DBTreeCell.h"
 
 @class Tag;
+@class DBTagItem;
 
 @interface DBTagCell : DBTreeCell
 @property(weak, nonatomic) Tag* tagObj;
+@property(weak, nonatomic) DBTagItem* tagItm;
+	// TODO replace model ptr with protocol or delegate
 @end

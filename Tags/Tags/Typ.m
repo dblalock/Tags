@@ -352,8 +352,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = [MutableTyp typWithName:@"Time Range"];
-		[sharedInstance addField:@"Start" typ:[Typ typDatetime]];
-		[sharedInstance addField:@"End" typ:[Typ typDatetime]];
+		[sharedInstance addField:kStartTimeFieldName typ:[Typ typDatetime]];
+		[sharedInstance addField:kEndTimeFieldName typ:[Typ typDatetime]];
 	});
 	return sharedInstance;
 }

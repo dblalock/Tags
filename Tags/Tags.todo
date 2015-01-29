@@ -29,8 +29,10 @@ make tags table / screen
 	X initing tag cells with correct values
 	X editing subtag values so they affect the actual tag
 	recording crap
-		subclasses to match cell subclasses where necessary
-		factory method in something to create the appropriate one
+		X subclasses to match cell subclasses where necessary
+		X factory method in something to create the appropriate one
+		make item start/stop recording
+	make changes in child tags alter duration in parent tag
 	storing tag history
 		have it convert whole history to a big array of stuff in json
 
