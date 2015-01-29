@@ -16,10 +16,12 @@
 //#import "DBTableItem.h"
 #import "DBTagItem.h"
 #import "DBTreeCell.h"
-#import "DBCellManager.h"
 #import "TypManager.h"
 #import "Typ.h"
 #import "Tag.h"
+
+#import "DBCellManager.h"
+#import "DBItemManager.h"
 
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
@@ -101,7 +103,8 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 		{
 			// TODO ideally deep copy with original tags values
 			DBTagItem* item = [self.treeView itemForCell:cell];
-			DBTagItem* dup = [[DBTagItem alloc] initWithTyp:item.tag.typ];
+//			DBTagItem* dup = [[DBTagItem alloc] initWithTyp:item.tag.typ];
+			DBTagItem* dup = createTagItemForTyp(item.tag.typ);
 			[self.data addObject:dup];
 			[self.treeView reloadData];
 			[self.treeView scrollToRowForItem:dup
@@ -163,7 +166,8 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
-	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
+//	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
+	DBTagItem* item = createTagItemForTyp(typ);
 	[self.data addObject:item];
 	[self.treeView reloadData];
 	

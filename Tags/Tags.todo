@@ -28,6 +28,9 @@ make tags table / screen
 	X subtag cells based on typ
 	X initing tag cells with correct values
 	X editing subtag values so they affect the actual tag
+	recording crap
+		subclasses to match cell subclasses where necessary
+		factory method in something to create the appropriate one
 	storing tag history
 		have it convert whole history to a big array of stuff in json
 

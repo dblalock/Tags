@@ -17,8 +17,9 @@
 #pragma mark Interface
 // ================================================================
 
-//@interface DBTagItem ()
-//@end
+@interface DBTagItem ()
+@property (strong, nonatomic) NSDate* creationTime;
+@end
 
 // ================================================================
 #pragma mark Initialization
@@ -31,6 +32,7 @@
 		self.tag = tag;
 		self.name = tag.name;
 		self.parent = parent;
+		self.creationTime = [NSDate date];
 		
 		if (! [tag.childTags count]) {
 			self.children = nil;

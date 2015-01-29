@@ -20,6 +20,8 @@
 @property (strong, nonatomic) NSString *name;
 @property (strong, nonatomic) DBTableItem *parent;
 @property (strong, nonatomic) NSMutableArray *children;	// protected--use accessors!
+//@property (strong, nonatomic, readonly) NSMutableDictionary* cellInfo;
+
 
 //+(id) itemWithName:(NSString *)name children:(NSArray *)children;
 //+(void) joinParent:(DBTableItem*)parent toChild:(DBTableItem*)child;

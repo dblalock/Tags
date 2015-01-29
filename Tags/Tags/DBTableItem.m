@@ -13,6 +13,7 @@
 -(instancetype) init {
 	if (self = [super init]) {
 		_children = [NSMutableArray array];
+//		_cellInfo = [NSMutableDictionary dictionary];
 	}
 	return self;
 }

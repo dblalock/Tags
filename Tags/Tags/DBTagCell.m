@@ -24,7 +24,6 @@ BOOL itemHasTag(DBTableItem* item) {
 	[super setupWithItem:item atLevel:lvl expanded:expanded];
 	NSAssert(itemHasTag(item), @"DBTagCell: setupWithItem: item must have a Tag");
 	self.tagObj = ((DBTagItem*)item).tag;
-	self.treeLvl = lvl;
 }
 
 -(BOOL) wantsUtilityButtons {

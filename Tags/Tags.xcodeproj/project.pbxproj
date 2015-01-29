@@ -19,6 +19,8 @@
 		727563A91A79530000C31329 /* DBTimeRangeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563A81A79530000C31329 /* DBTimeRangeCell.m */; };
 		727563AB1A7955CC00C31329 /* DBTimeRangeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727563AA1A7955CC00C31329 /* DBTimeRangeCell.xib */; };
 		727563AD1A79627800C31329 /* DBTagCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727563AC1A79627800C31329 /* DBTagCell.xib */; };
+		727563B01A79D20300C31329 /* DBItemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563AF1A79D20300C31329 /* DBItemManager.m */; };
+		727563B31A79D5AA00C31329 /* DBTimeRangeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 727563B21A79D5AA00C31329 /* DBTimeRangeItem.m */; };
 		72D3BFC51A70053800648A67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC41A70053800648A67 /* main.m */; };
 		72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFC71A70053800648A67 /* AppDelegate.m */; };
 		72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3BFCA1A70053800648A67 /* FirstViewController.m */; };
@@ -72,6 +74,10 @@
 		727563A81A79530000C31329 /* DBTimeRangeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTimeRangeCell.m; sourceTree = "<group>"; };
 		727563AA1A7955CC00C31329 /* DBTimeRangeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTimeRangeCell.xib; sourceTree = "<group>"; };
 		727563AC1A79627800C31329 /* DBTagCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DBTagCell.xib; sourceTree = "<group>"; };
+		727563AE1A79D20300C31329 /* DBItemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBItemManager.h; sourceTree = "<group>"; };
+		727563AF1A79D20300C31329 /* DBItemManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBItemManager.m; sourceTree = "<group>"; };
+		727563B11A79D5AA00C31329 /* DBTimeRangeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTimeRangeItem.h; sourceTree = "<group>"; };
+		727563B21A79D5AA00C31329 /* DBTimeRangeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTimeRangeItem.m; sourceTree = "<group>"; };
 		72D3BFBF1A70053800648A67 /* Tags.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tags.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72D3BFC31A70053800648A67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72D3BFC41A70053800648A67 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -204,6 +210,10 @@
 		72D3BFF41A70431500648A67 /* TreeViewItems */ = {
 			isa = PBXGroup;
 			children = (
+				727563AE1A79D20300C31329 /* DBItemManager.h */,
+				727563AF1A79D20300C31329 /* DBItemManager.m */,
+				727563B11A79D5AA00C31329 /* DBTimeRangeItem.h */,
+				727563B21A79D5AA00C31329 /* DBTimeRangeItem.m */,
 				727563941A7820A700C31329 /* DBTagItem.h */,
 				727563951A7820A700C31329 /* DBTagItem.m */,
 				72D3C00D1A7320C400648A67 /* DBTreeItemAddNew.h */,
@@ -432,12 +442,14 @@
 				727563961A7820A700C31329 /* DBTagItem.m in Sources */,
 				72D3C0051A71A85B00648A67 /* TypManager.m in Sources */,
 				72D3BFFC1A71749300648A67 /* DBTableItem.m in Sources */,
+				727563B31A79D5AA00C31329 /* DBTimeRangeItem.m in Sources */,
 				727563A31A79496E00C31329 /* DBCellManager.m in Sources */,
 				72D3C0001A71774500648A67 /* DBTreeCell.m in Sources */,
 				727563991A78293E00C31329 /* Tag.m in Sources */,
 				727563A01A79354F00C31329 /* DBTagCell.m in Sources */,
 				72D3BFF31A7042F800648A67 /* RATableViewCell.m in Sources */,
 				72D3BFF21A7042F800648A67 /* RADataObject.m in Sources */,
+				727563B01A79D20300C31329 /* DBItemManager.m in Sources */,
 				72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

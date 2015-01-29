@@ -12,5 +12,4 @@
 
 @interface DBTagCell : DBTreeCell
 @property(weak, nonatomic) Tag* tagObj;
-@property(nonatomic) NSUInteger treeLvl;
 @end

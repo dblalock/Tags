@@ -115,6 +115,7 @@ void shrinkTextFieldToFit(UITextField* field) {
 }
 
 -(void) setupWithItem:(DBTableItem*)item atLevel:(NSUInteger)lvl expanded:(BOOL)expanded {
+	self.treeLvl = lvl;
 	[self setupWithTitle:item.name level:lvl numChildren:item.children.count];
 }
 

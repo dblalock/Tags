@@ -35,6 +35,7 @@
 
 @property(nonatomic) BOOL wantsUtilityButtons;
 @property(nonatomic) NSUInteger preferredRowHeight;
+@property(nonatomic) NSUInteger treeLvl;
 @property(weak, nonatomic) id<DBTreeCellDelegate> treeDelegate;
 
 //@property(nonatomic) BOOL requiresSetup;
