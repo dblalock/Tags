@@ -20,7 +20,7 @@
 #import "Typ.h"
 #import "Tag.h"
 
-#import "DBCellManager.h"
+//#import "DBCellManager.h"
 #import "DBItemManager.h"
 
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
@@ -34,20 +34,8 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) viewDidLoad {
 	[super viewDidLoad];
 	
-	// register all the nibs we might use
-	NSDictionary* ids2nibs = reuseIdsToNibs();
-	for (NSString* Id in [ids2nibs allKeys]) {
-		[self.treeView registerNib:ids2nibs[Id] forCellReuseIdentifier:Id];
-	}
-	
-	// TEST: now that these are in the manager dict, will it work?
-		// apparently not...
-		// ah, that makes sense because this is using [DBTagItem reuseIdentifier], which is != [DBTableItem reuseIdenitfier]
-			// the question is why this identifier is needed...
-//	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTagItem reuseIdentifier]];		// tagItem
-
-//	self.data = [getAllTagItems() mutableCopy];
-	self.data = [defaultTagItems() mutableCopy];
+	self.data = [getAllTagItems() mutableCopy];
+//	self.data = [defaultTagItems() mutableCopy];
 	for (DBTagItem* item in self.data) {
 		item.tagDelegate = self;
 	}
@@ -56,6 +44,16 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 											 selector: @selector(notifiedTypSelected:)
 												 name: kNotificationTypSelected
 											   object:nil];
+}
+
+-(void) viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	self.navigationController.navigationBarHidden = YES;
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	self.navigationController.navigationBarHidden = NO;
 }
 
 -(void) didReceiveMemoryWarning {
@@ -69,6 +67,7 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 -(UITableViewCell*) treeView:(RATreeView *)treeView cellForItem:(id)item {
 	DBTreeCell* cell = dequeCellForTreeViewItem(treeView, item);
+	NSLog(@"dequed cell of class: %@\n\n", [cell class]);
 
 	// rest is just adding utility buttons
 	if (! cell.wantsUtilityButtons) return cell;
@@ -123,11 +122,25 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	}
 }
 
+//- (void)swipeableTableViewCell:(SWTableViewCell *)cell scrollingToState:(SWCellState)state {
+//	switch (state) {
+//		case kCellStateCenter:
+//			break;
+//		case kCellStateLeft:
+//		case kCellStateRight:
+//
+//		default:
+//			break;
+//	}
+//}
+
 // ================================================================
 #pragma mark DBTagItem Delegate
 // ================================================================
 
 -(void) itemDidChange:(DBTagItem*)item {
+//	DBTreeCell* cell = [self.treeView cellForItem:item];
+//	if (cell.cellState == kCellStateCenter) return;	//private property of SWTableViewCell
 	[self.treeView reloadRowsForItems:@[item] withRowAnimation:RATreeViewRowAnimationNone];
 }
 
@@ -168,8 +181,9 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 }
 
 -(void)notifiedTypSelected:(NSNotification*)notification {
-	if (! self.presentedViewController) return;		//TODO slightly more robust check
-	[self dismissViewControllerAnimated:YES completion:nil];
+//	if (! self.presentedViewController) return;		//TODO slightly more robust check
+//	[self dismissViewControllerAnimated:YES completion:nil];
+	[self.navigationController popToViewController:self animated:YES];
 	Typ* typ = extractTypFromNotification(notification);
 	[self addItemOfTyp:typ];
 }
@@ -196,7 +210,9 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	// to be a member of this viewcontroller class; see:
 	// http://stackoverflow.com/a/6395750/1153180
 	UIViewController* cntrl = [[FirstViewController alloc] initWithNibName:@"EmptyView" bundle:nil];
-	[self presentViewController:cntrl animated:YES completion:nil];
+	cntrl.hidesBottomBarWhenPushed = YES;
+	[self.navigationController pushViewController:cntrl animated:YES];
+//	[self presentViewController:cntrl animated:YES completion:nil];
 }
 
 -(void) addRootItem {

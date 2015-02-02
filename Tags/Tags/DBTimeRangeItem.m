@@ -8,6 +8,8 @@
 
 #import "DBTimeRangeItem.h"
 
+#import <RMMapper.h>	// to exclude properties
+
 #import "Tag.h"
 #import "Typ.h"
 
@@ -84,7 +86,7 @@ static const BOOL kStartRecordingWhenCreated = YES;
 														 selector:@selector(incrementRecordingTime:)
 														 userInfo:nil
 														  repeats:YES];
-	} else if (_recordingTimer.isValid) {
+	} else if ([_recordingTimer isValid]) {
 		[_recordingTimer invalidate];
 	}
 }
@@ -109,6 +111,10 @@ NSDateComponents* diffBetweenDates(NSDate *start, NSDate* end) {
 	| NSCalendarUnitMinute
 	| NSCalendarUnitSecond;
 	return [calendar components:flags fromDate:start toDate:end options:0];
+}
+
+-(NSArray*) rm_excludedProperties {
+	return @[@"recordingTimer"];
 }
 
 @end

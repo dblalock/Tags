@@ -51,6 +51,9 @@ void uploadTextFile(NSString* localPath, NSString* dropboxPath, void(^responseHa
 		queue = [[NSOperationQueue alloc] init];
 	}
 	
+	// TODO this just segfaulted, with neither request nor queue nil;
+	// seemingly hadn't executed block cuz wouldn't tell me values of
+	// any of its vars. Err code = 9.
 	[NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
 		if (error) {
 			NSLog(@"Upload file: Error: %@", error);

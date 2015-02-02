@@ -13,7 +13,7 @@ static NSString *const kReservedPrefixAndSuffixChar = @"_";
 static NSString *const kSubtypeSeparator = @".";
 static NSString *const kSubtypeSeparatorReplacement = @";";
 
-#define DEFAULT_DEFAULT @(NAN)	// it is *really* important that this != nil
+#define DEFAULT_DEFAULT @(NAN)	// important that this != nil...I think
 #define TYP_DEFAULT_MUTABLE	([MutableTyp typWithName:@"TypDefaultMutable" parents:nil default:@""])
 #define TYP_DEFAULT	([Typ typWithName:@"TypDefault" parents:nil default:@""])
 #define TYP_BOOL	([Typ typWithName:@"TypBool"])
@@ -122,7 +122,12 @@ NSArray* sortTyps(NSArray* typs) {
 
 -(BOOL) isEqual:(id)object {
 	if (! [object isMemberOfClass:[self class]]) return NO;
-	return [self.ID.UUIDString isEqualToString: ((Typ*)object).ID.UUIDString];
+	Typ* t = (Typ*) object;
+	return [self.ID.UUIDString isEqualToString: t.ID.UUIDString];
+//	if (! [self.fields count] && ! [t.fields count]) {
+//		return [self.ID.UUIDString isEqualToString: t.ID.UUIDString];
+//	}
+//	return [self.fields isEqualToDictionary:t.fields];
 }
 
 -(NSUInteger) hash {
@@ -268,6 +273,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_DEFAULT_MUTABLE;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+								   @"ED035970-D75C-4EA5-AE8D-C9518003AE57"];
 	});
 	return sharedInstance;
 }
@@ -277,6 +284,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_DEFAULT;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"11248946-CB78-461E-9B1A-2CF52EB998FC"];
 	});
 	return sharedInstance;
 }
@@ -286,6 +295,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_BOOL;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"27EE7962-025E-4CB6-B37F-F994EE537BBD"];
 	});
 	return sharedInstance;
 }
@@ -294,6 +305,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_RATING;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"4B578250-3BEA-49D0-BE0F-48CFF1E2212E"];
 	});
 	return sharedInstance;
 }
@@ -302,6 +315,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_COUNT;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"C2068901-121C-4B3A-9950-0124489A5762"];
 	});
 	return sharedInstance;
 }
@@ -310,6 +325,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_AMOUNT;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"2D2AFC4A-2BBA-4BAD-A154-0B49BA483533"];
 	});
 	return sharedInstance;
 }
@@ -318,6 +335,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_TIME;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"6387B7D0-58C1-4C21-B1D7-3BD61B51B5AF"];
 	});
 	return sharedInstance;
 }
@@ -326,6 +345,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_DATETIME;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"0B29519A-C64E-452F-8764-6FAFF36E7790"];
 	});
 	return sharedInstance;
 }
@@ -334,6 +355,8 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = TYP_STRING;
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"0960754D-AE03-46CC-A806-078EA0221965"];
 	});
 	return sharedInstance;
 }
@@ -344,6 +367,8 @@ NSArray* sortTyps(NSArray* typs) {
 			 [self typRating],
 			 [self typCount],
 			 [self typAmount],
+			 [self typTime],
+			 [self typDatetime],
 			 [self typString],
 			 ];
 }
@@ -365,6 +390,11 @@ NSArray* sortTyps(NSArray* typs) {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		sharedInstance = [MutableTyp typWithName:@"Time Range"];
+		// normally derived typs don't need a special id, but since we check
+		// for instances of this typ when determining which nib to use,
+		// it has be fixed across app runs, and thus set ahead of time
+		sharedInstance.ID = [[NSUUID alloc] initWithUUIDString:
+							 @"639BEF9D-D7C4-442B-BBEB-A1F953748BD0"];
 		[sharedInstance addField:kStartTimeFieldName typ:[Typ typDatetime]];
 		[sharedInstance addField:kEndTimeFieldName typ:[Typ typDatetime]];
 	});

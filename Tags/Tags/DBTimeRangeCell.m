@@ -21,7 +21,6 @@
 -(void) setupWithItem:(DBTableItem*)item atLevel:(NSUInteger)lvl expanded:(BOOL)expanded {
 	[super setupWithItem:item atLevel:lvl expanded:expanded];
 	
-	NSLog(@"timeRangeCell: item = %@", item);
 	assert([item isKindOfClass:[DBTimeRangeItem class]]);
 	self.itm = (DBTimeRangeItem*)item;
 
@@ -53,8 +52,8 @@
 
 NSString* formatDuration(NSDateComponents* components) {
 //	return [NSString stringWithFormat:@"%2d:%02d", components.hour, components.minute];
-	return [NSString stringWithFormat:@"%2d:%02d:%02d",
-			components.hour, components.minute, components.second];
+	return [NSString stringWithFormat:@"%2ld:%02ld:%02ld",
+			(long)components.hour, (long)components.minute, (long)components.second];
 }
 
 @end

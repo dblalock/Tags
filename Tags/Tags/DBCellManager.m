@@ -13,6 +13,7 @@
 
 #import "DBTreeCell.h"
 #import "DBTableItem.h"
+#import "DBTreeItemAddNew.h"
 //#import "DBTagItem.h"		// ideally, never create this generic cell
 
 static NSString *const kReuseIdentifierDefault = @"reuseIdDefault";
@@ -37,7 +38,7 @@ static NSString *const kReuseIdentifierDefault = @"reuseIdDefault";
 // standardNib(); this means we really just need to map Typs to cell
 // classes.
 
-NSString* rawReuseIdentifierForTyp(Typ* typ) {
+id rawReuseIdentifierForTyp(Typ* typ) {
 	return [typ uniqueIDString];
 }
 
@@ -52,6 +53,7 @@ NSDictionary* reuseIdsToNibNames() {
 		dict = 	@{
 				  //TODO add in stuff for TreeCell, DBTableItem, etc, not just stuff for typs
 				  kReuseIdentifierDefault:							@"DBTagCell",
+				  [DBTreeItemAddNew reuseIdentifier]:				@"DBTreeCellAddNew",
 				  [DBTableItem reuseIdentifier]:					@"DBTreeCell",
 //				  [DBTagItem reuseIdentifier]:						@"DBTagCell",
 //				  reuseIdentifierForTyp([Typ typString]):		@"DBTextCell",
@@ -79,12 +81,14 @@ NSDictionary* reuseIdsToNibs() {
 NSString* reuseIdentifierForTyp(Typ* typ) {
 	NSString* Id = rawReuseIdentifierForTyp(typ);
 	NSDictionary* ids2names = reuseIdsToNibNames();
+	NSLog(@"ids2names: %@", ids2names);
 	
 	if (ids2names[Id]) return Id;
 	
 	for (Typ* p in [typ allParents]) {
 		Id = rawReuseIdentifierForTyp(p);
 		if (ids2names[Id]) return Id;
+		NSLog(@"no reuse Id for typ %@\nwith Id: %@", p, Id);
 	}
 	
 	return kReuseIdentifierDefault;

@@ -8,6 +8,8 @@
 
 #import "DBTableItem.h"
 
+#import "NSObject+RMArchivable.h"	// automatically does encode/decode
+
 #import "Typ.h"
 
 @interface DBTypItem : DBTableItem

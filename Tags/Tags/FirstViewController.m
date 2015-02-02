@@ -32,7 +32,7 @@ CGRect fullScreenFrame() {
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
+	
 	// this just adds a background behind the status bar, because the treeview
 	// hasn't been resized to start below it yet; it seems to stick around even
 	// after the treeview is resized
@@ -40,10 +40,36 @@ CGRect fullScreenFrame() {
 
 	UINib* typNib = [UINib nibWithNibName:@"DBTypCell" bundle:nil];
 	[self.treeView registerNib:typNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
-
+	
 //	self.data = [getAllTypItems() mutableCopy];
 	self.data = [defaultTypItems() mutableCopy];
 }
+
+//- (void)viewWillAppear:(BOOL)animated {
+//	[super viewWillAppear:animated];
+//
+//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+//	CGRect viewBounds = self.view.bounds;
+////	viewBounds.size.height -= tabBarHeight;
+//	self.treeView.frame = viewBounds;
+//	
+//	// both of these are just 0...
+////	NSLog(@"top layout guide height: %g", self.topLayoutGuide.length);
+////	NSLog(@"btm layout guide height: %g", self.bottomLayoutGuide.length);
+//
+////	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+////	float statusBarHeight = statusBarViewRect.size.height;
+//	
+//////	NSLog(@"tabBarHeight = %g", tabBarHeight);
+////	
+////	if ([self.navigationController isNavigationBarHidden]) {
+////		viewBounds.origin.y += statusBarHeight;
+////		viewBounds.size.height -= tabBarHeight + statusBarHeight;
+////	} else {
+////		
+////	}
+//
+//}
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
@@ -158,6 +184,7 @@ CGRect fullScreenFrame() {
 -(void) treeCell:(DBTreeCell *)cell didSetNameTo:(NSString *)name {
 	DBTableItem* item = [self.treeView itemForCell:cell];
 	item.name = name;
+	[self saveItems];
 }
 
 -(void) treeCelldidTapMainButton:(DBTreeCell*)cell {
@@ -179,7 +206,6 @@ CGRect fullScreenFrame() {
 }
 
 -(void) addRootItem {
-//	DBTableItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:nil];
 	DBTableItem *newChild = [[DBTypItem alloc] initWithName:kDefaultChildName parent:nil];
 	[self.data addObject:newChild];
 	
@@ -241,3 +267,4 @@ void notifyItemSelected(DBTypItem* item) {
 //}
 
 @end
+//

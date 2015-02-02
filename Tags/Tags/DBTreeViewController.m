@@ -10,6 +10,7 @@
 
 #import <RATreeView.h>
 
+#import "DBCellManager.h"
 #import "DBTreeCell.h"
 #import "DBTreeCellAddNew.h"
 #import "DBTableItem.h"
@@ -22,6 +23,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+	
+//	self.edgesForExtendedLayout = UIRe;
 
 	// we create a temporary treeview object so that we don't assign
 	// directly to a weak property until it's been retained by self.view...I think
@@ -34,9 +37,15 @@
 	self.treeView.separatorStyle = RATreeViewCellSeparatorStyleSingleLineEtched;
 	self.treeView.allowsSelection = NO;		// will only get every other collapse cmd otherwise
 
+	// register all the nibs we might use
+	NSDictionary* ids2nibs = reuseIdsToNibs();
+	for (NSString* Id in [ids2nibs allKeys]) {
+		[self.treeView registerNib:ids2nibs[Id] forCellReuseIdentifier:Id];
+	}
+	
 	// my tableviewcell nib
-	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
-	[self.treeView registerNib:[DBTreeCellAddNew standardNib] forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
+//	[self.treeView registerNib:[DBTreeCell standardNib] forCellReuseIdentifier:[DBTableItem reuseIdentifier]];	// tableItem
+//	[self.treeView registerNib:[DBTreeCellAddNew standardNib] forCellReuseIdentifier:[DBTreeItemAddNew reuseIdentifier]];// add new button
 
 	// dealing with keyboard covering crap
 	[[NSNotificationCenter defaultCenter] addObserver: self
@@ -48,18 +57,41 @@
 }
 
 // this just makes it not be behind the status bar + tab bar
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-
-	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
-	float statusBarHeight = statusBarViewRect.size.height;
-	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-//	NSLog(@"tabBarHeight = %g", tabBarHeight);
-	CGRect viewBounds = self.view.bounds;
-	viewBounds.origin.y = statusBarHeight;
-	viewBounds.size.height -= tabBarHeight + statusBarHeight;
-	self.treeView.frame = viewBounds;
-}
+//EDIT: whatever I put here only makes things worse...
+//- (void)viewWillAppear:(BOOL)animated {
+//	[super viewWillAppear:animated];
+//	self.treeView.bounds = self.view.bounds;	// makes everything magically work
+		//except that it still scrolls under the status bar, dangit
+	
+//	CGRect bounds = self.treeView.frame;
+//	if (bounds.origin.y == 0) {
+//		CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+//		float statusBarHeight = statusBarViewRect.size.height;
+//		bounds.origin.y = statusBarHeight;
+//		bounds.size.height -= statusBarHeight;
+//	}
+//	self.treeView.frame = bounds;
+	
+//	NSLog(@"treeview frame: %@", NSStringFromCGRect(self.treeView.frame));
+//}
+//
+//	// both of these are just 0...
+////	NSLog(@"top layout guide height: %g", self.topLayoutGuide.length);
+////	NSLog(@"btm layout guide height: %g", self.bottomLayoutGuide.length);
+//	
+//	CGRect statusBarViewRect = [[UIApplication sharedApplication] statusBarFrame];
+//	float statusBarHeight = statusBarViewRect.size.height;
+//	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+////	NSLog(@"tabBarHeight = %g", tabBarHeight);
+//	CGRect viewBounds = self.view.bounds;
+//	if ([self.navigationController isNavigationBarHidden]) {
+//		viewBounds.origin.y += statusBarHeight;
+//		viewBounds.size.height -= tabBarHeight + statusBarHeight;
+//	} else {
+//		viewBounds.size.height -= tabBarHeight;
+//	}
+//	self.treeView.frame = viewBounds;
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -119,6 +151,7 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 	NSInteger lvl = [treeView levelForCellForItem:item];
 	BOOL expanded = [treeView isCellForItemExpanded:item];
 
+	NSLog(@"dequing cell for item of class %@ with identifier: %@", [item class], [item reuseIdentifier]);
 	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
 
 	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
