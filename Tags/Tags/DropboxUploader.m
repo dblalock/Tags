@@ -47,24 +47,29 @@ void uploadTextFile(NSString* localPath, NSString* dropboxPath, void(^responseHa
 	
 	// not at all the right way to initialize an operation queue
 	static NSOperationQueue* queue = nil;
-	if (!queue) {
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
 		queue = [[NSOperationQueue alloc] init];
-	}
+	});
 	
 	// TODO this just segfaulted, with neither request nor queue nil;
 	// seemingly hadn't executed block cuz wouldn't tell me values of
 	// any of its vars. Err code = 9.
-	[NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-		if (error) {
-			NSLog(@"Upload file: Error: %@", error);
-		} else {
-			//			NSLog(@"Upload file: Success: %@ %@", response, [[NSString alloc] initWithData:responseObject
-			//																	 encoding:NSUTF8StringEncoding]);
-		}
-		if (responseHandler) {
-			responseHandler(response, responseObject, error);
-		}
-	}];
+		// EDIT: naively added a synchronized block here--maybe that will prevent this?
+			// seems likely cuz this gets called from lots of different threads
+	@synchronized(queue) {
+		[NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+			if (error) {
+				NSLog(@"Upload file: Error: %@", error);
+			} else {
+				//			NSLog(@"Upload file: Success: %@ %@", response, [[NSString alloc] initWithData:responseObject
+				//																	 encoding:NSUTF8StringEncoding]);
+			}
+			if (responseHandler) {
+				responseHandler(response, responseObject, error);
+			}
+		}];
+	}
 }
 
 // ================================================================

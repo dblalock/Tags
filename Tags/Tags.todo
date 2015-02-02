@@ -55,8 +55,8 @@ make tags table / screen
 		X add everything via new logmanager class
 		make sure it's actually working
 
-//	SELF: make DBTagItem::reuseIdentifier use the func that searches for an appropriate parent typ identifier
-	// if it isn't already
+	have second updates not refresh row
+		KVO on time tag values
 
 	ability to duplicate tags
 		X copy tag typ

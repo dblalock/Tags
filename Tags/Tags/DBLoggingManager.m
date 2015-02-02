@@ -13,6 +13,7 @@
 #import "DBDataLogger.h"
 #import "DBPebbleMonitor.h"
 #import "DBSensorMonitor.h"
+#import "DBBackgrounder.h"
 
 #import "MiscUtils.h"
 
@@ -59,9 +60,8 @@ NSString* loggingSubdir() {
 @property (strong, nonatomic) DBDataLogger* dataLogger;
 @property (strong, nonatomic) DBSensorMonitor* sensorMonitor;
 @property (strong, nonatomic) DBPebbleMonitor* pebbleMonitor;
-
+@property (strong, nonatomic) DBBackgrounder* backgrounder;
 @end
-
 
 @implementation DBLoggingManager
 
@@ -100,6 +100,9 @@ NSString* loggingSubdir() {
 		_sensorMonitor.sendOnlyIfDifferent = YES;	//TODO want to still send it, but have datalogger ignore
 		
 		_pebbleMonitor = [[DBPebbleMonitor alloc] init];
+		
+		// enable background execution by retaining an intance of this class
+		_backgrounder = [[DBBackgrounder alloc] init];
 	}
 	return self;
 }
@@ -183,12 +186,14 @@ NSString* loggingSubdir() {
 	[_pebbleMonitor startWatchApp];
 	[_dataLogger startLog];
 	[_sensorMonitor poll];
+	[_backgrounder setBackgroundEnabled:YES];
 }
 
 -(void) stopRecording {
 	_recording = NO;
 	[_dataLogger endLog];
 	[_pebbleMonitor stopWatchApp];
+	[_backgrounder setBackgroundEnabled:NO];
 	// TODO stop sensor logging also, esp. GPS
 }
 

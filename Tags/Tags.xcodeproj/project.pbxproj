@@ -53,6 +53,8 @@
 		72D3C00C1A731AD600648A67 /* DBTreeCellAddNew.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72D3C00B1A731AD600648A67 /* DBTreeCellAddNew.xib */; };
 		72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */; };
 		72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */; };
+		72E205BC1A7FE82000D4CA24 /* bg_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */; };
+		72E205BF1A7FEA4500D4CA24 /* DBBackgrounder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +147,9 @@
 		72D3C00E1A7320C400648A67 /* DBTreeItemAddNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeItemAddNew.m; sourceTree = "<group>"; };
 		72D3C0101A7323DC00648A67 /* DBTreeCellAddNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTreeCellAddNew.h; sourceTree = "<group>"; };
 		72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTreeCellAddNew.m; sourceTree = "<group>"; };
+		72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bg_sound.mp3; sourceTree = "<group>"; };
+		72E205BD1A7FEA4500D4CA24 /* DBBackgrounder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBBackgrounder.h; sourceTree = "<group>"; };
+		72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBBackgrounder.m; sourceTree = "<group>"; };
 		9AEB05530126F6F8C5CE903F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -210,6 +215,8 @@
 				727563C01A7AA3A100C31329 /* DropboxUploader.m */,
 				727563C61A7AB79300C31329 /* DBLoggingManager.h */,
 				727563C71A7AB79300C31329 /* DBLoggingManager.m */,
+				72E205BD1A7FEA4500D4CA24 /* DBBackgrounder.h */,
+				72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */,
 			);
 			name = Logging;
 			sourceTree = "<group>";
@@ -270,6 +277,7 @@
 		72D3BFC21A70053800648A67 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */,
 				72D3BFC31A70053800648A67 /* Info.plist */,
 				72D3BFC41A70053800648A67 /* main.m */,
 			);
@@ -473,6 +481,7 @@
 				72D3BFD31A70053800648A67 /* Images.xcassets in Resources */,
 				727563AD1A79627800C31329 /* DBTagCell.xib in Resources */,
 				7275639D1A788D3E00C31329 /* DBTypCell.xib in Resources */,
+				72E205BC1A7FE82000D4CA24 /* bg_sound.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +546,7 @@
 				727563C51A7AA41C00C31329 /* DropboxInfo.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
+				72E205BF1A7FEA4500D4CA24 /* DBBackgrounder.m in Sources */,
 				727563BA1A7A9FCF00C31329 /* FileUtils.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
 				727563961A7820A700C31329 /* DBTagItem.m in Sources */,

@@ -543,6 +543,8 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //--------------------------------------------------------------
 
 -(void) flushUpToTimeStamp:(timestamp_t)ms {
+	NSLog(@"datalogger: flushing data");
+	
 	@synchronized(self) {
 		if (! [_data count]) return;
 

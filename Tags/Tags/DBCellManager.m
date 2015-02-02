@@ -81,14 +81,14 @@ NSDictionary* reuseIdsToNibs() {
 NSString* reuseIdentifierForTyp(Typ* typ) {
 	NSString* Id = rawReuseIdentifierForTyp(typ);
 	NSDictionary* ids2names = reuseIdsToNibNames();
-	NSLog(@"ids2names: %@", ids2names);
+//	NSLog(@"ids2names: %@", ids2names);
 	
 	if (ids2names[Id]) return Id;
 	
 	for (Typ* p in [typ allParents]) {
 		Id = rawReuseIdentifierForTyp(p);
 		if (ids2names[Id]) return Id;
-		NSLog(@"no reuse Id for typ %@\nwith Id: %@", p, Id);
+//		NSLog(@"no reuse Id for typ %@\nwith Id: %@", p, Id);
 	}
 	
 	return kReuseIdentifierDefault;
