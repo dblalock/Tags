@@ -372,7 +372,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	// thing changed
 	if (numChangedVals <= 1 && !force) {
 		_samplesSinceWriting++;
-		NSLog(@"writeSampleValues: not writing output for the %dth time", _samplesSinceWriting);
+//		NSLog(@"writeSampleValues: not writing output for the %dth time", _samplesSinceWriting);
 		return;
 	}
 	
@@ -388,9 +388,9 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	NSString* line = [NSString stringWithFormat:@"%@%@\n", sinceUpdateStr, valuesStr];
 	
 	// debug output
-	if (force) {
-		NSLog(@"being forced to write sample");
-	}
+//	if (force) {
+//		NSLog(@"being forced to write sample");
+//	}
 	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
 	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
 
@@ -410,8 +410,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 #pragma mark writeData()
 //--------------------------------------------------------------
 
--(void) resetCurrentSampleValues {	//TODO uncomment this
-	NSLog(@"resetting current sample values");
+-(void) resetCurrentSampleValues {
 	timestamp_t t = getTimeStampForSampleValues(_currentSampleValues);
 	_currentSampleValues = [_defaultValues mutableCopy];
 	setTimeStampForSampleValues(_currentSampleValues, t);
@@ -543,8 +542,6 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //--------------------------------------------------------------
 
 -(void) flushUpToTimeStamp:(timestamp_t)ms {
-	NSLog(@"datalogger: flushing data");
-	
 	@synchronized(self) {
 		if (! [_data count]) return;
 

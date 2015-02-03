@@ -10,6 +10,7 @@
 
 #import <RATreeView.h>
 #import <SWTableViewCell.h>
+#import "MZDayPicker.h"
 
 #import "FirstViewController.h"
 
@@ -26,7 +27,10 @@
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
-@interface SecondViewController () <SWTableViewCellDelegate, DBTagItemDelegate>
+@interface SecondViewController () <SWTableViewCellDelegate, DBTagItemDelegate,
+	MZDayPickerDataSource, MZDayPickerDelegate>
+@property (strong, nonatomic) MZDayPicker* dayPicker;
+@property (strong, nonatomic) NSDateFormatter* dayNameFormatter;
 @end
 
 @implementation SecondViewController
@@ -34,20 +38,59 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) viewDidLoad {
 	[super viewDidLoad];
 	
+	// all of these apparently get ignored, except that they have to set
+	// everything to not be 0 initially
+	float statusBarHeight = 20.0f;
+	float dayPickerHeight = 40.0f;
+	float dayPickerCellWidth = 50.0f;
+	float dayPickerCellHeight = 50.0f;
+	float dayCellFooterHeight = 50.0f;
+	_dayPicker = [[MZDayPicker alloc] initWithFrame:CGRectMake(0, statusBarHeight,
+															   self.view.bounds.size.width,
+															   dayPickerHeight + statusBarHeight)
+										dayCellSize:CGSizeMake(dayPickerCellWidth, dayPickerCellHeight)
+								dayCellFooterHeight:dayCellFooterHeight];
+	[self.view addSubview:_dayPicker];
+	_dayPicker.delegate = self;
+	_dayPicker.dataSource = self;
+	_dayPicker.dayNameLabelFontSize = 12.0f;
+	_dayPicker.dayLabelFontSize = 18.0f;
+//	[self.dayPicker setStartDate:[NSDate dateFromDay:28 month:9 year:2013] endDate:[NSDate dateFromDay:5 month:10 year:2013]];
+	[_dayPicker setCurrentDate:[NSDate date] animated:NO];
+	
+	_dayNameFormatter = [[NSDateFormatter alloc] init];
+	[_dayNameFormatter setDateFormat:@"EE"];
+	
 	self.data = [getAllTagItems() mutableCopy];
 //	self.data = [defaultTagItems() mutableCopy];
 	for (DBTagItem* item in self.data) {
 		item.tagDelegate = self;
 	}
 	
-	[[NSNotificationCenter defaultCenter] addObserver: self
-											 selector: @selector(notifiedTypSelected:)
-												 name: kNotificationTypSelected
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(notifiedTypSelected:)
+												 name:kNotificationTypSelected
 											   object:nil];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	
+	// no really, be below the status bar
+	CGRect dayFrame = self.dayPicker.frame;
+	dayFrame.origin.y = 20;
+//	dayFrame.size.height = 60;	// cells pick the height they want, so this
+//								// just defines where the view below it can start;
+//								// this is the correct height to not be hideous
+	self.dayPicker.frame = dayFrame;
+	
+	// resize treeview to not be under day picker
+	CGRect frame = self.treeView.frame;
+	frame.origin.y += dayFrame.size.height;
+	frame.size.height -= dayFrame.size.height;
+	self.treeView.frame = frame;
+	
+	// hide navigation bar
 	self.navigationController.navigationBarHidden = YES;
 }
 
@@ -67,7 +110,7 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 -(UITableViewCell*) treeView:(RATreeView *)treeView cellForItem:(id)item {
 	DBTreeCell* cell = dequeCellForTreeViewItem(treeView, item);
-	NSLog(@"dequed cell of class: %@\n\n", [cell class]);
+//	NSLog(@"dequed cell of class: %@\n\n", [cell class]);
 
 	// rest is just adding utility buttons
 	if (! cell.wantsUtilityButtons) return cell;
@@ -152,6 +195,14 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 //	DBTableItem* item = [self.treeView itemForCell:cell];
 //	item.name = name;
 //}
+
+// ================================================================
+#pragma mark MZDayPicker Data Source methods
+// ================================================================
+
+-(NSString*) dayPicker:(MZDayPicker*) dayPicker titleForCellDayNameLabelInDay:(MZDay*)day {
+	return [self.dayNameFormatter stringFromDate:day.date];
+}
 
 // ================================================================
 #pragma mark UIActionSheetDelegate

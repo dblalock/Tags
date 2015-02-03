@@ -55,6 +55,10 @@
 		72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */; };
 		72E205BC1A7FE82000D4CA24 /* bg_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */; };
 		72E205BF1A7FEA4500D4CA24 /* DBBackgrounder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */; };
+		72FDB60D1A812D1F00721B3C /* MZDay.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB6081A812D1F00721B3C /* MZDay.m */; };
+		72FDB60E1A812D1F00721B3C /* MZDayPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB60A1A812D1F00721B3C /* MZDayPicker.m */; };
+		72FDB60F1A812D1F00721B3C /* MZDayPickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB60C1A812D1F00721B3C /* MZDayPickerCell.m */; };
+		72FDB6121A812EEB00721B3C /* LICENSE_MZDatePicker in Resources */ = {isa = PBXBuildFile; fileRef = 72FDB6111A812EEB00721B3C /* LICENSE_MZDatePicker */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,6 +154,13 @@
 		72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bg_sound.mp3; sourceTree = "<group>"; };
 		72E205BD1A7FEA4500D4CA24 /* DBBackgrounder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBBackgrounder.h; sourceTree = "<group>"; };
 		72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBBackgrounder.m; sourceTree = "<group>"; };
+		72FDB6071A812D1F00721B3C /* MZDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZDay.h; sourceTree = "<group>"; };
+		72FDB6081A812D1F00721B3C /* MZDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZDay.m; sourceTree = "<group>"; };
+		72FDB6091A812D1F00721B3C /* MZDayPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZDayPicker.h; sourceTree = "<group>"; };
+		72FDB60A1A812D1F00721B3C /* MZDayPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZDayPicker.m; sourceTree = "<group>"; };
+		72FDB60B1A812D1F00721B3C /* MZDayPickerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZDayPickerCell.h; sourceTree = "<group>"; };
+		72FDB60C1A812D1F00721B3C /* MZDayPickerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZDayPickerCell.m; sourceTree = "<group>"; };
+		72FDB6111A812EEB00721B3C /* LICENSE_MZDatePicker */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_MZDatePicker; sourceTree = "<group>"; };
 		9AEB05530126F6F8C5CE903F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0029EDFA08E0B94C5A29C49 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -269,6 +280,7 @@
 				72D3BFD21A70053800648A67 /* Images.xcassets */,
 				72D3BFD41A70053800648A67 /* LaunchScreen.xib */,
 				7275639A1A7881B800C31329 /* EmptyView.xib */,
+				72FDB6101A812D3000721B3C /* MZDayPicker */,
 				72D3BFC21A70053800648A67 /* Supporting Files */,
 			);
 			path = Tags;
@@ -356,6 +368,20 @@
 				727563A81A79530000C31329 /* DBTimeRangeCell.m */,
 			);
 			name = TreeViewCells;
+			sourceTree = "<group>";
+		};
+		72FDB6101A812D3000721B3C /* MZDayPicker */ = {
+			isa = PBXGroup;
+			children = (
+				72FDB6111A812EEB00721B3C /* LICENSE_MZDatePicker */,
+				72FDB6071A812D1F00721B3C /* MZDay.h */,
+				72FDB6081A812D1F00721B3C /* MZDay.m */,
+				72FDB6091A812D1F00721B3C /* MZDayPicker.h */,
+				72FDB60A1A812D1F00721B3C /* MZDayPicker.m */,
+				72FDB60B1A812D1F00721B3C /* MZDayPickerCell.h */,
+				72FDB60C1A812D1F00721B3C /* MZDayPickerCell.m */,
+			);
+			name = MZDayPicker;
 			sourceTree = "<group>";
 		};
 		A0BA1AF16B07CE8A08102499 /* Frameworks */ = {
@@ -480,6 +506,7 @@
 				72D3C0021A7185AB00648A67 /* DBTreeCell.xib in Resources */,
 				72D3BFD31A70053800648A67 /* Images.xcassets in Resources */,
 				727563AD1A79627800C31329 /* DBTagCell.xib in Resources */,
+				72FDB6121A812EEB00721B3C /* LICENSE_MZDatePicker in Resources */,
 				7275639D1A788D3E00C31329 /* DBTypCell.xib in Resources */,
 				72E205BC1A7FE82000D4CA24 /* bg_sound.mp3 in Resources */,
 			);
@@ -536,12 +563,15 @@
 				727563A61A7952E800C31329 /* DBTimeCell.m in Sources */,
 				727563A91A79530000C31329 /* DBTimeRangeCell.m in Sources */,
 				72D3C00F1A7320C400648A67 /* DBTreeItemAddNew.m in Sources */,
+				72FDB60D1A812D1F00721B3C /* MZDay.m in Sources */,
 				727563D01A7AB83800C31329 /* DBPebbleMonitor.m in Sources */,
 				727563D11A7AB83800C31329 /* DBSensorMonitor.m in Sources */,
 				72D3BFCE1A70053800648A67 /* SecondViewController.m in Sources */,
 				727563BC1A7A9FCF00C31329 /* TimeUtils.m in Sources */,
+				72FDB60F1A812D1F00721B3C /* MZDayPickerCell.m in Sources */,
 				727563C11A7AA3A100C31329 /* DropboxUploader.m in Sources */,
 				72D3BFC81A70053800648A67 /* AppDelegate.m in Sources */,
+				72FDB60E1A812D1F00721B3C /* MZDayPicker.m in Sources */,
 				7275638E1A77421A00C31329 /* DBTreeViewController.m in Sources */,
 				727563C51A7AA41C00C31329 /* DropboxInfo.m in Sources */,
 				72D3BFCB1A70053800648A67 /* FirstViewController.m in Sources */,

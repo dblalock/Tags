@@ -50,7 +50,7 @@ make tags table / screen
 		datetimes as unix timestamps
 		write out a file
 		upload it to dropbox
-	get it actually persisting stuff across app launches
+	X get it actually persisting stuff across app launches
 	integrate iosense stuff
 		X add everything via new logmanager class
 		make sure it's actually working

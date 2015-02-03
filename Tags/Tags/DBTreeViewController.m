@@ -151,7 +151,7 @@ DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item) {
 	NSInteger lvl = [treeView levelForCellForItem:item];
 	BOOL expanded = [treeView isCellForItemExpanded:item];
 
-	NSLog(@"dequing cell for item of class %@ with identifier: %@", [item class], [item reuseIdentifier]);
+//	NSLog(@"dequing cell for item of class %@ with identifier: %@", [item class], [item reuseIdentifier]);
 	DBTreeCell* cell = [treeView dequeueReusableCellWithIdentifier:[item reuseIdentifier]];
 
 	[cell setupWithItem:tableItem atLevel:lvl expanded:expanded];
@@ -296,7 +296,7 @@ CGSize keyboardSize(NSNotification* notification) {
 }
 
 -(void) clickedDeleteCell:(DBTreeCell*)cell {
-	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete tag?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
+	UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:@"Permanently delete item?" delegate:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Delete", nil];
 	sheet.tag = kActionSheetTagDelete;
 	sheet.delegate = self;
 	self.cellInQuestion = cell;

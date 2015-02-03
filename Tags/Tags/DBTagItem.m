@@ -65,7 +65,6 @@
 
 // different reuse identifiers for different tag types
 -(NSString*) reuseIdentifier {
-	NSLog(@"DBTagItem: getting identifier for typ %@", self.tag.typ);
 	return reuseIdentifierForTyp(self.tag.typ);
 }
 
