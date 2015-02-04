@@ -37,6 +37,7 @@
 @property(nonatomic) NSUInteger preferredRowHeight;
 @property(nonatomic) NSUInteger treeLvl;
 @property(weak, nonatomic) id<DBTreeCellDelegate> treeDelegate;
+@property(strong, nonatomic) CAGradientLayer* gradientLayer;
 
 //@property(nonatomic) BOOL requiresSetup;
 

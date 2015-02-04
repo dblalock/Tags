@@ -20,7 +20,6 @@ static const NSUInteger kPreferredRowHeight = 44;
 
 @implementation DBTreeCell
 
-
 - (void)awakeFromNib {
 	[super awakeFromNib];
     // Initialization code
@@ -43,6 +42,51 @@ static const NSUInteger kPreferredRowHeight = 44;
 //    [super setSelected:selected animated:animated];
     // Configure the view for the selected state
 //}
+
+-(void) layoutSubviews {
+	[super layoutSubviews];
+	// ensure the gradient layers occupies the full bounds
+	if (! _gradientLayer) return;
+	_gradientLayer.frame = self.bounds;
+//	self.backgroundColor = [UIColor clearColor];
+//	self.backgroundView = nil;
+}
+
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+	if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+		self.gradientLayer = [self createGradientLayer];
+	}
+	return self;
+}
+
+-(instancetype) initWithCoder:(NSCoder *)aDecoder {
+	if (self = [super initWithCoder:aDecoder]) {
+		self.gradientLayer = [self createGradientLayer];
+	}
+	return self;
+}
+
+-(CAGradientLayer*) createGradientLayer {
+	// add a layer that overlays the cell adding a subtle gradient effect
+//	CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+//	gradientLayer.frame = self.bounds;
+//	gradientLayer.colors = @[(id)[[UIColor colorWithWhite:1.0f alpha:0.9f] CGColor],
+//							  (id)[[UIColor colorWithWhite:1.0f alpha:0.95f] CGColor],
+////							  (id)[[UIColor clearColor] CGColor],
+//							  (id)[[UIColor whiteColor] CGColor],
+//							  (id)[[UIColor colorWithWhite:0.0f alpha:0.9f] CGColor]];
+//	gradientLayer.locations = @[@0.00f, @0.01f, @0.95f, @1.00f];
+//	return gradientLayer;
+	return nil;
+}
+
+-(void) setGradientLayer:(CAGradientLayer*)gradientLayer {
+	if (_gradientLayer) {
+		[_gradientLayer removeFromSuperlayer];
+	}
+	_gradientLayer = gradientLayer;
+	[self.layer insertSublayer:_gradientLayer atIndex:0];
+}
 
 //===============================================================
 #pragma mark IBActions
