@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 D Blalock. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "TimeUtils.h"
 
-typedef int64_t timestamp_t;
+#import <Foundation/Foundation.h>
 
 // ================================================================
 // timestamp_t funcs
@@ -54,7 +54,16 @@ timestamp_t timeStampFromCoreMotionTimeStamp(NSTimeInterval timestamp) {
 }
 
 // ================================================================
-// timestamp_t-agnostic funcs
+// date funcs
+// ================================================================
+
+//NSDate* currentDay() {
+//	return [[NSDate date] dateAtStartOfDay];
+//}
+
+
+// ================================================================
+// other funcs
 // ================================================================
 
 int64_t currentTimeMs() {
@@ -79,24 +88,25 @@ NSDateFormatter* isoDateFormatter() {
 // this behavior)
 NSDateFormatter* isoDateFormatterForFileName() {
 	NSDateFormatter *dateFormatter = isoDateFormatter();
-//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//	NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-//	[dateFormatter setLocale:enUSPOSIXLocale];
-//	[dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
 	[dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH_mm_ssZZZZZ"];
 	return dateFormatter;
 }
 
+NSString* timeStrForDate(NSDate* date) {
+	return [isoDateFormatter() stringFromDate:date];
+}
+
+NSString* timeStrForDateForFileName(NSDate* date) {
+	NSString* str = [isoDateFormatterForFileName() stringFromDate:date];
+	return [str stringByReplacingOccurrencesOfString:@":" withString:@"_"];
+}
+
 NSString* currentTimeStr() {
-	NSDate *now = [NSDate date];
-	NSString *iso8601String = [isoDateFormatter() stringFromDate:now];
-	return iso8601String;
+	return timeStrForDate([NSDate date]);
 }
 
 NSString* currentTimeStrForFileName() {
-//	NSDate *now = [NSDate date];
-//	NSString *iso8601String = [isoDateFormatterForFileName() stringFromDate:now];
-	NSString* iso8601String = currentTimeStr();
-	iso8601String = [iso8601String stringByReplacingOccurrencesOfString:@":" withString:@"_"];
-	return iso8601String;
+	return timeStrForDateForFileName([NSDate date]);
 }
+
+

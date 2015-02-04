@@ -8,6 +8,7 @@
 
 #import "TypManager.h"
 
+#import <NSDate+Escort.h>
 #import "NSUserDefaults+RMSaveCustomObject.h"
 #import "Underscore.h"
 #define _ Underscore
@@ -102,8 +103,10 @@ NSArray* defaultTagItems() {
 	item.name = NSLocalizedString(@"Example Entry", 0);
 	return @[item];
 }
+
 NSArray* getAllTagItems() {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults synchronize];
 	NSArray* typItems = [defaults rm_customObjectForKey:kKeyAllTagItems];
 	if (! typItems) {
 		typItems = defaultTagItems();
@@ -117,8 +120,21 @@ void saveTagItems(NSArray* items) {
 	logTagItems(items);		//TODO maybe don't do this automatically here
 }
 
+NSArray* getTagItemsForDate(NSDate* date) {
+	NSString* key = dayKeyForDate(date);
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults synchronize];
+	return [defaults rm_customObjectForKey:key];
+}
+void saveTagItemsForDate(NSArray* items, NSDate* date) {
+	NSString* key = dayKeyForDate(date);
+	[[NSUserDefaults standardUserDefaults] rm_setCustomObject:items forKey:key];
+	
+	logTagItemsForDate(items, date);
+}
+
 // ================================================================
-#pragma mark List of tags
+#pragma mark Logging tags
 // ================================================================
 
 NSString* tagItemsToJSONString(NSArray* items) {
@@ -130,26 +146,51 @@ NSString* tagItemsToJSONString(NSArray* items) {
 	return toJSONString(tagVals, pretty);
 }
 
-void logTagItems(NSArray* items) {
+// note that this clobbers, so don't use the same logId twice if
+// you don't want to overwrite data
+void logTagItemsUsingLogId(NSArray* items, NSString* logId) {
+//	if (! [items count]) return;	// actually, don't want these checks
+//	if (! logId) return;
+	
 	NSString* jsonStr = tagItemsToJSONString(items);
 	NSLog(@"saving items as JSON str: %@", jsonStr);
 	NSString* baseFileName = @"tagItems";
-	NSString* dateStr = currentTimeStrForFileName();
-	NSString* fileName1 = [baseFileName stringByAppendingFormat:@"__%@.json", dateStr];
-	NSString* fileName2 = [baseFileName stringByAppendingString:@".json"];
+	NSString* fileName1 = [baseFileName stringByAppendingFormat:@"__%@.json", logId];
+//	NSString* fileName2 = [baseFileName stringByAppendingString:@".json"];
 	NSString* dir = @"users";
 	NSString* user = getUniqueDeviceIdentifierAsString();
 	
 	NSString* localPath1 = [FileUtils getFullFileName:fileName1];
-	NSString* localPath2 = [FileUtils getFullFileName:fileName2];
+//	NSString* localPath2 = [FileUtils getFullFileName:fileName2];
 	NSString* destPath1 = [NSString pathWithComponents:@[dir, user, fileName1]];
-	NSString* destPath2 = [NSString pathWithComponents:@[dir, user, fileName2]];
+//	NSString* destPath2 = [NSString pathWithComponents:@[dir, user, fileName2]];
 	NSLog(@"saving local file %@", localPath1);
 	NSLog(@"uploading file to %@", destPath1);
-	NSLog(@"uploading file to %@", destPath2);
+//	NSLog(@"uploading file to %@", destPath2);
 	
 	[FileUtils writeString:jsonStr toFile:localPath1];
-	[FileUtils writeString:jsonStr toFile:localPath2];
+//	[FileUtils writeString:jsonStr toFile:localPath2];
 	[[DropboxUploader sharedUploader] addFileToUpload:localPath1 toPath:destPath1];
-	[[DropboxUploader sharedUploader] addFileToUpload:localPath2 toPath:destPath2];
+//	[[DropboxUploader sharedUploader] addFileToUpload:localPath2 toPath:destPath2];
+	
+	[[DropboxUploader sharedUploader] tryUploadingFiles];
+}
+
+void logTagItems(NSArray* items) {
+	logTagItemsUsingLogId(items, currentTimeStrForFileName());
+}
+
+void logTagItemsForDate(NSArray* items, NSDate* date) {
+	NSString* logId = timeStrForDateForFileName(date);
+	logId = [logId stringByAppendingFormat:@"__%@", currentTimeStrForFileName()];
+	logTagItemsUsingLogId(items, logId);
+}
+
+// ================================================================
+#pragma mark Other
+// ================================================================
+
+NSString* dayKeyForDate(NSDate* date) {
+	NSDate* day = [date dateAtStartOfDay];
+	return timeStrForDateForFileName(day);
 }

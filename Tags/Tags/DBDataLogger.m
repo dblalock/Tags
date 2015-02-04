@@ -322,7 +322,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	if ([values count] < kTimeStampIndex) return;
 	NSMutableArray* fmtVals = [NSMutableArray arrayWithCapacity:[values count]];
 	
-	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
+//	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
 //	NSLog(@"prev line:\n%@", prevLine);
 	int numChangedVals = 0;
 	
@@ -391,8 +391,8 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //	if (force) {
 //		NSLog(@"being forced to write sample");
 //	}
-	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
-	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
+//	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
+//	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
 
 	writeLineToStream(line, stream);
 

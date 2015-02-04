@@ -19,7 +19,12 @@ NSArray* getAllTypItems();
 void saveTypItems(NSArray* items);
 
 NSArray* defaultTagItems();
-NSArray* getAllTagItems();
+//NSArray* getAllTagItems();
+NSArray* getTagItemsForDate(NSDate* date);
 void saveTagItems(NSArray* items);
+void saveTagItemsForDate(NSArray* items, NSDate* date);
 
 void logTagItems(NSArray* items);
+void logTagItemsForDate(NSArray* items, NSDate* date);
+
+NSString* dayKeyForDate(NSDate* date);

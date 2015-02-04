@@ -18,19 +18,7 @@ X move easily shareable treeview code into common superclass
 
 // 135x162 = min timepicker dims; 165x162 = min datetime picker dims
 
-
-
-// SELF: so this is getting f'd up by the fact that the unique Ids don't persist across app launches, so the typ identity comparisons all fail
-	-fix this by having ability to init a typ with a particular id
-		-although prolly a private constructor
-
-	-aha: self: it's now breaking because we have an isEqual that recursively compares stuff until it gets to basic typs, but our dict for determining which cell typ to use is still using raw ids
-		-crap, but we still need a consistent reuseIdentifier for each typ so that we can map instances to nibs
-			-wait, this should be
-
-
-
-make tags table / screen
+X make tags table / screen
 	X extend superclass
 	X start it with a dummy/example datapoint
 	X get it to have the "+" cell at the bottom
@@ -51,23 +39,76 @@ make tags table / screen
 		write out a file
 		upload it to dropbox
 	X get it actually persisting stuff across app launches
-	integrate iosense stuff
+	X integrate iosense stuff
 		X add everything via new logmanager class
-		make sure it's actually working
+		X make sure it's actually working
 
-	have second updates not refresh row
-		KVO on time tag values
+X make it store dict: day -> tags, and display stuff appropriately
+	X add day selector
+		X pick one from interwebs
+		X get it integrated and invoking our callbacks
+	X get stuff using dict, not array of all tags ever
 
-	ability to duplicate tags
-		X copy tag typ
-		with default value
-	make everything a child of a day row
-		or, alternatively, make each table a day and have some kind of horizontal switching between days
+fix bug where tag items get stored with default values, not actual ones
+fix bug where keyboard covers crap
+fix bug where having keyboard appear hides navbar in typ selection
 
-put in iOSense stuff
-	add creationTimeMs to all DBTableItems
+add repeating tags
+	figure out how to do this in terms of data model
+	figure out how to do this in terms of UI
 
-maybe untangle and write labels somehow for easier data crunching
+have second updates not refresh row
+	KVO on time tag values
+	EDIT: or, just show time range in minutes, not seconds
+		although still shouldn't refresh row or will do something weird if user happens to be showing buttons when minute changes
+
+ability to duplicate tags
+	X copy tag typ
+	with same values
+
+when selecting tag typ, have a text field at the top to allow custom label without adding a new typ
+	actually, probably don't, so ppl are forced to categorize their time
+		reasonable expectation if much of our value prop is showing them how they spend it
+
+have recording auto-stop at midnight and start a new one on the next day
+
+add creationTimeMs to all tags
+
+X don't have it be recording by default
+
+prolly auto-sorting of stuff by start time within each day
+
+if you pause it for more than k minutes/secs, then when you press record, it should create a new event, not modify the existing one
+
+add "unknown" rows between items with a gap between them that prompt you to add a time range entry with the appropriate start and end time
+
+add ability to create "routines" of a bunch of stuff in a row
+	possibly that auto-triggers the next item after you finish one
+
+maybe just ability to have arbitrary triggers for arbitrary tags, reminders, or other stuff
+
+ideally look up what kind of place (residential, commercial, university, nat'l park, etc) each gps location is and store that as a special label
+
+prefs screen to enable/disable fine location and whatever else
+
+put in some kind of audio feedback so we have an excuse to do background audio
+
+ideally integrate with ibeacons
+	but only after other trigger stuff is set up
+
+prolly add a "guess" field to every tag
+	-show a row below whatever other children any root tag has with whether it's a guess (and maybe something else that would fit) would almost certainly be good
+	-might want to distinguish between guess and scheduled, but we could mark "scheduled" internally
+		-"guess" ~=~ "I did X, but I'm not sure exactly when"
+		-"scheduled" ~=~ "I intended to do X around this time range, but who knows what I actually did"
+
+prolly separate table of time ranges from table of other stuff
+	-cuz hodgepodge of both would be weird and not as intuitive
+	-maybe a separate tab, or maybe just have a select-one-of-k button that switches between table views
+		-key thing is that day that's showing should be synchronized
+	-or maybe don't, cuz of stuff that has a timestamp but isn't a time range
+		-would still make sense to display it temporally
+
 
 ------------------------------------------------
 Refinements

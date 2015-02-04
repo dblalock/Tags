@@ -29,7 +29,8 @@
 	// we create a temporary treeview object so that we don't assign
 	// directly to a weak property until it's been retained by self.view...I think
 	RATreeView* treeView = [[RATreeView alloc] initWithFrame:self.view.bounds];
-	[self.view insertSubview:treeView atIndex:0];
+//	[self.view insertSubview:treeView atIndex:0];
+	[self.view addSubview:treeView];
 	self.treeView = treeView;
 
 	self.treeView.delegate = self;

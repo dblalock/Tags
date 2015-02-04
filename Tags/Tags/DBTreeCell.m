@@ -137,13 +137,15 @@ void shrinkTextFieldToFit(UITextField* field) {
 		self.accessoryType = UITableViewCellAccessoryNone;
 	}
 	
-	if (level == 0) {
-		self.backgroundColor = UIColorFromRGB(0xF7F7F7);
-	} else if (level == 1) {
-		self.backgroundColor = UIColorFromRGB(0xD1EEFC);
-	} else if (level >= 2) {
-		self.backgroundColor = UIColorFromRGB(0xE0F8D8);
-	}
+	self.backgroundColor = UIColorFromRGB(0xFFFFFF - 0x111111 * level);
+	
+//	if (level == 0) {
+//		self.backgroundColor = UIColorFromRGB(0xF7F7F7);
+//	} else if (level == 1) {
+//		self.backgroundColor = UIColorFromRGB(0xD1EEFC);
+//	} else if (level >= 2) {
+//		self.backgroundColor = UIColorFromRGB(0xE0F8D8);
+//	}
 	
 //	id titl = self.titleText;
 //	[self.titleText removeFromSuperview];

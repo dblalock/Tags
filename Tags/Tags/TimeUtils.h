@@ -27,12 +27,22 @@ timestamp_t coreMotionStartTimeMs();
 timestamp_t timeStampFromCoreMotionTimeStamp(NSTimeInterval timestamp);
 
 // ================================================================
+// date funcs
+// ================================================================
+
+// returns the current day at midnight
+//NSDate* currentDay();
+
+// ================================================================
 // other funcs
 // ================================================================
 
 int64_t currentTimeMs();
 
 NSDateFormatter* isoDateFormatter();
+
+NSString* timeStrForDate(NSDate* date);
+NSString* timeStrForDateForFileName(NSDate* date); // no colons
+
 NSString* currentTimeStr();
-//NSDateFormatter* isoDateFormatterForFileName();	//no colons
 NSString* currentTimeStrForFileName();			//no colons

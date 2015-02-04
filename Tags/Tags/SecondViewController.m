@@ -10,6 +10,7 @@
 
 #import <RATreeView.h>
 #import <SWTableViewCell.h>
+#import <NSDate+Escort.h>
 #import "MZDayPicker.h"
 
 #import "FirstViewController.h"
@@ -27,10 +28,14 @@
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
+static const float kStatusBarHeight = 20.0f;
+
 @interface SecondViewController () <SWTableViewCellDelegate, DBTagItemDelegate,
 	MZDayPickerDataSource, MZDayPickerDelegate>
 @property (strong, nonatomic) MZDayPicker* dayPicker;
 @property (strong, nonatomic) NSDateFormatter* dayNameFormatter;
+//@property (strong, nonatomic) NSMutableDictionary* dataForDays;
+@property (strong, nonatomic) NSDate* displayedDay;
 @end
 
 @implementation SecondViewController
@@ -38,35 +43,53 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 -(void) viewDidLoad {
 	[super viewDidLoad];
 	
-	// all of these apparently get ignored, except that they have to set
-	// everything to not be 0 initially
-	float statusBarHeight = 20.0f;
-	float dayPickerHeight = 40.0f;
-	float dayPickerCellWidth = 50.0f;
+	// all of these except the heights apparently get ignored, except that
+	// they have to set to not be 0 initially or it'll freak out
+	float dayPickerCellWidth = 50.0f;	// ignored
 	float dayPickerCellHeight = 50.0f;
-	float dayCellFooterHeight = 50.0f;
-	_dayPicker = [[MZDayPicker alloc] initWithFrame:CGRectMake(0, statusBarHeight,
+	float dayCellFooterHeight = 0.0f;	// ignored
+	float dayPickerHeight = 40.0f;
+	_dayPicker = [[MZDayPicker alloc] initWithFrame:CGRectMake(0, kStatusBarHeight,
 															   self.view.bounds.size.width,
-															   dayPickerHeight + statusBarHeight)
+															   dayPickerHeight + kStatusBarHeight)
 										dayCellSize:CGSizeMake(dayPickerCellWidth, dayPickerCellHeight)
 								dayCellFooterHeight:dayCellFooterHeight];
-	[self.view addSubview:_dayPicker];
+	[self.view insertSubview:_dayPicker atIndex:0];	// magically makes frames work?
 	_dayPicker.delegate = self;
 	_dayPicker.dataSource = self;
-	_dayPicker.dayNameLabelFontSize = 12.0f;
+	_dayPicker.dayNameLabelFontSize = 13.0f;
 	_dayPicker.dayLabelFontSize = 18.0f;
 //	[self.dayPicker setStartDate:[NSDate dateFromDay:28 month:9 year:2013] endDate:[NSDate dateFromDay:5 month:10 year:2013]];
-	[_dayPicker setCurrentDate:[NSDate date] animated:NO];
+//	[_dayPicker setCurrentDate:[NSDate date] animated:NO];
 	
 	_dayNameFormatter = [[NSDateFormatter alloc] init];
 	[_dayNameFormatter setDateFormat:@"EE"];
+//	[_dayNameFormatter setDateFormat:@"M"];
 	
-	self.data = [getAllTagItems() mutableCopy];
+	
+	// TODO put this in [self showDataForSelectedDay]
+//	self.dataForDays = [getAllTagItems() mutableCopy];	// TODO uncomment
+//	self.dataForDays = [@{} mutableCopy];
+//	NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+//	NSDate* selectedDay;
+//	[cal rangeOfUnit:NSCalendarUnitDay startDate:&selectedDay interval:nil forDate:[NSDate date]];
+//	NSDate* currentDay = [cal startOfDayForDate:[NSDate date]];
+
+	
+	// TODO start/end dates a week before/after first/last dates in history dict,
+	// if these are earlier/later
+//	NSDate* today = [[NSDate date] dateAtStartOfDay];
+	NSDate* today = [NSDate date];
+	[_dayPicker setStartDate:[today dateBySubtractingDays:7]];
+	[_dayPicker setEndDate:[today dateByAddingMonths:1]];
+	[_dayPicker setCurrentDate:today animated:NO];
+	
+	self.displayedDay = today;
+	
+//	[self showDataForDate:today];
+//	self.data = [getAllTagItems() mutableCopy];
 //	self.data = [defaultTagItems() mutableCopy];
-	for (DBTagItem* item in self.data) {
-		item.tagDelegate = self;
-	}
-	
+
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(notifiedTypSelected:)
 												 name:kNotificationTypSelected
@@ -78,17 +101,25 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	
 	// no really, be below the status bar
 	CGRect dayFrame = self.dayPicker.frame;
-	dayFrame.origin.y = 20;
-//	dayFrame.size.height = 60;	// cells pick the height they want, so this
+	dayFrame.origin.y = kStatusBarHeight;
+//	dayFrame.size.height = 40;	// cells pick the height they want, so this
 //								// just defines where the view below it can start;
 //								// this is the correct height to not be hideous
 	self.dayPicker.frame = dayFrame;
 	
 	// resize treeview to not be under day picker
 	CGRect frame = self.treeView.frame;
-	frame.origin.y += dayFrame.size.height;
-	frame.size.height -= dayFrame.size.height;
+	frame.origin.y = dayFrame.origin.y + dayFrame.size.height + 8;	//+5 for footer part
+	frame.size.height = self.view.bounds.size.height - frame.origin.y;// dayFrame.size.height;
 	self.treeView.frame = frame;
+	
+	// y this have gap between stuff!? None of these fix it:
+//	self.dayPicker.backgroundColor = [UIColor redColor];
+//	self.treeView.backgroundColor = [UIColor blueColor];
+//	self.treeView.contentSize = frame.size;
+//	self.treeView.contentInset = UIEdgeInsetsZero;
+//	self.treeView.treeHeaderView = nil;
+//	NSLog(@"subviews : %@", self.view.subviews);
 	
 	// hide navigation bar
 	self.navigationController.navigationBarHidden = YES;
@@ -165,18 +196,6 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	}
 }
 
-//- (void)swipeableTableViewCell:(SWTableViewCell *)cell scrollingToState:(SWCellState)state {
-//	switch (state) {
-//		case kCellStateCenter:
-//			break;
-//		case kCellStateLeft:
-//		case kCellStateRight:
-//
-//		default:
-//			break;
-//	}
-//}
-
 // ================================================================
 #pragma mark DBTagItem Delegate
 // ================================================================
@@ -197,11 +216,20 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 //}
 
 // ================================================================
-#pragma mark MZDayPicker Data Source methods
+#pragma mark MZDayPicker Data Source
 // ================================================================
 
 -(NSString*) dayPicker:(MZDayPicker*) dayPicker titleForCellDayNameLabelInDay:(MZDay*)day {
 	return [self.dayNameFormatter stringFromDate:day.date];
+}
+
+// ================================================================
+#pragma mark MZDayPicker Delegate
+// ================================================================
+
+-(void) dayPicker:(MZDayPicker *)dayPicker didSelectDay:(MZDay *)day {
+	NSLog(@"called didSelectDay");
+	self.displayedDay = day.date;
 }
 
 // ================================================================
@@ -228,12 +256,12 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 // ================================================================
 
 -(void) saveItems {
-	saveTagItems(self.data);
+//	NSLog(@"------ about to save tag items for date");
+	saveTagItemsForDate(self.data, self.displayedDay);
+//	NSLog(@"------ saved tag items for date");
 }
 
 -(void)notifiedTypSelected:(NSNotification*)notification {
-//	if (! self.presentedViewController) return;		//TODO slightly more robust check
-//	[self dismissViewControllerAnimated:YES completion:nil];
 	[self.navigationController popToViewController:self animated:YES];
 	Typ* typ = extractTypFromNotification(notification);
 	[self addItemOfTyp:typ];
@@ -241,13 +269,13 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
-//	DBTagItem *item = [[DBTagItem alloc] initWithTyp:typ];
 	NSLog(@"2ndVC: adding item of typ: %@", typ);
 	DBTagItem* item = createTagItemForTyp(typ);
 	NSLog(@"2ndVC: created item %@ has typ: %@", item, item.tag.typ);
 	item.tagDelegate = self;
 	[self.data addObject:item];
 	[self.treeView reloadData];
+	NSLog(@"data = %@", self.data);
 	
 	[self.treeView scrollToRowForItem:item
 				 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
@@ -263,7 +291,6 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	UIViewController* cntrl = [[FirstViewController alloc] initWithNibName:@"EmptyView" bundle:nil];
 	cntrl.hidesBottomBarWhenPushed = YES;
 	[self.navigationController pushViewController:cntrl animated:YES];
-//	[self presentViewController:cntrl animated:YES completion:nil];
 }
 
 -(void) addRootItem {
@@ -288,6 +315,21 @@ static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 	}
 
 	saveTypItems(self.data);
+}
+
+-(void) setDisplayedDay:(NSDate *)displayedDay {
+	if ([_displayedDay isEqualToDate: displayedDay]) return;
+	NSLog(@"setting displayed day to %@", displayedDay);
+	_displayedDay = displayedDay;
+	NSArray* dataForDay = getTagItemsForDate(displayedDay);
+	if (! [dataForDay count]) {
+		NSLog(@"empty data for this day");
+		dataForDay = [NSMutableArray array];
+	}
+	self.data = [dataForDay mutableCopy];
+	for (DBTagItem* item in self.data) {
+		item.tagDelegate = self;
+	}
 }
 
 @end
