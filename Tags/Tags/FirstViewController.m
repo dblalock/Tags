@@ -45,9 +45,11 @@ CGRect fullScreenFrame() {
 	self.data = [defaultTypItems() mutableCopy];
 }
 
-//- (void)viewWillAppear:(BOOL)animated {
-//	[super viewWillAppear:animated];
-//
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	self.treeView.frame = self.view.frame;	// magically fixes everything
+}
+
 //	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;
 //	CGRect viewBounds = self.view.bounds;
 ////	viewBounds.size.height -= tabBarHeight;

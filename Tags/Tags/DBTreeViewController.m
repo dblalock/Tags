@@ -270,9 +270,13 @@ CGSize keyboardSize(NSNotification* notification) {
 	id item = [_treeView itemForCell:_cellInQuestion];
 
 	CGRect treeFrame = _treeView.frame;
-//	NSLog(@"kbSize for class %@: tabBarHeight = %g", [self class], self.tabBarController.tabBar.frame.size.height);
-	treeFrame.size.height -= kbSize.height - self.tabBarController.tabBar.frame.size.height;
+	treeFrame.size.height -= kbSize.height;
+//	treeFrame.size.height -= self.tabBarController.tabBar.frame.size.height;
+
+//	NSLog(@"kb hidden treeView origin.y, end.y = %g, %g", treeFrame.origin.y, treeFrame.size.height + treeFrame.origin.y);
 	[_treeView setFrame:treeFrame];
+//	NSLog(@"keyboard height = %g", kbSize.height);
+//	NSLog(@"kb showing treeView origin.y, end.y = %g, %g", treeFrame.origin.y, treeFrame.size.height + treeFrame.origin.y);
 	[_treeView scrollToRowForItem:item
 				 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
 }
@@ -282,7 +286,8 @@ CGSize keyboardSize(NSNotification* notification) {
 	CGSize kbSize = keyboardSize(aNotification);	// 320 x 216
 	[UIView animateWithDuration:duration animations:^{
 		CGRect treeFrame = _treeView.frame;
-		treeFrame.size.height += kbSize.height - self.tabBarController.tabBar.frame.size.height;
+		treeFrame.size.height += kbSize.height;
+//		treeFrame.size.height += self.tabBarController.tabBar.frame.size.height;
 		[_treeView setFrame:treeFrame];
 	} completion:^(BOOL finished) {
 	}];
