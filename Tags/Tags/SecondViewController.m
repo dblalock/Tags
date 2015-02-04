@@ -203,6 +203,7 @@ static const float kStatusBarHeight = 20.0f;
 -(void) itemDidChange:(DBTagItem*)item {
 //	DBTreeCell* cell = [self.treeView cellForItem:item];
 //	if (cell.cellState == kCellStateCenter) return;	//private property of SWTableViewCell
+	[self saveItems];	// TODO remove if performance hit
 	[self.treeView reloadRowsForItems:@[item] withRowAnimation:RATreeViewRowAnimationNone];
 }
 

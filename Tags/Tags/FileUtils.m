@@ -52,7 +52,7 @@ static const NSStringEncoding kENCODING = NSUTF8StringEncoding;
 +(void) writeString:(NSString*)str toFile:(NSString*)fileName {
 	NSString* fullFileName = [FileUtils getFullFileName:fileName];
 	[FileUtils ensureFileExists:fullFileName];
-	NSLog(@"trying to write string: \"%@\"", str);
+//	NSLog(@"trying to write string: \"%@\"", str);
 	[[str dataUsingEncoding:kENCODING] writeToFile:fullFileName atomically:NO];
 }
 
