@@ -51,9 +51,9 @@
 
 
 NSString* formatDuration(NSDateComponents* components) {
-//	return [NSString stringWithFormat:@"%2d:%02d", components.hour, components.minute];
-	return [NSString stringWithFormat:@"%2ld:%02ld:%02ld",
-			(long)components.hour, (long)components.minute, (long)components.second];
+	return [NSString stringWithFormat:@"%2d:%02d", components.hour, components.minute];
+//	return [NSString stringWithFormat:@"%2ld:%02ld:%02ld",
+//			(long)components.hour, (long)components.minute, (long)components.second];
 }
 
 @end
