@@ -23,6 +23,8 @@ void uploadTextFile(NSString* localPath, NSString* dropboxPath,
 
 -(void) tryUploadingFiles;
 
+-(NSUInteger) numberOfFilesToUpload;
+
 //TODO possibly add callback property for what to do when a file is uploaded
 
 @end

@@ -8,8 +8,12 @@
 
 #import "DropboxUploader.h"
 
+#import <NSObject+RMArchivable.h>
+#import <NSUserDefaults+RMSaveCustomObject.h>
 #import "DropboxInfo.h"
 #import "FileUtils.h"	//for fileEmpty()
+
+static NSString *const kKeyFilesToUpload = @"uploader_filesToUpload";
 
 // assumes you're uploading a text file, but really you could just pass in the
 // content type as another arg and it should work with anything
@@ -142,7 +146,14 @@ static const double kTryUploadEveryNSecs = 2*60;	// 2min
 
 -(instancetype) init {
 	if (self = [super init]) {
-		_filesToUpload = [NSMutableSet set];
+		// try reading in outstanding files to upload from previous app launch;
+		// create empty set if there are none
+		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		_filesToUpload = [defaults rm_customObjectForKey:kKeyFilesToUpload];
+		if (! [_filesToUpload count]) {
+			_filesToUpload = [NSMutableSet set];
+		}
+		// timer to try uploading files periodically
 		_tryUploadTimer = [NSTimer scheduledTimerWithTimeInterval:kTryUploadEveryNSecs
 												  target:self
 												selector:@selector(tryUploadingFiles)
@@ -152,12 +163,19 @@ static const double kTryUploadEveryNSecs = 2*60;	// 2min
 	return self;
 }
 
+-(void) saveFilesToUpload {
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults rm_setCustomObject:_filesToUpload forKey:kKeyFilesToUpload];
+}
+
 -(void) addFileToUpload:(NSString*)localPath toPath:(NSString*)dropboxPath {
 	[_filesToUpload addObject:createUpload(localPath, dropboxPath)];
+	[self saveFilesToUpload];
 }
 
 -(void) removeUpload:(Upload*)upload {
 	[_filesToUpload removeObject:upload];
+	[self saveFilesToUpload];
 }
 
 -(void) removeFileToUpload:(NSString*)localPath toPath:(NSString*)dropboxPath {
@@ -200,6 +218,10 @@ static const double kTryUploadEveryNSecs = 2*60;	// 2min
 		}
 	}
 	
+}
+
+-(NSUInteger) numberOfFilesToUpload {
+	return [_filesToUpload count];
 }
 
 //_tapTimer = [NSTimer scheduledTimerWithTimeInterval:kTryUploadEveryNSecs
