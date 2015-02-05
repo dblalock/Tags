@@ -215,7 +215,7 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 	
 	_latestTimeStamp = MAX(_latestTimeStamp, ms);
 	if (_latestTimeStamp - _lastFlushTimeMs > _autoFlushLagMs) {
-		[self flush];
+		[self flushUpToTimeStamp:(_lastFlushTimeMs - _autoFlushLagMs)];
 	}
 }
 
