@@ -26,6 +26,8 @@
 @property(strong, nonatomic) Tag* tag;
 @property(weak, nonatomic) id<DBTagItemDelegate> tagDelegate;
 
++(NSArray*) sortedItems:(NSArray*)unsorted;
+
 //-(instancetype)initWithName:(NSString *)name children:(NSArray *)array NS_UNAVAILABLE;
 -(instancetype) init NS_UNAVAILABLE;
 
@@ -35,5 +37,7 @@
 -(instancetype) initWithTyp:(Typ*)typ;
 
 -(void) notifyChildChanged:(Tag*)tag;
+
+-(NSComparisonResult) compare:(DBTagItem*)other;
 
 @end

@@ -21,11 +21,19 @@
 @property (strong, nonatomic) NSDate* creationTime;
 @end
 
+@implementation DBTagItem
+
+// ================================================================
+#pragma mark Class methods
+// ================================================================
+
++(NSArray*) sortedItems:(NSArray*)unsorted {
+	return [unsorted sortedArrayUsingSelector:@selector(compare:)];
+}
+
 // ================================================================
 #pragma mark Initialization
 // ================================================================
-
-@implementation DBTagItem
 
 -(instancetype) initWithTag:(Tag*)tag parent:(DBTableItem*)parent {
 	if (self = [super init]) {
@@ -71,6 +79,10 @@
 // ================================================================
 #pragma mark Public methods
 // ================================================================
+
+-(NSComparisonResult) compare:(DBTagItem*)other {
+	return [self.creationTime compare:other.creationTime];
+}
 
 -(void) notifyChildChanged:(Tag*)tag {
 	// propogate the notification up if there's a parent tag; if

@@ -122,7 +122,6 @@ static const float kStatusBarHeight = 20.0f;
 //	NSLog(@"subviews : %@", self.view.subviews);
 	
 	// hide navigation bar
-	NSLog(@"2ndVC: hiding navbar");
 	self.navigationController.navigationBarHidden = YES;
 }
 
@@ -176,13 +175,14 @@ static const float kStatusBarHeight = 20.0f;
 	switch (index) {
 		case 0:		// Duplicate Button
 		{
-			// TODO ideally deep copy with original tags values
+			// TODO ideally deep copy with original tag's values
 			DBTagItem* item = [self.treeView itemForCell:cell];
 //			DBTagItem* dup = [[DBTagItem alloc] initWithTyp:item.tag.typ];
 			DBTagItem* dup = createTagItemForTyp(item.tag.typ);
 			dup.tagDelegate = self;
 			[self.data addObject:dup];
-			[self.treeView reloadData];
+//			[self.treeView reloadData];
+			[self refreshData];
 			[self.treeView scrollToRowForItem:dup
 						 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
 			break;
@@ -230,7 +230,6 @@ static const float kStatusBarHeight = 20.0f;
 // ================================================================
 
 -(void) dayPicker:(MZDayPicker *)dayPicker didSelectDay:(MZDay *)day {
-	NSLog(@"called didSelectDay");
 	self.displayedDay = day.date;
 }
 
@@ -257,6 +256,11 @@ static const float kStatusBarHeight = 20.0f;
 #pragma mark Item manipulation
 // ================================================================
 
+-(void) refreshData {
+	self.data = [[DBTagItem sortedItems:self.data] mutableCopy];
+	[self.treeView reloadData];
+}
+
 -(void) saveItems {
 //	NSLog(@"------ about to save tag items for date");
 	saveTagItemsForDate(self.data, self.displayedDay);
@@ -271,13 +275,13 @@ static const float kStatusBarHeight = 20.0f;
 
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
-	NSLog(@"2ndVC: adding item of typ: %@", typ);
+//	NSLog(@"2ndVC: adding item of typ: %@", typ);
 	DBTagItem* item = createTagItemForTyp(typ);
-	NSLog(@"2ndVC: created item %@ has typ: %@", item, item.tag.typ);
+//	NSLog(@"2ndVC: created item %@ has typ: %@", item, item.tag.typ);
 	item.tagDelegate = self;
 	[self.data addObject:item];
-	[self.treeView reloadData];
-	NSLog(@"data = %@", self.data);
+//	[self.treeView reloadData];
+	[self refreshData];
 	
 	[self.treeView scrollToRowForItem:item
 				 atScrollPosition:RATreeViewScrollPositionBottom animated:NO];
@@ -321,17 +325,16 @@ static const float kStatusBarHeight = 20.0f;
 
 -(void) setDisplayedDay:(NSDate *)displayedDay {
 	if ([_displayedDay isEqualToDate: displayedDay]) return;
-	NSLog(@"setting displayed day to %@", displayedDay);
 	_displayedDay = displayedDay;
 	NSArray* dataForDay = getTagItemsForDate(displayedDay);
 	if (! [dataForDay count]) {
-		NSLog(@"empty data for this day");
 		dataForDay = [NSMutableArray array];
 	}
 	self.data = [dataForDay mutableCopy];
 	for (DBTagItem* item in self.data) {
 		item.tagDelegate = self;
 	}
+	[self refreshData];
 }
 
 @end

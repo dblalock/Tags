@@ -67,6 +67,15 @@ static const BOOL kStartRecordingWhenCreated = NO;
 #pragma mark Public methods
 // ================================================================
 
+-(NSComparisonResult) compare:(DBTagItem*)other {
+	if ([other isKindOfClass:[DBTimeRangeItem class]]) {
+		DBTimeRangeItem* oth = (DBTimeRangeItem*) other;
+		return [self.startTag.value compare:oth.startTag.value];
+	} else {
+		return [super compare:other];
+	}
+}
+
 -(NSDateComponents*) duration {
 	id start = _startTag.value;
 	id end = _endTag.value;
