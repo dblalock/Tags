@@ -113,6 +113,10 @@ void uploadTextFile(NSString* localPath, NSString* dropboxPath, void(^responseHa
 @end
 
 Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
+	if (! localPath || ! dropboxPath) {
+		[NSException raise:@"couldn't create upload!" format:@"can't upload %@ to %@", localPath, dropboxPath];
+		return nil;
+	}
 	Upload* upload = [[Upload alloc] init];
 	upload.localPath = localPath;
 	upload.dropboxPath = dropboxPath;
@@ -164,11 +168,18 @@ static const double kTryUploadEveryNSecs = 2*60;	// 2min
 }
 
 -(void) saveFilesToUpload {
+	if (_filesToUpload == nil) return;	// should never happen...
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	[defaults rm_setCustomObject:_filesToUpload forKey:kKeyFilesToUpload];
+	//  ^ this line has thrown:
+	// 'NSInvalidArgumentException', reason: '*** -[__NSPlaceholderArray initWithObjects:count:]: attempt to insert nil object from objects[31]'
+	//
+	// hopefully added checks for nil in createUpload will make this fail fast
+	// if it ever happens again
 }
 
 -(void) addFileToUpload:(NSString*)localPath toPath:(NSString*)dropboxPath {
+	if (! localPath || ! dropboxPath) return;	//TODO uncomment to fail fast in createUpload() to debug rare (?) crash
 	[_filesToUpload addObject:createUpload(localPath, dropboxPath)];
 	[self saveFilesToUpload];
 }
@@ -217,7 +228,6 @@ static const double kTryUploadEveryNSecs = 2*60;	// 2min
 			[self removeUpload:u];
 		}
 	}
-	
 }
 
 -(NSUInteger) numberOfFilesToUpload {
