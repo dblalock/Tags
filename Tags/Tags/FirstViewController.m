@@ -33,6 +33,8 @@ CGRect fullScreenFrame() {
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+//	self.navigationController.navigationBarHidden = NO;
+	
 	// this just adds a background behind the status bar, because the treeview
 	// hasn't been resized to start below it yet; it seems to stick around even
 	// after the treeview is resized
@@ -41,13 +43,18 @@ CGRect fullScreenFrame() {
 	UINib* typNib = [UINib nibWithNibName:@"DBTypCell" bundle:nil];
 	[self.treeView registerNib:typNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 	
-//	self.data = [getAllTypItems() mutableCopy];
-	self.data = [defaultTypItems() mutableCopy];
+	self.data = [getAllTypItems() mutableCopy];
+//	self.data = [defaultTypItems() mutableCopy];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	self.treeView.frame = self.view.frame;	// magically fixes everything
+}
+
+- (void) keyboardWillDisappear:(NSNotification*)aNotification {
+	[super keyboardWillDisappear:aNotification];
+	self.navigationController.navigationBarHidden = NO;
 }
 
 //	float tabBarHeight = self.tabBarController.tabBar.frame.size.height;

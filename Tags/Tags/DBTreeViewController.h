@@ -44,4 +44,7 @@ static const int kActionSheetTagDelete = 1;
 // utility method to get an initialized treeviewcell
 DBTreeCell* dequeCellForTreeViewItem(RATreeView* treeView, id item);
 
+- (void) keyboardWillShow:(NSNotification*)aNotification;
+- (void) keyboardWillDisappear:(NSNotification*)aNotification;
+
 @end

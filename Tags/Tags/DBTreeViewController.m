@@ -99,13 +99,22 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void) dealloc {
+
+-(void) unsubNotifications {
 	[[NSNotificationCenter defaultCenter] removeObserver: self
 													name: UIKeyboardWillShowNotification
 												  object: nil];
 	[[NSNotificationCenter defaultCenter] removeObserver: self
 													name: UIKeyboardWillHideNotification
 												  object: nil];
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+	[self unsubNotifications];
+}
+
+-(void) dealloc {
+	[self unsubNotifications];
 }
 
 /*

@@ -122,6 +122,7 @@ static const float kStatusBarHeight = 20.0f;
 //	NSLog(@"subviews : %@", self.view.subviews);
 	
 	// hide navigation bar
+	NSLog(@"2ndVC: hiding navbar");
 	self.navigationController.navigationBarHidden = YES;
 }
 

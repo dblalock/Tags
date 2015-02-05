@@ -149,31 +149,28 @@ NSString* tagItemsToJSONString(NSArray* items) {
 // note that this clobbers, so don't use the same logId twice if
 // you don't want to overwrite data
 void logTagItemsUsingLogId(NSArray* items, NSString* logId) {
-//	if (! [items count]) return;	// actually, don't want these checks
-//	if (! logId) return;
+//	if (! [items count]) return;	// actually, don't want these checks;
+//	if (! logId) return;			// might want to store empty file
+	
+	static NSString *const dir = @"users";
+	static NSString *const userSubdir = @"tagItems";
 	
 	NSString* jsonStr = tagItemsToJSONString(items);
 	NSLog(@"saving items as JSON str: %@", jsonStr);
-	NSString* baseFileName = @"tagItems";
-	NSString* fileName1 = [baseFileName stringByAppendingFormat:@"__%@.json", logId];
-//	NSString* fileName2 = [baseFileName stringByAppendingString:@".json"];
-	NSString* dir = @"users";
+	NSString* fileName = [NSString stringWithFormat:@"%@.json", logId];
 	NSString* user = getUniqueDeviceIdentifierAsString();
+	NSString* localPath = [FileUtils getFullFileName:fileName];
 	
-	NSString* localPath1 = [FileUtils getFullFileName:fileName1];
-//	NSString* localPath2 = [FileUtils getFullFileName:fileName2];
-	NSString* destPath1 = [NSString pathWithComponents:@[dir, user, fileName1]];
-//	NSString* destPath2 = [NSString pathWithComponents:@[dir, user, fileName2]];
-	NSLog(@"saving local file %@", localPath1);
-	NSLog(@"uploading file to %@", destPath1);
+	NSString* destPath1 = [NSString pathWithComponents:@[dir, user, userSubdir, fileName]];
+	
+	[FileUtils writeString:jsonStr toFile:localPath];
+	[[DropboxUploader sharedUploader] addFileToUpload:localPath toPath:destPath1];
+	
+	// uncomment to debug
+//	NSLog(@"saving local file %@", localPath);
+//	NSLog(@"uploading file to %@", destPath1);
 //	NSLog(@"uploading file to %@", destPath2);
-	
-	[FileUtils writeString:jsonStr toFile:localPath1];
-//	[FileUtils writeString:jsonStr toFile:localPath2];
-	[[DropboxUploader sharedUploader] addFileToUpload:localPath1 toPath:destPath1];
-//	[[DropboxUploader sharedUploader] addFileToUpload:localPath2 toPath:destPath2];
-	
-	[[DropboxUploader sharedUploader] tryUploadingFiles];
+//	[[DropboxUploader sharedUploader] tryUploadingFiles];
 }
 
 void logTagItems(NSArray* items) {

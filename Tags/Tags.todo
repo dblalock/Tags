@@ -49,13 +49,17 @@ X make it store dict: day -> tags, and display stuff appropriately
 		X get it integrated and invoking our callbacks
 	X get stuff using dict, not array of all tags ever
 
-fix bug where tag items get stored with default values, not actual ones
-fix bug where keyboard covers crap
-fix bug where having keyboard appear hides navbar in typ selection
+X fix bug where tag items get stored with default values, not actual ones
+X fix bug where keyboard covers crap
+X fix bug where having keyboard appear hides navbar in typ selection
 
-add repeating tags
-	figure out how to do this in terms of data model
-	figure out how to do this in terms of UI
+add limits on start and end times so durations are never negative
+
+add creationTimeMs to all tags
+add guess to all tags
+add confirmed to all tags
+
+add prefs
 
 have second updates not refresh row
 	KVO on time tag values
@@ -66,13 +70,15 @@ ability to duplicate tags
 	X copy tag typ
 	with same values
 
+add repeating tags
+	figure out how to do this in terms of data model
+	figure out how to do this in terms of UI
+
 when selecting tag typ, have a text field at the top to allow custom label without adding a new typ
 	actually, probably don't, so ppl are forced to categorize their time
 		reasonable expectation if much of our value prop is showing them how they spend it
 
 have recording auto-stop at midnight and start a new one on the next day
-
-add creationTimeMs to all tags
 
 X don't have it be recording by default
 
