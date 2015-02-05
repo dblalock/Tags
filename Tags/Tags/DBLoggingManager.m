@@ -99,7 +99,8 @@ NSString* loggingSubdir() {
 						  ];
 		_sensorMonitor.sendOnlyIfDifferent = YES;	//TODO want to still send it, but have datalogger ignore
 		
-		_pebbleMonitor = [[DBPebbleMonitor alloc] init];
+//		_pebbleMonitor = [[DBPebbleMonitor alloc] init];
+		_pebbleMonitor = [DBPebbleMonitor sharedInstance];
 		
 		// enable background execution by retaining an intance of this class
 		_backgrounder = [[DBBackgrounder alloc] init];

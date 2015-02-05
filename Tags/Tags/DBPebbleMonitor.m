@@ -42,7 +42,7 @@ NSDictionary* pebbleDefaultValuesDict() {
 //===============================================================
 
 @interface DBPebbleMonitor () <PBPebbleCentralDelegate>
-
+@property (nonatomic, readonly) BOOL pebbleConnected;
 @property (strong, nonatomic) PBWatch *myWatch;
 @property (nonatomic) BOOL launchedApp;
 
@@ -53,6 +53,15 @@ NSDictionary* pebbleDefaultValuesDict() {
 //===============================================================
 
 @implementation DBPebbleMonitor
+
++(instancetype) sharedInstance {
+	static DBPebbleMonitor* sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedInstance = [[self alloc] init];
+	});
+	return sharedInstance;
+}
 
 //--------------------------------
 // initialization
@@ -86,6 +95,7 @@ NSDictionary* pebbleDefaultValuesDict() {
 	[PBPebbleCentral setDebugLogsEnabled:YES];
 	[self setPebbleUUID:kPebbleAppUUID];
 	self.myWatch = [[PBPebbleCentral defaultCentral] lastConnectedWatch];
+	_connectedPebbleName = self.myWatch.name;
 	NSLog(@"Last connected watch: %@", self.myWatch);
 }
 
@@ -131,6 +141,7 @@ NSDictionary* pebbleDefaultValuesDict() {
 	_pebbleConnected = YES;
 	NSLog(@"Pebble connected: %@", [watch name]);
 	self.myWatch = watch;
+	_connectedPebbleName = [watch name];
 	[self startWatchApp];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:kNotificationPebbleConnected
@@ -148,6 +159,7 @@ NSDictionary* pebbleDefaultValuesDict() {
 	
 	if (self.myWatch == watch || [watch isEqual:self.myWatch]) {
 		self.myWatch = nil;
+		_connectedPebbleName = nil;
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:kNotificationPebbleDisconnected

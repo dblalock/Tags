@@ -21,11 +21,12 @@ extern NSString *const kNotificationPebbleConnected;
 extern NSString *const kNotificationPebbleDisconnected;
 
 @interface DBPebbleMonitor : NSObject
+@property (strong, nonatomic, readonly) NSString* connectedPebbleName;
 
-@property (nonatomic, readonly) BOOL pebbleConnected;
++(instancetype) sharedInstance;
 
-- (void)stopWatchApp;
-- (void)startWatchApp;
+-(void) stopWatchApp;
+-(void) startWatchApp;
 
 @end
 

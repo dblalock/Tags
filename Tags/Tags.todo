@@ -53,13 +53,17 @@ X fix bug where tag items get stored with default values, not actual ones
 X fix bug where keyboard covers crap
 X fix bug where having keyboard appear hides navbar in typ selection
 
+fix bug where retrieving stored typs yields current tag items
+
+X add prefs
+	-show if pebble connected for now
+	-maybe show # files to upload?
+
+X add auto-sorting of stuff by start time within each day
+
+------------------------ end crap that really has to get done
+
 add limits on start and end times so durations are never negative
-
-add creationTimeMs to all tags
-add guess to all tags
-add confirmed to all tags
-
-add prefs
 
 have second updates not refresh row
 	KVO on time tag values
@@ -74,26 +78,35 @@ add repeating tags
 	figure out how to do this in terms of data model
 	figure out how to do this in terms of UI
 
+add calendar sync / ability to put stuff in future
+
+X add creationTimeMs to all tags
+add guess to all tags
+add confirmed to all tags
+
+when changing times of tags, ideally have it just change the position of the row if it needs to be reordered, rather than refreshing the whole table
+
 when selecting tag typ, have a text field at the top to allow custom label without adding a new typ
 	actually, probably don't, so ppl are forced to categorize their time
 		reasonable expectation if much of our value prop is showing them how they spend it
 
-have recording auto-stop at midnight and start a new one on the next day
+X have recording auto-stop at midnight and start a new one on the next day
+	-Actually don't, cuz it'll actually just record the correct duration as it is
+		-the hours displayed will reset, but the duration + times should be right cuz it's just incrementing stuff
 
-X don't have it be recording by default
-
-prolly auto-sorting of stuff by start time within each day
+X don't have it be recording by default when a tag item gets created
 
 if you pause it for more than k minutes/secs, then when you press record, it should create a new event, not modify the existing one
 
 add "unknown" rows between items with a gap between them that prompt you to add a time range entry with the appropriate start and end time
 
 add ability to create "routines" of a bunch of stuff in a row
-	possibly that auto-triggers the next item after you finish one
+	should auto-trigger the next item after you finish one
 
 maybe just ability to have arbitrary triggers for arbitrary tags, reminders, or other stuff
 
 ideally look up what kind of place (residential, commercial, university, nat'l park, etc) each gps location is and store that as a special label
+	although maybe not if this will make it harder to retain anonymity
 
 prefs screen to enable/disable fine location and whatever else
 
@@ -124,54 +137,3 @@ Refinements
 -allow rearranging history, and have dropping something between 2 things with timestamps auto-set its start and end to the appropriate interval
 -some kind of visualization
 -settings to enable/disable location services, etc
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-// Head 0?
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-================================================================
-Head 1
-================================================================
-
-------------------------------------------------
-Head2
-------------------------------------------------
-
-================================
-Head3
-================================
-
-------------------------
-Head4
-------------------------
-
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-// this one is the best...let's do this
-
-// ================================================================
-// Head 1
-// ================================================================
-
-//------------------------------------------------
-// Head2
-//------------------------------------------------
-
-//------------------------ Head 3
-
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-
-================================================================
-Head 1
-================================================================
-
------------------------- Head 2 ------------------------
-
-================================ Head 3
-
------------------------- Head 4
-
