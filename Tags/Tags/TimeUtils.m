@@ -9,6 +9,7 @@
 #import "TimeUtils.h"
 
 #import <Foundation/Foundation.h>
+#import <NSDate+Escort.h>
 
 // ================================================================
 // timestamp_t funcs
@@ -57,10 +58,18 @@ timestamp_t timeStampFromCoreMotionTimeStamp(NSTimeInterval timestamp) {
 // date funcs
 // ================================================================
 
-//NSDate* currentDay() {
-//	return [[NSDate date] dateAtStartOfDay];
-//}
+NSDate* currentDay() {
+	return [[NSDate date] dateAtStartOfDay];
+}
 
+BOOL datesOnSameDay(NSDate* date1, NSDate* date2) {
+	if (! date1 || ! date2 ) return false;
+	return [[date1 dateAtStartOfDay] isEqualToDate:[date2 dateAtStartOfDay]];
+}
+
+BOOL dateInToday(NSDate* date) {
+	return datesOnSameDay(date, [NSDate date]);
+}
 
 // ================================================================
 // other funcs

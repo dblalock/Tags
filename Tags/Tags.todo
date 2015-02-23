@@ -53,7 +53,8 @@ X fix bug where tag items get stored with default values, not actual ones
 X fix bug where keyboard covers crap
 X fix bug where having keyboard appear hides navbar in typ selection
 
-fix bug where retrieving stored typs yields current tag items
+X fix bug where retrieving stored typs yields current tag items
+	X can't reproduce this...
 
 X add prefs
 	-show if pebble connected for now
@@ -61,9 +62,52 @@ X add prefs
 
 X add auto-sorting of stuff by start time within each day
 
+have recording continue even when looking at another day and/or view controller
+
+X have it not upload the tag items to dropbox every time they're saved, cuz it's literally thousands of files
+	X -temp solution: dont timestamp, so single copy for each day
+	X -prolly just have typmanager store the last stuff it wrote and only write new stuff if it's different
+	X -actually, even easier: just clobber data for a given day
+		-although make sure stuff is working robustly first...
+		-maybe append an app run id that would be stable within a launch but not overwrite everything ever if something went wrong
+	X -and either way, just plain don't write stuff to dropbox so often
+		-it's like an API call every second
+			-and 1000/s might start to flag stuff if this scaled...
+
+make sure it's doing the right thing as far as writing current values as first line of new log file when it just starts a new file but doesn't start recording
+
+make it create new items in a given day using the day that's showing, not the current day
+
+sanity check pebble data
+	cuz it seems to like *always* be moving...
+
 ------------------------ end crap that really has to get done
 
+make dbuploader only upload every 30 minutes or so
+
+do something about recording crap on days that aren't today
+	-should prolly be disallowed in some nice way
+	-frankly, should only be possible to record crap ending at the current moment
+		-there's prolly some elegant way to unify this with fact that you shouldn't be able to start and stop recording
+			-prolly have some other button that shows up when you can't record anymore
+				-edit?
+					-prolly want ability to edit at least start time of stuff that you're currently recording though...
+
+have it auto-delete typs you add if you don't name them
+
+prolly make time rows a little taller so you can see that they're date pickers
+
+tutorial page and/or starting rows that tell you to swipe, etc, would be good
+	-default rows telling you what to do make a lot of sense
+	-opening pageview like legit apps would be longer-term
+
 add limits on start and end times so durations are never negative
+
+prolly set stuff to have min duration of 5min
+	except not cuz some of my stuff is like 1min, or even just secs...
+
+add ability to create crap between items and auto-fill start + end times
+	and possibly always a button to change start/end to end/start of adjacent neighbors
 
 have second updates not refresh row
 	KVO on time tag values
@@ -128,6 +172,8 @@ prolly separate table of time ranges from table of other stuff
 	-or maybe don't, cuz of stuff that has a timestamp but isn't a time range
 		-would still make sense to display it temporally
 
+graphs or whatever of you're time would be a pretty darn beneficial if trying to get normal ppl to actually use it
+	since this would pretty much be the value prop
 
 ------------------------------------------------
 Refinements

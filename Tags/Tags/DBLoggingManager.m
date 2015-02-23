@@ -23,6 +23,9 @@
 
 #define DEFAULT_VALUE_ACCEL DBINVALID_ACCEL
 
+// how often to flush log
+static const uint flushEveryMs = 30*1000;	//30s
+
 //===============================================================
 #pragma mark Configuration funcs
 //===============================================================
@@ -88,7 +91,7 @@ NSString* loggingSubdir() {
 		_dataLogger = [[DBDataLogger alloc] initWithSignalNames:allDataKeys()
 												  defaultValues:allDataDefaultValues()
 												   samplePeriod:DATALOGGING_PERIOD_MS];
-		_dataLogger.autoFlushLagMs = 2000;	//write every 2s
+		_dataLogger.autoFlushLagMs = flushEveryMs;	//write every 2s
 		_dataLogger.logSubdir = loggingSubdir();
 		_sensorMonitor = [[DBSensorMonitor alloc] initWithDataReceivedHandler:^
 						  void(NSDictionary *data, timestamp_t timestamp) {

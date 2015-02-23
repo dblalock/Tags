@@ -43,8 +43,9 @@ CGRect fullScreenFrame() {
 	UINib* typNib = [UINib nibWithNibName:@"DBTypCell" bundle:nil];
 	[self.treeView registerNib:typNib forCellReuseIdentifier:[DBTypItem reuseIdentifier]];		// typItem
 	
-//	self.data = [getAllTypItems() mutableCopy];
-	self.data = [defaultTypItems() mutableCopy];
+	self.data = [getAllTypItems() mutableCopy];
+	NSLog(@"1stVC: allTypItems: %@", self.data);
+//	self.data = [defaultTypItems() mutableCopy];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

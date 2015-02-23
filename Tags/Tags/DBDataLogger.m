@@ -322,9 +322,11 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	if ([values count] < kTimeStampIndex) return;
 	NSMutableArray* fmtVals = [NSMutableArray arrayWithCapacity:[values count]];
 	
+	force = force || (_linesInLog == 1);	// always write 1st data line
+	
 //	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
 //	NSLog(@"prev line:\n%@", prevLine);
-	int numChangedVals = 0;
+	unsigned long numChangedVals = 0;
 	
 	// first time writing values
 	if (! [_prevWrittenVals count]) {

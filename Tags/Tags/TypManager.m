@@ -88,7 +88,8 @@ void saveTypItems(NSArray* items) {
 NSArray* getAllTypItems() {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	NSArray* typItems = [defaults rm_customObjectForKey:kKeyAllTypItems];
-	if (! typItems) {
+	if (! [typItems count]) {
+		NSLog(@"ERROR: TypManager: didn't retrieve any stored TypItems!");
 		typItems = defaultTypItems();
 	}
 	return typItems;
@@ -179,7 +180,7 @@ void logTagItems(NSArray* items) {
 
 void logTagItemsForDate(NSArray* items, NSDate* date) {
 	NSString* logId = timeStrForDateForFileName(date);
-	logId = [logId stringByAppendingFormat:@"__%@", currentTimeStrForFileName()];
+//	logId = [logId stringByAppendingFormat:@"__%@", currentTimeStrForFileName()];
 	logTagItemsUsingLogId(items, logId);
 }
 

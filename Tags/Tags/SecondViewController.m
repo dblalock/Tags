@@ -25,6 +25,8 @@
 //#import "DBCellManager.h"
 #import "DBItemManager.h"
 
+#import "DBTimeRangeItem.h"	// TODO shouldn't know about concrete class
+
 static NSString *const kCellNewButtonNibName = @"DBCellAddNew";
 static NSString *const kCellNewButtonIdentifier = @"cellNewButton";
 
@@ -277,6 +279,9 @@ static const float kStatusBarHeight = 20.0f;
 	if (! typ) return;
 //	NSLog(@"2ndVC: adding item of typ: %@", typ);
 	DBTagItem* item = createTagItemForTyp(typ);
+	if ([item isKindOfClass:[DBTimeRangeItem class]]) {	// TODO interface, not class
+		[((DBTimeRangeItem*)item) setDay:_displayedDay];
+	}
 //	NSLog(@"2ndVC: created item %@ has typ: %@", item, item.tag.typ);
 	item.tagDelegate = self;
 	[self.data addObject:item];
@@ -320,7 +325,7 @@ static const float kStatusBarHeight = 20.0f;
 		[self.treeView reloadRowsForItems:@[parent] withRowAnimation:RATreeViewRowAnimationNone];
 	}
 
-	saveTypItems(self.data);
+	[self saveItems];
 }
 
 -(void) setDisplayedDay:(NSDate *)displayedDay {

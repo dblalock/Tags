@@ -31,7 +31,9 @@ timestamp_t timeStampFromCoreMotionTimeStamp(NSTimeInterval timestamp);
 // ================================================================
 
 // returns the current day at midnight
-//NSDate* currentDay();
+NSDate* currentDay();
+BOOL datesOnSameDay(NSDate* date1, NSDate* date2);
+BOOL dateInToday(NSDate* date);
 
 // ================================================================
 // other funcs

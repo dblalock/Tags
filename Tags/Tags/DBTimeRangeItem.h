@@ -12,5 +12,7 @@
 @property(nonatomic) BOOL recording;
 
 -(NSDateComponents*) duration;
+-(BOOL) inToday;
+-(void) setDay:(NSDate*) anyDateDuringDay;
 
 @end

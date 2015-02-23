@@ -15,6 +15,8 @@
 
 static NSString *const kKeyFilesToUpload = @"uploader_filesToUpload";
 
+static const double kTryUploadEveryNSecs = 2*60;	// 5min		// TODO longer
+
 // assumes you're uploading a text file, but really you could just pass in the
 // content type as another arg and it should work with anything
 void uploadTextFile(NSString* localPath, NSString* dropboxPath, void(^responseHandler)(NSURLResponse *response, id responseObject, NSError *error)) {
@@ -126,8 +128,6 @@ Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
 // ================================================================
 // Dropbox Uploader
 // ================================================================
-
-static const double kTryUploadEveryNSecs = 2*60;	// 2min
 
 @interface DropboxUploader ()
 @property(strong, atomic) NSMutableSet* filesToUpload;

@@ -9,9 +9,11 @@
 #import "DBTimeRangeItem.h"
 
 #import <RMMapper.h>	// to exclude properties
+#import <NSDate+Escort.h>
 
 #import "Tag.h"
 #import "Typ.h"
+#import "TimeUtils.h"
 
 static const int kIncrementDurationEverySecs = 5;	//TODO 1s, but don't kill swiped-over-ness
 static const BOOL kStartRecordingWhenCreated = NO;
@@ -85,10 +87,20 @@ static const BOOL kStartRecordingWhenCreated = NO;
 	return diffBetweenDates(start, end);
 }
 
+-(BOOL) inToday {
+	return dateInToday(self.startTag.value);
+}
+
 -(void) setRecording:(BOOL)recording {
-	if (_recording == recording) return;
+//	if (_recording == recording) return;	// deliberately dont check for this
 	_recording = recording;
-	if (recording) {
+	if (recording && ! [_recordingTimer isValid]) {
+		// if the end tag isn't on the same day as today, can't record; if it
+		// is on the same day, recording -> end time is now
+		if (dateInToday(_endTag.value)) {
+			_endTag.value = [NSDate date];
+		}
+		
 		// try incrementing stuff once/min
 		_recordingTimer = [NSTimer scheduledTimerWithTimeInterval:kIncrementDurationEverySecs
 														   target:self
@@ -98,6 +110,17 @@ static const BOOL kStartRecordingWhenCreated = NO;
 	} else if ([_recordingTimer isValid]) {
 		[_recordingTimer invalidate];
 	}
+}
+
+-(void) setDay:(NSDate*) anyDateDuringDay {
+	NSDate* day = [anyDateDuringDay dateAtStartOfDay];
+	int startHours = [_startTag.value hour];
+	int startMinutes = [_startTag.value minute];
+	int endHours = [_endTag.value hour];
+	int endMinutes = [_endTag.value minute];
+	
+	_startTag.value = [[day dateByAddingHours:startHours] dateByAddingMinutes:startMinutes];
+	_endTag.value = [[day dateByAddingHours:endHours] dateByAddingMinutes:endMinutes];
 }
 
 // ================================================================

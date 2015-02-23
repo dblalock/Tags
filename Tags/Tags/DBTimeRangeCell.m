@@ -38,9 +38,12 @@
 		//EDIT: nevermind--now we have our very own TableItem subclass that
 		//knows things. Hooray!
 	
-	[self.recordingSwitch setOn:self.itm.recording animated:NO];
-	
-//	self.itm.recording = [self.recordingSwitch isOn];
+	if ([self.itm inToday]) {
+		self.recordingSwitch.hidden = NO;
+		[self.recordingSwitch setOn:self.itm.recording animated:NO];
+	} else {
+		self.recordingSwitch.hidden = YES;
+	}
 }
 
 -(IBAction) switchChanged:(id)sender {
@@ -51,7 +54,7 @@
 
 
 NSString* formatDuration(NSDateComponents* components) {
-	return [NSString stringWithFormat:@"%2d:%02d", components.hour, components.minute];
+	return [NSString stringWithFormat:@"%2d:%02d", (int)components.hour, (int) components.minute];
 //	return [NSString stringWithFormat:@"%2ld:%02ld:%02ld",
 //			(long)components.hour, (long)components.minute, (long)components.second];
 }
