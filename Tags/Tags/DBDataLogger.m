@@ -181,7 +181,8 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 		
 		// time stuff
 		_samplingPeriodMs = ms;
-		_autoFlushLagMs = maxTimeStampMs();
+//		_autoFlushLagMs = maxTimeStampMs(); // never flush automatically
+		_autoFlushLagMs = 60 * 1000; // flush every 60s--can't overflow memory
 		_gapThresholdMs = kDefaultGapThresholdMs;
 		_lastFlushTimeMs = currentTimeStampMs();
 		_prevLastSampleTimeWritten = minTimeStampMs();
@@ -215,7 +216,7 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 	
 	_latestTimeStamp = MAX(_latestTimeStamp, ms);
 	if (_latestTimeStamp - _lastFlushTimeMs > _autoFlushLagMs) {
-		[self flushUpToTimeStamp:(_lastFlushTimeMs - _autoFlushLagMs)];
+		[self flushUpToTimeStamp:(_latestTimeStamp - _autoFlushLagMs)];
 	}
 }
 
@@ -427,7 +428,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 // assumes that samples are sorted by increasing timestamp
 -(void)writeData:(NSArray*)samples {
 	if (! [samples count]) return;
-
+	
 	NSMutableArray* prevSampleValues;// = _currentSampleValues;
 	timestamp_t tprev;
 	timestamp_t t = _prevLastSampleTimeWritten;
@@ -550,7 +551,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 		NSArray* sorted = sortedByTimeStamp(_data);
 		NSInteger numSamples = [sorted count];
 		timestamp_t minTime = _lastFlushTimeMs;
-		_lastFlushTimeMs = currentTimeStampMs();
+		_lastFlushTimeMs = ms; // not current time because could be a time in the past
 		
 		// find the start of samples that are after the last flush;
 		// at end of loop, start is the first idx in the array that's
@@ -559,9 +560,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 		
 		for (start = 0; start < numSamples; start++) {
 			timestamp_t sampleTime = getTimeStampForSample(sorted[start]);
-			if (sampleTime < minTime) {
-				start++;
-			} else {
+			if (sampleTime >= minTime) {
 				break;
 			}
 		}
