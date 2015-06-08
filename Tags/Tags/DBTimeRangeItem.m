@@ -114,10 +114,10 @@ static const BOOL kStartRecordingWhenCreated = NO;
 
 -(void) setDay:(NSDate*) anyDateDuringDay {
 	NSDate* day = [anyDateDuringDay dateAtStartOfDay];
-	int startHours = [_startTag.value hour];
-	int startMinutes = [_startTag.value minute];
-	int endHours = [_endTag.value hour];
-	int endMinutes = [_endTag.value minute];
+	NSInteger startHours = [_startTag.value hour];
+	NSInteger startMinutes = [_startTag.value minute];
+	NSInteger endHours = [_endTag.value hour];
+	NSInteger endMinutes = [_endTag.value minute];
 	
 	_startTag.value = [[day dateByAddingHours:startHours] dateByAddingMinutes:startMinutes];
 	_endTag.value = [[day dateByAddingHours:endHours] dateByAddingMinutes:endMinutes];
