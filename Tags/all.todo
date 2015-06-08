@@ -1,3 +1,13 @@
+# This file is a dump of all TODO items for the app; effectively, it's a
+# bug tracker, but much lower overhead. Complement to main.todo, which
+# actually captures what to do next in more detail.
+#
+# Syntax:
+#	-leading "X" if it's done
+#		-implies that child items are also done
+#	-"//" for comments that aren't actually todo items
+# 	-"#foo" to add "foo" tag; mostly used for tagging with particular people
+#	to claim/assign ownership
 
 X add a "new" button at the bottom of the table / bottom of screen
 	make it work
@@ -63,6 +73,8 @@ X add prefs
 X add auto-sorting of stuff by start time within each day
 
 have recording continue even when looking at another day and/or view controller
+	X code it
+	test it
 
 X have it not upload the tag items to dropbox every time they're saved, cuz it's literally thousands of files
 	X -temp solution: dont timestamp, so single copy for each day
@@ -75,8 +87,10 @@ X have it not upload the tag items to dropbox every time they're saved, cuz it's
 			-and 1000/s might start to flag stuff if this scaled...
 
 make sure it's doing the right thing as far as writing current values as first line of new log file when it just starts a new file but doesn't start recording
+	X code
+	testing
 
-make it create new items in a given day using the day that's showing, not the current day
+X make it create new items in a given day using the day that's showing, not the current day
 
 sanity check pebble data
 	cuz it seems to like *always* be moving...
@@ -84,6 +98,28 @@ sanity check pebble data
 ------------------------ end crap that really has to get done
 
 make dbuploader only upload every 30 minutes or so
+
+additional stuff to log:
+	-log screen brightness
+	-whether headphones are plugged in
+	-phone model
+	-phone OS version
+	-battery level
+	-device language
+	-country
+
+don't generate any data if we don't have access to it (eg, if user didn't let us access location services, don't send empty GPS fixes)
+
+nonzero chance we'll want to split the data collection and UI into separate apps
+	-eg, if we do a cross-platform UI using phonegap or something, which won't necessarily be able to talk to pebble, etc
+
+would be good to give people option to disallow certain probes (properties)
+	-although probably simplify it into groups rather than giving people a wall of buttons to check/uncheck
+
+should almost certainly split data into separate tables so we don't have to sample all of it synchronously
+	-should allow for way more compression cuz can run-length-encode each property separately
+		-could probably just let gzip do this and simplify our lives a bunch
+	-doesn't break our format if we add a new property to collect
 
 do something about recording crap on days that aren't today
 	-should prolly be disallowed in some nice way
@@ -172,7 +208,7 @@ prolly separate table of time ranges from table of other stuff
 	-or maybe don't, cuz of stuff that has a timestamp but isn't a time range
 		-would still make sense to display it temporally
 
-graphs or whatever of you're time would be a pretty darn beneficial if trying to get normal ppl to actually use it
+graphs or whatever of your time would be a pretty darn beneficial if trying to get normal ppl to actually use it
 	since this would pretty much be the value prop
 
 ------------------------------------------------

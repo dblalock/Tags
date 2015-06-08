@@ -1,0 +1,168 @@
+# This file serves as the immediate roadmap for the project. Complement to
+# all.todo, which captures everything that has to get done, but without
+# much detail or ordering information.
+
+================================================================
+Goal 0: Get up to speed on Obj-C, building the project, etc
+================================================================
+
+-Install Xcode
+-Learn enough Obj-C to be read/modify our code
+	-Some weird syntax: boxing, blocks
+-Get access on Github
+-Get access on Dropbox
+-Come up with a name?
+-A note on expectations/incentives
+
+================================================================
+Goal 1: End-to-end pipeline that lets us collect anonymized data from users and read it into python scripts.
+================================================================
+
+------------------------------------------------
+Likely Steps
+------------------------------------------------
+
+1) Finish off logging functionality
+================================
+
+Split logging by collections of properties
+------------------------
+// We presently have all the data from every sensor combined into one dictionary,
+// which we turn into a string and write to a csv file 20 times/second
+//
+// What would be drastically better is to have separate csv files for different
+// groups of fields (enumerated near the bottom of this file); this would let
+// us sample different things at different rates (eg, update GPS 1/min, but
+// phone acceleration 10x/second), as well as change what collections get stored
+// more cleanly (eg, if a user disables GPS collection). This will probably
+// amount to having multiple DBDataLoggers, mostly.
+//
+// More precisely:
+
+-Log data for different signal groups separately
+	-allow different sampling rates for each group
+	-separate files for each group (see next section)
+	-groups of signals enumerated near bottom of doc
+-Compress data when we write it
+-Encrypt compressed data
+	-so, ideally, unencrypted data never touches the filesystem
+
+Notes:
+-Implementation should be conducive to future expansion
+	-sending files to server, not just dropbox
+	-sending data to MIT Datahub
+	-streaming live data to server
+	-porting to Java for android
+
+
+2) Python code to read log files
+------------------------
+	-class with fields:
+		-userId
+		-data
+			-which contains the union of all the sensor data (and location labels) we have at a given time step
+				-sampled at ~20hz
+			-should be a Pandas DataFrame
+		-tags / labels entered in the app (with timestamps)
+
+3) Basic data collection validation
+------------------------
+-Python code to plot pebble and phone acceleration data
+-Some simple collected data to get
+
+------------------------------------------------
+Likely Spec
+------------------------------------------------
+// feel free to change this; the goal is just something simple for the above
+// python scripts to be able to read and for us to sanity check the structure
+// of in dropbox
+
+file saving schema
+------------------------
+	-<appRoot>/randomUserId/whateverDataType/timeStampedDataFile.csv
+	-example:
+		<appRoot>/asldfn23j23rASDFo351/motion/2015-6-8_03:12:44.csv
+	-note that the timestamp is in the user's local time
+		-which is important because this is all the tells us how to convert between the user's local time and the timestamps in our files
+
+
+data file schema
+------------------------
+	<blank>, property1name, property2name, ...
+	unix timestamp, property1currentValue, property2currentValue, ...
+	difference since last timestamp,
+
+
+example code we want to be able to write
+------------------------
+	[LoggingManager startLogging]
+	[LoggingManager stopLogging]
+	[LoggingManager enableCollectionFor:DATA_LOCATION] # where const is group of properties
+	[LoggingManager disableCollectionFor:DATA_LOCATION]
+	[LoggingManager ]
+
+------------------------------------------------
+Signals we (want to) log
+------------------------------------------------
+
+Currently getting logged
+------------------------
+
+Pebble:
+	accel{X,Y,Z}
+
+Phone motion:
+	accelGravity_{X,Y,Z}
+	accelUser_{X,Y,Z}
+	roll, pitch, yaw
+	gryo_{X,Y,Z}
+	magAccuracy
+	max{x,y,z}
+
+Phone Location:
+	latitude
+	longitude
+	altitude # if not anonymized
+	buildingFloor
+	horizontalAccuracy
+	verticalAccuracy
+	course
+	speed
+
+Phone Heading:
+	magneticHeading
+	headingAccuracy
+	heading_{x,y,z}
+
+
+Want to log these also
+------------------------
+
+Phone Misc:
+	hasHeadphonesPluggedIn
+	batteryLevel
+	isCharging
+	isWifiAvailable
+	screenBrightness
+
+Phone Device Info:
+	iphone model
+	iOS version # don't check too frequently cuz apple could reidentify from moment of update
+
+Phone Activity: # unclear reliability
+	activity
+	activityConfidence
+	//https://developer.apple.com/library/ios/documentation/CoreMotion/Reference/CoreMotion_Reference
+
+Phone Steps: # super unreliable, we believe
+	stepCount
+	distance
+	floors
+	//https://developer.apple.com/library/ios/documentation/CoreMotion/Reference/CMPedometer_class/index.html#//apple_ref/occ/cl/CMPedometer
+
+Tags: # based on data user enters or other rules
+	locationName
+
+================================================================
+Goal 2: TBD, but probably UI usability (which should be interesting as well)
+================================================================
