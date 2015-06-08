@@ -427,8 +427,8 @@ NSDictionary* dictFromLocation(CLLocation* location) {
 	// location accuracy (since it's given in degrees) and is thus probably
 	// more accurate than the GPS is anyway
 	return @{
-				KEY_LATITUDE : [NSString stringWithFormat:@"%6f", lat],
-				KEY_LONGITUDE: [NSString stringWithFormat:@"%6f", lon],
+				KEY_LATITUDE : [NSString stringWithFormat:@"%.6f", lat],
+				KEY_LONGITUDE: [NSString stringWithFormat:@"%.6f", lon],
 				KEY_ALTITUDE : @((int)alt),
 				KEY_HORIZONTAL_ACC: @((int)location.horizontalAccuracy),
 				KEY_VERTICAL_ACC:	@((int)location.verticalAccuracy),
