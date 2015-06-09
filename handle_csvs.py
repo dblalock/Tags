@@ -12,12 +12,17 @@ def fix_times(dataframe):
     return dataframe
 
 def insert_skips(dataframe):
-	#Adds in the duplicate rows that were skipped during compression
+    #Adds in the duplicate rows that were skipped during compression
     for i in range(0, len(dataframe.index)-1):
         timeSkipped = int(dataframe.get_value(i+1, "numSkipped"))
+        original_time = dataframe.get_value(i, "timestamp")
         if timeSkipped!=0:
+            time_dif = (dataframe.get_value(i+1, "timestamp") - original_time)/(timeSkipped+1)
             for j in range(0, timeSkipped):
                 dataframe = dataframe.append(dataframe.ix[i], ignore_index=True)
+                #Set the timestamps for each of the skipped rows to make sure no duplicate times
+                new_time = original_time+time_dif*(j+1)
+                dataframe.set_value(len(dataframe.index)-1, "timestamp", new_time)
     dataframe = dataframe.sort("timestamp").reset_index(drop=True)
     del dataframe["numSkipped"]
     return dataframe
@@ -46,4 +51,4 @@ def combine_frames(frames):
 
 all_csvs = get_csvs(path)
 full_frame = combine_frames(all_csvs)
-full_frame.to_csv("full.csv", na_rep="nan", index_lable="Index")
+full_frame.to_csv("full.csv", na_rep="None", index_lable="Index")
