@@ -24,7 +24,8 @@
 
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
-			 samplePeriod:(NSUInteger)ms;
+			 samplePeriod:(NSUInteger)ms
+                 dataType:(NSString*)type;
 
 -(void) logData:(NSDictionary*)kvPairs withTimeStamp:(timestamp_t)ms;
 -(void) logData:(NSDictionary*)kvPairs;
@@ -33,7 +34,6 @@
 	 finalTimeStamp:(timestamp_t)ms;
 -(void) logDataBuff:(NSArray*)sampleDicts
   withSampleSpacing:(NSUInteger)periodMs;
-
 -(void) startLog;
 -(void) pauseLog;
 -(void) endLog;

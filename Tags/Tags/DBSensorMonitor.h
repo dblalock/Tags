@@ -42,17 +42,23 @@
 
 @interface DBSensorMonitor : NSObject
 
-@property (nonatomic, copy) void (^onDataReceived)(NSDictionary* data, timestamp_t timestamp);
+@property (nonatomic, copy) void (^onDataReceived)(NSDictionary* data, timestamp_t timestamp, NSString *type);
 @property (nonatomic) BOOL sendOnlyIfDifferent;
 
 +(id) sharedInstance;
 
--(instancetype) initWithDataReceivedHandler:(void (^)(NSDictionary* data, timestamp_t timestamp))handler;
+-(instancetype) initWithDataReceivedHandler:(void (^)(NSDictionary* data, timestamp_t timestamp, NSString *type))handler;
 -(void) poll;	//force update
 -(void) pollLocation;	//force update of only location / heading
 
 @end
 
 NSDictionary* allSensorDefaultsDict();
+NSDictionary* defaultsDictMotion();
+NSDictionary* defaultsDictLocation();
+NSDictionary* defaultsDictHeading();
+NSArray* defaultValuesMotion();
+NSArray* defaultValuesLocation();
+NSArray* defaultValuesHeading();
 //NSArray* allSensorDataKeys();
 //NSArray* allSensorDataDefaultValues();

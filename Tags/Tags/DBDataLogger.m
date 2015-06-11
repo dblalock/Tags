@@ -34,11 +34,12 @@ static NSString *const kFloatFormat = @"%.3f";	// log only 3 decimal places
 static NSString *const kIntFormat = @"%d";
 static const timestamp_t kDefaultGapThresholdMs = 2*1000;	//2s
 static const timestamp_t kDefaultTimeStamp = -1;
-static const NSUInteger kMaxLinesInLog = 10000;	// ~4MB
+static const NSUInteger kMaxLinesInLog = 10;	// ~4MB
 
 @interface DBDataLogger ()
 
 //TODO I think we only really need currentSample and indexes
+@property(nonatomic) NSString* dataType;
 @property(strong, nonatomic) NSArray* allSignalNames;
 //@property(strong, nonatomic) NSSet* allSignalNames;
 //@property(strong, nonatomic) NSDictionary* defaultSample;
@@ -46,6 +47,7 @@ static const NSUInteger kMaxLinesInLog = 10000;	// ~4MB
 @property(strong, nonatomic) NSArray* defaultValues;
 @property(strong, nonatomic) NSDictionary* signalIdxs;
 @property(strong, nonatomic) NSMutableArray* currentSampleValues;
+
 
 @property(strong, atomic) NSMutableArray* data;
 @property(strong, atomic) NSMutableArray* prevWrittenVals;
@@ -121,7 +123,6 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 - (BOOL) signalNameRecognized:(id)name {
 	return [_allSignalNames containsObject:name];
 }
-
 - (NSMutableArray*) updateSampleValues:(NSMutableArray*)vals withSample:(NSDictionary*)sample {
 	for (id signalName in [sample allKeys]) {
 		if (! [self signalNameRecognized:signalName]) continue;	//only listen to predefined set
@@ -143,9 +144,22 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
-			   samplePeriod:(NSUInteger)ms {
+			   samplePeriod:(NSUInteger)ms
+                 dataType:(NSString*)type{
 	if (self = [super init]) {
-
+        _dataType = type;
+//        if ([_dataType isEqualToString:@"Pebble"]) {
+//            logFileType = @"Pebble";
+//        }
+//        if([_dataType isEqualToString:@"Loc"]){
+//            logFileType  =@"PhoneLoc";
+//        }
+//        if([_dataType isEqualToString:@"Motion"]){
+//            logFileType = @"PhoneMot";
+//        }
+//        if([_dataType isEqualToString:@"Head"]){
+//            logFileType = @"PhoneHead";
+//        }
 		// add a "signal" for the time stamp at position 0
 		NSMutableArray* defaultsWithTimeStamp = [defaults mutableCopy];
 		[defaultsWithTimeStamp insertObject:@(kDefaultTimeStamp) atIndex:kTimeStampIndex];
@@ -199,9 +213,13 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 //--------------------------------------------------------------
 
 -(void) logData:(NSDictionary*)kvPairs withTimeStamp:(timestamp_t)ms {
-//	NSLog(@"logData: t=%lld at time=%lld, logging %@", ms, currentTimeStampMs(), kvPairs);
-	if (! _isLogging) return;
-	if (! [kvPairs count]) return;
+	//NSLog(@"logData: t=%lld at time=%lld, logging %@", ms, currentTimeStampMs(), kvPairs);
+    if (! _isLogging){
+        return;
+    }
+    if (! [kvPairs count]){
+        return;
+    }
 	
 	if (ms <= 0) {
 		ms = currentTimeStampMs();
@@ -212,7 +230,7 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 	NSMutableDictionary* sample = [kvPairs mutableCopy];
 	setTimeStampForSample(sample, ms);
 	[_data addObject:sample];
-//	NSLog(@"added obj to data: %@", sample);
+	//NSLog(@"added obj to data: %@", sample);
 	
 	_latestTimeStamp = MAX(_latestTimeStamp, ms);
 	if (_latestTimeStamp - _lastFlushTimeMs > _autoFlushLagMs) {
@@ -638,6 +656,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	logPath = [FileUtils getFullFileName:_logSubdir];
 	[FileUtils ensureDirExists:logPath];
 	logPath = [logPath stringByAppendingPathComponent:_logName];
+    logPath = [logPath stringByAppendingString:_dataType];
 	logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
 	logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
 //	NSLog(@"logPath = %@", logPath);
@@ -652,7 +671,6 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	@synchronized(self) {
 		if (_isLogging) return;
 		_isLogging = YES;
-		
 		_logPath = [self generateLogFilePath];
 		_stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
 		[_stream open];

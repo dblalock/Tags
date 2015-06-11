@@ -166,7 +166,8 @@ static BOOL valChanged(id oldVal, id newVal, id thresh) {
 	}
 	
 	// otherwise, use class isEqual
-	return [newVal isEqual:oldVal];
+    //I think it should return the flip of the isEqual? Might need some testing.
+    return ![newVal isEqual:oldVal];
 }
 
 NSDictionary* extractChanges(NSDictionary* oldDict, NSDictionary* newDict, NSDictionary* thresholds) {
@@ -471,7 +472,30 @@ NSDictionary* allSensorDefaultsDict() {
 	[dict addEntriesFromDictionary:defaultsDictHeading()];
 	return dict;
 }
-
+NSArray* defaultValuesMotion(){
+    NSDictionary* dict = defaultsDictMotion();
+    NSMutableArray* vals = [NSMutableArray array];
+    for (id key in dict) {
+        [vals addObject:[dict valueForKey:key]];
+    }
+    return vals;
+}
+NSArray* defaultValuesLocation(){
+    NSDictionary* dict = defaultsDictLocation();
+    NSMutableArray* vals = [NSMutableArray array];
+    for (id key in dict) {
+        [vals addObject:[dict valueForKey:key]];
+    }
+    return vals;
+}
+NSArray* defaultValuesHeading(){
+    NSDictionary* dict = defaultsDictHeading();
+    NSMutableArray* vals = [NSMutableArray array];
+    for (id key in dict) {
+        [vals addObject:[dict valueForKey:key]];
+    }
+    return vals;
+}
 //================================================================
 // DBSensorMonitor
 //================================================================
@@ -511,7 +535,7 @@ NSDictionary* allSensorDefaultsDict() {
 	return sharedInstance;
 }
 
--(instancetype) initWithDataReceivedHandler:(void (^)(NSDictionary* data, timestamp_t timestamp))handler {
+-(instancetype) initWithDataReceivedHandler:(void (^)(NSDictionary* data, timestamp_t timestamp, NSString *type))handler {
 #ifdef ANONYMIZE
 	initAnonymizing();
 #endif
@@ -575,9 +599,9 @@ NSDictionary* allSensorDefaultsDict() {
 // private methods
 //--------------------------------------------------------------
 
--(void) sendData:(NSDictionary*)data withTime:(timestamp_t)t {
+-(void) sendData:(NSDictionary*)data withTime:(timestamp_t)t type:(NSString*)type{
 	if (_onDataReceived && [data count]) {
-		_onDataReceived(data, t);
+		_onDataReceived(data, t, type);
 	}
 }
 
@@ -588,11 +612,13 @@ NSDictionary* allSensorDefaultsDict() {
 												   data,
 												   changeThreshsDictMotion());
 			[_prevDataMotion addEntriesFromDictionary:changes];
-			[self sendData:changes withTime:time];
+            //NSLog(@"sending motion data: %@", data);
+
+            [self sendData:changes withTime:time type:@"motion"];
 		}
 	} else {
-//		NSLog(@"sending motion data: %@", data);
-		[self sendData:data withTime:time];
+		//NSLog(@"sending motion data: %@", data);
+        [self sendData:data withTime:time type:@"motion"];
 	}
 }
 
@@ -603,10 +629,10 @@ NSDictionary* allSensorDefaultsDict() {
 												   data,
 												   changeThreshsDictLocation());
 			[_prevDataLocation addEntriesFromDictionary:changes];
-			[self sendData:changes withTime:time];
+            [self sendData:changes withTime:time type:@"location"];
 		}
 	} else {
-		[self sendData:data withTime:time];
+		[self sendData:data withTime:time type:@"location"];
 	}
 }
 
@@ -617,10 +643,10 @@ NSDictionary* allSensorDefaultsDict() {
 												   data,
 												   changeThreshsDictHeading());
 			[_prevDataHeading addEntriesFromDictionary:changes];
-			[self sendData:changes withTime:time];
+            [self sendData:changes withTime:time type:@"heading"];
 		}
 	} else {
-		[self sendData:data withTime:time];
+		[self sendData:data withTime:time type:@"heading"];
 	}
 }
 

@@ -50,7 +50,14 @@ NSArray* allDataDefaultValues() {
 	}
 	return values;
 }
-
+NSArray* defaultValuesPebble(){
+    NSDictionary* dict = pebbleDefaultValuesDict();
+    NSMutableArray* vals = [NSMutableArray array];
+    for (id key in [pebbleDefaultValuesDict() allKeys]){
+        [vals addObject:[dict valueForKey:key]];
+    }
+    return vals;
+}
 NSString* loggingSubdir() {
 	return [LOGGING_SUBDIR_PREFIX stringByAppendingString:getUniqueDeviceIdentifierAsString()];
 }
@@ -60,7 +67,10 @@ NSString* loggingSubdir() {
 //===============================================================
 
 @interface DBLoggingManager ()
-@property (strong, nonatomic) DBDataLogger* dataLogger;
+@property (strong, nonatomic) DBDataLogger* dataLoggerPB;
+@property (strong, nonatomic) DBDataLogger* dataLoggerPM;
+@property (strong, nonatomic) DBDataLogger* dataLoggerPL;
+@property (strong, nonatomic) DBDataLogger* dataLoggerPH;
 @property (strong, nonatomic) DBSensorMonitor* sensorMonitor;
 @property (strong, nonatomic) DBPebbleMonitor* pebbleMonitor;
 @property (strong, nonatomic) DBBackgrounder* backgrounder;
@@ -88,15 +98,40 @@ NSString* loggingSubdir() {
 												   object:nil];
 		
 		// data logging
-		_dataLogger = [[DBDataLogger alloc] initWithSignalNames:allDataKeys()
-												  defaultValues:allDataDefaultValues()
-												   samplePeriod:DATALOGGING_PERIOD_MS];
-		_dataLogger.autoFlushLagMs = flushEveryMs;	//write every 2s
-		_dataLogger.logSubdir = loggingSubdir();
+        _dataLoggerPB = [[DBDataLogger alloc] initWithSignalNames:[pebbleDefaultValuesDict() allKeys]
+												  defaultValues:defaultValuesPebble()
+												   samplePeriod:DATALOGGING_PERIOD_MS
+                                                       dataType:@"Pebble"];
+        _dataLoggerPM = [[DBDataLogger alloc] initWithSignalNames:[defaultsDictMotion() allKeys]
+                                                    defaultValues:defaultValuesMotion()
+                                                     samplePeriod:DATALOGGING_PERIOD_MS
+                                                         dataType:@"Motion"];
+        _dataLoggerPL = [[DBDataLogger alloc] initWithSignalNames:[defaultsDictLocation() allKeys]
+                                                    defaultValues:defaultValuesLocation()
+                                                     samplePeriod:DATALOGGING_PERIOD_MS
+                                                         dataType:@"Loc"];
+        _dataLoggerPH = [[DBDataLogger alloc] initWithSignalNames:[defaultsDictHeading() allKeys]
+                                                    defaultValues:defaultValuesHeading()
+                                                     samplePeriod:DATALOGGING_PERIOD_MS
+                                                         dataType:@"Head"];
+		_dataLoggerPB.autoFlushLagMs = flushEveryMs;	//write every 2s
+		_dataLoggerPB.logSubdir = loggingSubdir();
 		_sensorMonitor = [[DBSensorMonitor alloc] initWithDataReceivedHandler:^
-						  void(NSDictionary *data, timestamp_t timestamp) {
+						  void(NSDictionary *data, timestamp_t timestamp, NSString *type) {
 							  dispatch_async(dispatch_get_main_queue(), ^{	//main thread
-								  [_dataLogger logData:data withTimeStamp:timestamp];
+                              if([ type isEqualToString:@"motion"]){
+                                  [_dataLoggerPM startLog];
+                                  [_dataLoggerPM logData:data withTimeStamp:timestamp];
+                              }
+                                  if([type isEqualToString:@"location"]){
+                                  [_dataLoggerPL startLog];
+                                  [_dataLoggerPL logData:data withTimeStamp:timestamp];
+                                  }
+                                if([type isEqualToString:@"heading"]){
+                                  [_dataLoggerPH startLog];
+                                  [_dataLoggerPH logData:data withTimeStamp:timestamp];
+                              }
+								  
 							  });
 						  }
 						  ];
@@ -122,13 +157,15 @@ NSString* loggingSubdir() {
 //===============================================================
 
 -(void) logAccelX:(double)x Y:(double)y Z:(double)z timeStamp:(timestamp_t)sampleTime {
+    //Logs pebble data
 	NSDictionary* kvPairs = @{kKeyPebbleX: @(x / 64.0),
 							  kKeyPebbleY: @(y / 64.0),
 							  kKeyPebbleZ: @(z / 64.0)};
-	[_dataLogger logData:kvPairs withTimeStamp:sampleTime];
+	[_dataLoggerPB logData:kvPairs withTimeStamp:sampleTime];
 }
 
 -(void) notifiedPebbleData:(NSNotification*)notification {
+    //When Pebble produces data, extract and log it
 	if ([notification name] != kNotificationPebbleData) return;
 	if (! _recording) return;
 	
@@ -140,6 +177,7 @@ NSString* loggingSubdir() {
 }
 
 -(void) notifiedPebbleDisconnected:(NSNotification*)notification {
+    //Notify user if peble is disconnected
 	if ([notification name] != kNotificationPebbleDisconnected) return;
 	[self logAccelX:NONSENSICAL_DOUBLE
 				  Y:NONSENSICAL_DOUBLE
@@ -177,7 +215,7 @@ NSString* loggingSubdir() {
 
 -(void) deleteLastLogFile {
 	if (!_recording) {
-		[_dataLogger deleteLog];
+		[_dataLoggerPB deleteLog];
 	}
 }
 
@@ -188,14 +226,14 @@ NSString* loggingSubdir() {
 -(void) startRecording {
 	_recording = YES;
 	[_pebbleMonitor startWatchApp];
-	[_dataLogger startLog];
+	[_dataLoggerPB startLog];
 	[_sensorMonitor poll];
 	[_backgrounder setBackgroundEnabled:YES];
 }
 
 -(void) stopRecording {
 	_recording = NO;
-	[_dataLogger endLog];
+	[_dataLoggerPB endLog];
 	[_pebbleMonitor stopWatchApp];
 	[_backgrounder setBackgroundEnabled:NO];
 	// TODO stop sensor logging also, esp. GPS

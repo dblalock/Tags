@@ -150,6 +150,7 @@ Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
 
 -(instancetype) init {
 	if (self = [super init]) {
+        NSLog(@"Initializing!");
 		// try reading in outstanding files to upload from previous app launch;
 		// create empty set if there are none
 		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -158,6 +159,7 @@ Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
 			_filesToUpload = [NSMutableSet set];
 		}
 		// timer to try uploading files periodically
+        NSLog(@"Starting Timer");
 		_tryUploadTimer = [NSTimer scheduledTimerWithTimeInterval:kTryUploadEveryNSecs
 												  target:self
 												selector:@selector(tryUploadingFiles)
@@ -205,11 +207,11 @@ Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
 }
 
 -(void) tryUploadingFiles {
-//	NSLog(@"Uploader: trying to upload files...");
+	NSLog(@"Uploader: trying to upload files...");
+    NSLog(@"Number of files %tu", [_filesToUpload count]);
 	NSFileManager* mgr = [NSFileManager defaultManager];
 	for (Upload* u in [_filesToUpload copy]) {
 		NSString* local = u.localPath;
-		
 		// if the local file exists, try to upload it to dropbox; if this
 		// succeeds, delete it
 		if ([mgr fileExistsAtPath:local]) {
