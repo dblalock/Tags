@@ -21,6 +21,7 @@ static const NSStringEncoding kENCODING = NSUTF8StringEncoding;
 }
 
 +(NSString*) getFullFileName:(NSString*)fileName {
+    NSLog(@"The file being searched for is: %@",fileName);
 	if ([fileName rangeOfString:[FileUtils docsDirectory]].location == 0) return fileName;
 	if ([fileName length]) {
 		return [[FileUtils docsDirectory] stringByAppendingPathComponent:fileName];

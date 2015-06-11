@@ -97,7 +97,7 @@ NSString* loggingSubdir() {
 													 name:kNotificationPebbleDisconnected
 												   object:nil];
 		
-		// data logging
+		// Yay! Data loggers galore!
         _dataLoggerPB = [[DBDataLogger alloc] initWithSignalNames:[pebbleDefaultValuesDict() allKeys]
 												  defaultValues:defaultValuesPebble()
 												   samplePeriod:DATALOGGING_PERIOD_MS
@@ -114,8 +114,16 @@ NSString* loggingSubdir() {
                                                     defaultValues:defaultValuesHeading()
                                                      samplePeriod:DATALOGGING_PERIOD_MS
                                                          dataType:@"Head"];
+        //NSMutableArray* loggers = [NSMutableArray arrayWithObjects:_dataLoggerPH, _dataLoggerPB, _dataLoggerPL, _dataLoggerPM, nil];
+        
 		_dataLoggerPB.autoFlushLagMs = flushEveryMs;	//write every 2s
 		_dataLoggerPB.logSubdir = loggingSubdir();
+        _dataLoggerPM.autoFlushLagMs = flushEveryMs;
+        _dataLoggerPM.logSubdir = loggingSubdir();
+        _dataLoggerPH.autoFlushLagMs = flushEveryMs;
+        _dataLoggerPH.logSubdir = loggingSubdir();
+        _dataLoggerPL.autoFlushLagMs = flushEveryMs;
+        _dataLoggerPL.logSubdir = loggingSubdir();
 		_sensorMonitor = [[DBSensorMonitor alloc] initWithDataReceivedHandler:^
 						  void(NSDictionary *data, timestamp_t timestamp, NSString *type) {
 							  dispatch_async(dispatch_get_main_queue(), ^{	//main thread
@@ -128,6 +136,8 @@ NSString* loggingSubdir() {
                                   [_dataLoggerPL logData:data withTimeStamp:timestamp];
                                   }
                                 if([type isEqualToString:@"heading"]){
+                                    NSLog(@"Heading Collecting");
+
                                   [_dataLoggerPH startLog];
                                   [_dataLoggerPH logData:data withTimeStamp:timestamp];
                               }

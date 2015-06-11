@@ -653,12 +653,14 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 
 -(NSString*) generateLogFilePath {
 	NSString* logPath;
+    NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
 	logPath = [FileUtils getFullFileName:_logSubdir];
+    NSLog(@"Logging to path: %@", logPath);
 	[FileUtils ensureDirExists:logPath];
 	logPath = [logPath stringByAppendingPathComponent:_logName];
-    logPath = [logPath stringByAppendingString:_dataType];
 	logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
 	logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
+    logPath = [logPath stringByAppendingString:infoType];
 //	NSLog(@"logPath = %@", logPath);
 	return [logPath stringByAppendingString:kLogFileExt];
 }
@@ -670,6 +672,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 -(void) startLog {
 	@synchronized(self) {
 		if (_isLogging) return;
+        NSLog(@"Starting the log");
 		_isLogging = YES;
 		_logPath = [self generateLogFilePath];
 		_stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
