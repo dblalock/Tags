@@ -34,7 +34,7 @@ static NSString *const kFloatFormat = @"%.3f";	// log only 3 decimal places
 static NSString *const kIntFormat = @"%d";
 static const timestamp_t kDefaultGapThresholdMs = 2*1000;	//2s
 static const timestamp_t kDefaultTimeStamp = -1;
-static const NSUInteger kMaxLinesInLog = 10;	// ~4MB
+static const NSUInteger kMaxLinesInLog = 100;	// ~4MB
 
 @interface DBDataLogger ()
 
@@ -339,11 +339,12 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 
 -(void) writeSampleValues:(NSArray*)values toStream:(NSOutputStream*)stream forceWrite:(BOOL)force {
 	if ([values count] < kTimeStampIndex) return;
+    //NSLog(@"Values being written: %@", values);
 	NSMutableArray* fmtVals = [NSMutableArray arrayWithCapacity:[values count]];
 	
 	force = force || (_linesInLog == 1);	// always write 1st data line
 	
-//	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
+	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
 //	NSLog(@"prev line:\n%@", prevLine);
 	unsigned long numChangedVals = 0;
 	
@@ -409,11 +410,11 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	NSString* line = [NSString stringWithFormat:@"%@%@\n", sinceUpdateStr, valuesStr];
 	
 	// debug output
-//	if (force) {
-//		NSLog(@"being forced to write sample");
-//	}
-//	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
-//	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
+	if (force) {
+		NSLog(@"being forced to write sample");
+	}
+	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
+	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
 
 	writeLineToStream(line, stream);
 
@@ -553,6 +554,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 
 	// start a new log file once this one is too long
 	if (_linesInLog >= kMaxLinesInLog) {
+        NSLog(@"Log too long");
 		[self endLog];
 		[self startLog];
 	}
@@ -677,7 +679,6 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 		_logPath = [self generateLogFilePath];
 		_stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
 		[_stream open];
-		
 		// write signal names as first line
 		NSMutableArray* titles = [NSMutableArray arrayWithArray:_allSignalNames];
 		[titles insertObject:kKeyNumSkipped atIndex:0];

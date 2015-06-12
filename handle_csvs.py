@@ -11,14 +11,13 @@ class dataProcessor:
         files = glob.glob(path)
         frames = [pd.DataFrame.from_csv(csv, index_col=False) for csv in files]
         return frames
-    def construct_path(userId, dataType):
-        return "../../Dropbox (MIT)/Apps/iOSense/users"+userID+"/*."+dataType+".csv"
     def __init__(self, userID, dataType):
         bigFrame = pd.DataFrame
         user = userID
         _dataType = dataType
-        path = construct_path(userID, dataType)
+        path = "../../Dropbox (MIT)/Apps/iOSense/users"+userID+"/*."+dataType+".csv"
         csvs = get_csvs(path)
+        big_frame = combine_frames(csvs)
     def fix_times(dataframe):
         #Sum up time stamps to give the actual times instead of the difference
         dataframe["timestamp"] = dataframe["timestamp"].cumsum()
@@ -45,11 +44,12 @@ class dataProcessor:
         return frame
     def combine_frames(frames):
     #Processes and then combines all the csv files into one big data frame
-    base = process_frame(frames[0])
-    for i in range(1,len(frames)):
-        to_add = process_frame(frames[i])
-        base.append(to_add)
-        base.reset_index(drop=True)
-    return base.sort("timestamp").reset_index(drop=True)
+        base = process_frame(frames[0])
+        for i in range(1,len(frames)):
+            to_add = process_frame(frames[i])
+            base.append(to_add)
+            base.reset_index(drop=True)
+        return base.sort("timestamp").reset_index(drop=True)
 
-proc = dataProcessor()
+proc = dataProcessor("4F7E3C4C-B52A-4485-A7F8-1D9FE320A2E1", "Motion")
+print proc.big_frame
