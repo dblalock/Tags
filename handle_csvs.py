@@ -1,4 +1,3 @@
-import pandas
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,23 +5,21 @@ import glob
 
 path="../../Dropbox (MIT)/Apps/iOSense/users/87630EE6-0386-4F28-BDCB-39AE7281460a/*.csv"
 class dataProcessor:
-    def get_csvs(path):
-        #Grabs all the csv files
-        files = glob.glob(path)
-        frames = [pd.DataFrame.from_csv(csv, index_col=False) for csv in files]
-        return frames
     def __init__(self, userID, dataType):
-        bigFrame = pd.DataFrame
         user = userID
         _dataType = dataType
-        path = "../../Dropbox (MIT)/Apps/iOSense/users"+userID+"/*."+dataType+".csv"
-        csvs = get_csvs(path)
-        big_frame = combine_frames(csvs)
-    def fix_times(dataframe):
+        path = "../../Dropbox (MIT)/Apps/iOSense/users/"+userID+"/*."+dataType+".csv"
+        print path
+        files = glob.glob(path)
+        csvs = [pd.DataFrame.from_csv(csv, index_col=False) for csv in files]
+        print len(csvs)
+        big_frame = self.combine_frames(csvs)
+        print big_frame
+    def fix_times(self, dataframe):
         #Sum up time stamps to give the actual times instead of the difference
         dataframe["timestamp"] = dataframe["timestamp"].cumsum()
         return dataframe
-    def insert_skips(dataframe):
+    def insert_skips(self, dataframe):
         #Adds in the duplicate rows that were skipped during compression
         for i in range(0, len(dataframe.index)-1):
             timeSkipped = int(dataframe.get_value(i+1, "numSkipped"))
@@ -37,19 +34,19 @@ class dataProcessor:
         dataframe = dataframe.sort("timestamp").reset_index(drop=True)
         del dataframe["numSkipped"]
         return dataframe
-    def process_frame(frame):
+    def process_frame(self, frame):
         #Fix the times and the skips
-        frame = fix_times(frame)
-        frame = insert_skips(frame)
+        frame = self.fix_times(frame)
+        frame = self.insert_skips(frame)
         return frame
-    def combine_frames(frames):
+    def combine_frames(self, frames):
     #Processes and then combines all the csv files into one big data frame
-        base = process_frame(frames[0])
+        base = self.process_frame(frames[0])
         for i in range(1,len(frames)):
-            to_add = process_frame(frames[i])
+            to_add = self.process_frame(frames[i])
             base.append(to_add)
             base.reset_index(drop=True)
         return base.sort("timestamp").reset_index(drop=True)
 
-proc = dataProcessor("4F7E3C4C-B52A-4485-A7F8-1D9FE320A2E1", "Motion")
+proc = dataProcessor("5A218C93-D44E-49C1-99C0-2E8B5FC0F938", "Motion")
 print proc.big_frame
