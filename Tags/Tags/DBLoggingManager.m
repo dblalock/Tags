@@ -128,17 +128,13 @@ NSString* loggingSubdir() {
 						  void(NSDictionary *data, timestamp_t timestamp, NSString *type) {
 							  dispatch_async(dispatch_get_main_queue(), ^{	//main thread
                               if([ type isEqualToString:@"motion"]){
-                                  [_dataLoggerPM startLog];
                                   [_dataLoggerPM logData:data withTimeStamp:timestamp];
                               }
                                   if([type isEqualToString:@"location"]){
-                                  [_dataLoggerPL startLog];
                                   [_dataLoggerPL logData:data withTimeStamp:timestamp];
                                   }
                                 if([type isEqualToString:@"heading"]){
-                                    NSLog(@"Heading Collecting");
-
-                                  [_dataLoggerPH startLog];
+//                                    NSLog(@"Heading Collecting");
                                   [_dataLoggerPH logData:data withTimeStamp:timestamp];
                               }
 								  
@@ -237,6 +233,9 @@ NSString* loggingSubdir() {
 	_recording = YES;
 	[_pebbleMonitor startWatchApp];
 	[_dataLoggerPB startLog];
+    [_dataLoggerPM startLog];
+    [_dataLoggerPH startLog];
+    [_dataLoggerPL startLog];
 	[_sensorMonitor poll];
 	[_backgrounder setBackgroundEnabled:YES];
 }
@@ -244,6 +243,9 @@ NSString* loggingSubdir() {
 -(void) stopRecording {
 	_recording = NO;
 	[_dataLoggerPB endLog];
+    [_dataLoggerPM endLog];
+    [_dataLoggerPH endLog];
+    [_dataLoggerPL endLog];
 	[_pebbleMonitor stopWatchApp];
 	[_backgrounder setBackgroundEnabled:NO];
 	// TODO stop sensor logging also, esp. GPS

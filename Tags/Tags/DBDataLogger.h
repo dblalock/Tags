@@ -37,6 +37,7 @@
 -(void) startLog;
 -(void) pauseLog;
 -(void) endLog;
+//-(void) handleLongLog;
 -(void) deleteLog;
 
 -(void) flushUpToTimeStamp:(timestamp_t)ms;

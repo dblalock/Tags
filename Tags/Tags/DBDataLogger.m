@@ -62,7 +62,7 @@ static const NSUInteger kMaxLinesInLog = 100;	// ~4MB
 
 @property(nonatomic) BOOL isLogging;
 @property(nonatomic) BOOL shouldAppendToLog;
-
+@property(nonatomic) BOOL isEnding;
 @property(nonatomic) NSUInteger linesInLog;
 @property(nonatomic) NSUInteger samplesSinceWriting;
 @property(nonatomic) timestamp_t lastSampleWrittenTime;
@@ -328,8 +328,11 @@ id valToWriteForVal(id val) {
 //}
 
 void writeLineToStream(NSString* line, NSOutputStream* stream) {
+    NSLog(@"The Data being written is: %@",line);
+    NSLog(@"The stream is open: %d",(signed int)stream.streamStatus);
 	NSData *data = [line dataUsingEncoding:NSUTF8StringEncoding];
-	[stream write:data.bytes maxLength:data.length];
+    NSLog(@"Result of writing to the stream: %tu", [stream write:data.bytes maxLength:data.length]);
+
 }
 
 void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
@@ -344,7 +347,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	
 	force = force || (_linesInLog == 1);	// always write 1st data line
 	
-	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
+//	NSString* prevLine = [_prevWrittenVals componentsJoinedByString:kCsvSeparator];
 //	NSLog(@"prev line:\n%@", prevLine);
 	unsigned long numChangedVals = 0;
 	
@@ -410,12 +413,12 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	NSString* line = [NSString stringWithFormat:@"%@%@\n", sinceUpdateStr, valuesStr];
 	
 	// debug output
-	if (force) {
-		NSLog(@"being forced to write sample");
-	}
-	NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
-	NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
-
+//	if (force) {
+//		NSLog(@"being forced to write sample");
+//	}
+	//NSString* dataLine = [values componentsJoinedByString:kCsvSeparator];
+	//NSLog(@"writing prev line, sample, line:\n%@\n%@\n%@\n", prevLine, dataLine, line);
+    
 	writeLineToStream(line, stream);
 
 	// update state
@@ -553,11 +556,12 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	_prevLastSampleTimeWritten = t;
 
 	// start a new log file once this one is too long
-	if (_linesInLog >= kMaxLinesInLog) {
-        NSLog(@"Log too long");
-		[self endLog];
-		[self startLog];
-	}
+            if (_linesInLog >= kMaxLinesInLog) {
+                NSLog(@"Log too long");
+                [self endLog];
+                [self startLog];
+            }
+
 }
 
 //--------------------------------------------------------------
@@ -657,7 +661,6 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	NSString* logPath;
     NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
 	logPath = [FileUtils getFullFileName:_logSubdir];
-    NSLog(@"Logging to path: %@", logPath);
 	[FileUtils ensureDirExists:logPath];
 	logPath = [logPath stringByAppendingPathComponent:_logName];
 	logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
@@ -672,13 +675,26 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //--------------------------------------------------------------
 
 -(void) startLog {
+   // NSLog(@"Trying to start log");
+    if(_isEnding){
+        return;
+    }
 	@synchronized(self) {
 		if (_isLogging) return;
         NSLog(@"Starting the log");
 		_isLogging = YES;
 		_logPath = [self generateLogFilePath];
-		_stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
-		[_stream open];
+        _stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
+        @try {
+            NSLog(@"Opening Stream");
+            [_stream open];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Failed to open stream: %@",exception);
+        }
+        @finally {
+            NSLog(@"Finished stream op");
+        }
 		// write signal names as first line
 		NSMutableArray* titles = [NSMutableArray arrayWithArray:_allSignalNames];
 		[titles insertObject:kKeyNumSkipped atIndex:0];
@@ -691,27 +707,46 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	}
 }
 -(void) pauseLog {
+    NSLog(@"Pausing Log");
 	@synchronized(self) {
-		_isLogging = NO;
 		_shouldAppendToLog = YES;
+        _isLogging = NO;
 		[self flush];
 		[_stream close];
 	}
+    NSLog(@"Finished the pause operation");
 }
 -(void) endLog {
+    if(_isEnding){
+        return;
+    }
+    _isEnding = YES;
+    NSLog(@"ENDING! The thread making this call is: %@", [NSThread currentThread]);
 	@synchronized(self) {
-		[self pauseLog];
-		_shouldAppendToLog = NO;
-		
-		_linesInLog = 0;
-		_samplesSinceWriting = 0;
-		
-		NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[_logPath lastPathComponent]];
-		[[DropboxUploader sharedUploader] addFileToUpload:_logPath toPath:dbPath];
-		[[DropboxUploader sharedUploader] tryUploadingFiles];	//will auto-try later anyway
+            [self pauseLog];
+            _shouldAppendToLog = NO;
+            _linesInLog = 0;
+            _samplesSinceWriting = 0;
+            NSLog(@"Ending the log");
+            NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[_logPath lastPathComponent]];
+            NSLog(@"Writing to file %@",dbPath);
+            [[DropboxUploader sharedUploader] addFileToUpload:_logPath toPath:dbPath];
+            [[DropboxUploader sharedUploader] tryUploadingFiles];	//will auto-try later anyway
+        _isEnding=NO;
 	}
 }
+//-(void) handleLongLog {
+//    @synchronized(self){
+//        if (_linesInLog >= kMaxLinesInLog) {
+//            NSLog(@"Log too long");
+//            [self endLog];
+//            [self startLog];
+//        }
+//            
+//    }
+//}
 -(void) deleteLog {
+    NSLog(@"Deleting Log");
 	[self endLog];
 	[FileUtils deleteFile:[self generateLogFilePath]];
 }

@@ -211,6 +211,7 @@ Upload* createUpload(NSString* localPath, NSString* dropboxPath) {
     NSLog(@"Number of files %tu", [_filesToUpload count]);
 	NSFileManager* mgr = [NSFileManager defaultManager];
 	for (Upload* u in [_filesToUpload copy]) {
+        NSLog(@"Doing something!");
 		NSString* local = u.localPath;
 		// if the local file exists, try to upload it to dropbox; if this
 		// succeeds, delete it
