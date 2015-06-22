@@ -12,7 +12,7 @@
 
 -(void) layoutSubviews {
 	[super layoutSubviews];
-	self.backgroundColor = [UIColor greenColor];
+	self.backgroundColor = [UIColor colorWithRed:0.3 green:0.5 blue:1.0 alpha:1.0];
 }
 
 -(CAGradientLayer*) createGradientLayer {

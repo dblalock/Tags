@@ -52,7 +52,7 @@ NSInteger const kDefaultFinalInactiveDays = 8;
 
 #define kDefaultColorDay [UIColor blackColor]
 #define kDefaultColorDayName [UIColor colorWithRed:0.55f green:0.04f blue:0.04f alpha:1.00f]
-#define kDefaultColorBottomBorder [UIColor colorWithRed:0.22f green:0.57f blue:0.80f alpha:1.00f]
+#define kDefaultColorBottomBorder [UIColor colorWithRed:0.3 green:0.5 blue:1.0 alpha:1.0]
 
 
 static BOOL NSRangeContainsRow (NSRange range, NSInteger row) {
