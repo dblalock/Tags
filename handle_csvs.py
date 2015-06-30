@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import glob
+import zipfile
 
 path = "../../Dropbox (MIT)/Apps/iOSense/users/87630EE6-0386-4F28-BDCB-39AE7281460a/*.csv"
 
@@ -10,13 +11,29 @@ class dataProcessor:
     def __init__(self, userID, dataType):
         # user = userID
         # _dataType = dataType
-        path = "../../Dropbox (MIT)/Apps/iOSense/users/"+userID+"/*."+dataType+".csv"
-        print path
-        files = glob.glob(path)
-        csvs = [pd.DataFrame.from_csv(csv, index_col=False) for csv in files]
+        csvs = self.extract_csvs(userID, dataType)
         print len(csvs)
         self.big_frame = self.combine_frames(csvs)
         print self.big_frame
+
+    def unzip_zip(self, path):
+        pw_file = open("pw.txt")
+        pw = "423124a2sc35s7e7r"
+        print("Password is ", pw)
+        z_file = zipfile.ZipFile(path)
+        print("The namelist is: ", z_file.namelist())
+        z_file.extract(z_file.namelist()[0], path="../", pwd=pw)
+
+    def extract_csvs(self, userID, dataType):
+        zip_path = "../../Dropbox (MIT)/Apps/iOSense/users/"+userID+"/*."+dataType+".zip"
+        csv_path = "../*."+dataType+".csv"
+        zips = glob.glob(zip_path)
+        for i in range(0, len(zips)):
+            self.unzip_zip(zips[i])
+        csvs = glob.glob(csv_path)
+        print("The csvs are: ",csvs)
+        frames = [pd.DataFrame.from_csv(csv, index_col=False) for csv in csvs]
+        return frames
 
     def fix_times(self, dataframe):
         # Sum up time stamps to give the actual times instead of the difference
@@ -57,7 +74,7 @@ class dataProcessor:
     def make_csv(self, frame, path):
         # Make the bigger dataframe into a csv
         frame.to_csv(path, na_rep="nan")
-proc = dataProcessor("5A218C93-D44E-49C1-99C0-2E8B5FC0F938", "Motion")
+proc = dataProcessor("5A218C93-D44E-49C1-99C0-2E8B5FC0F938", "Pebble")
 proc.make_csv(proc.big_frame, "../../frame.csv")
 proc.big_frame.plot(x='timestamp')
 plt.legend(loc='upper left', bbox_to_anchor=(1.1, 1.05), fancybox=True, shadow=True)

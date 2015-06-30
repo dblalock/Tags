@@ -94,6 +94,7 @@ static const NSUInteger kPreferredRowHeight = 44;
 
 -(IBAction)tappedMainButton:(id)sender {
 	if ([_treeDelegate respondsToSelector:@selector(treeCelldidTapMainButton:)]) {
+        NSLog(@"Tapped the main button");
 		[_treeDelegate treeCelldidTapMainButton:self];
 	}
 }

@@ -35,6 +35,7 @@ static const BOOL kStartRecordingWhenCreated = NO;
 				_startTag = tag;
 			} else if ([tag.name isEqualToString:kEndTimeFieldName]) {
 				_endTag = tag;
+                NSLog(@"End tag is of type: %@", [tag class]);
 			}
 		}
 		NSAssert(_startTag, @"DBTimeRangeItem: no start tag!");
@@ -84,6 +85,10 @@ static const BOOL kStartRecordingWhenCreated = NO;
 	if (! (start && end)) return nil;
 	if (! [start isKindOfClass:[NSDate class]]) return nil;
 	if (! [end isKindOfClass:[NSDate class]]) return nil;
+    if ([start isLaterThanDate:end]){
+        [_endTag forceValue:start];
+        return nil;
+    }
 	return diffBetweenDates(start, end);
 }
 

@@ -20,7 +20,6 @@
 
 -(void) setupWithItem:(DBTableItem*)item atLevel:(NSUInteger)lvl expanded:(BOOL)expanded {
 	[super setupWithItem:item atLevel:lvl expanded:expanded];
-	
 	assert([item isKindOfClass:[DBTimeRangeItem class]]);
 	self.itm = (DBTimeRangeItem*)item;
 

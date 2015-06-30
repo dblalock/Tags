@@ -19,10 +19,10 @@
 // ================================================================
 #pragma mark Interface
 // ================================================================
+static NSString *const kTimeChanged = @"TimeUpdated";
 
 @interface Tag ()
 @property(strong, nonatomic) id attrs;
-
 // exactly one of these two will be non-nil
 @property(strong, nonatomic) NSDictionary* dict;
 
@@ -89,7 +89,14 @@
 	_attrs = value;
 	_childTags = computeChildTags(_attrs, _typ);
 }
-
+-(void) forceValue:(id)value {
+    _attrs = value;
+    _childTags = computeChildTags(_attrs, _typ);
+    if ([value isKindOfClass:[NSDate class]]){
+        NSDictionary* dict = @{@"time":value};
+        [[NSNotificationCenter defaultCenter] postNotificationName:_identifier object:self userInfo:dict];
+    }
+}
 //------------------------------------------------
 // Tag un-creation
 //------------------------------------------------
@@ -120,7 +127,6 @@ NSArray* computeChildTags(NSDictionary* attrsDict, Typ* myTyp) {
 	// no child attributes -> no child tags
 	if (! [attrsDict respondsToSelector:@selector(count)]) return nil;
 	if (! [attrsDict count]) return nil;
-	
 	NSMutableArray* tags = [NSMutableArray array];
 	
 	// for each field in our typ, create a tag with

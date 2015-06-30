@@ -28,7 +28,7 @@ BOOL itemHasTag(DBTableItem* item) {
 }
 
 -(BOOL) wantsUtilityButtons {
-	return self.treeLvl == 0;	// TODO treeview delegate should prolly know this rule, not the cell
+	return self.treeLvl == NO;	// TODO treeview delegate should prolly know this rule, not the cell
 }
 
 @end

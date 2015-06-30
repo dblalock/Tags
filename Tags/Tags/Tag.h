@@ -16,7 +16,7 @@
 @property(strong, nonatomic) NSString* name;
 @property(nonatomic, readonly) Typ* typ;
 @property(nonatomic, readonly) NSArray* childTags;
-
+@property(strong, nonatomic) NSString* identifier;
 // // exactly one of these two will be non-nil
 //@property(strong, nonatomic, readonly) NSDictionary* dict;
 @property(strong, nonatomic) id value;
@@ -24,9 +24,8 @@
 -(instancetype) init NS_UNAVAILABLE;
 -(instancetype) initWithTyp:(Typ*)typ;
 -(instancetype) initWithTyp:(Typ*)typ value:(id)val NS_DESIGNATED_INITIALIZER;
-
+-(void) forceValue:(id) value;
 -(NSArray*) childTags;
-
 -(id) toDictOrValue;
 
 @end

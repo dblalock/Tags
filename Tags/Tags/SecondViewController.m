@@ -270,6 +270,7 @@ static const float kStatusBarHeight = 20.0f;
 }
 
 -(void)notifiedTypSelected:(NSNotification*)notification {
+    NSLog(@"Typ was selected!!!");
 	[self.navigationController popToViewController:self animated:YES];
 	Typ* typ = extractTypFromNotification(notification);
 	[self addItemOfTyp:typ];
@@ -277,6 +278,7 @@ static const float kStatusBarHeight = 20.0f;
 
 -(void) addItemOfTyp:(Typ*)typ {
 	if (! typ) return;
+    NSLog(@"Creating item");
 //	NSLog(@"2ndVC: adding item of typ: %@", typ);
 	DBTagItem* item = createTagItemForTyp(typ);
 	if ([item isKindOfClass:[DBTimeRangeItem class]]) {	// TODO interface, not class

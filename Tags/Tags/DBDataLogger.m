@@ -16,6 +16,8 @@
 #import "TimeUtils.h"
 #import "MiscUtils.h"
 #import "DropboxUploader.h"
+#import "Objective-Zip/ZipFile.h"
+#import "Objective-Zip/ZipWriteStream.h"
 
 #define LOG_DIFFERENTIAL_TIMESTAMPS
 
@@ -655,7 +657,15 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 		}
 	}
 }
-
+-(NSString*) getEncodePW {
+    NSString *filePath = @"pw";
+    NSString* fileRoot = [[NSBundle mainBundle]
+                          pathForResource:filePath ofType:@"txt"];
+    NSLog(@"The file root is: %@", fileRoot);
+    NSString* fileContents = [NSString stringWithContentsOfFile:fileRoot
+                              encoding:NSUTF8StringEncoding error:nil];
+    return fileContents;
+}
 -(NSString*) generateLogFilePath {
 	NSString* logPath;
     NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
@@ -668,7 +678,18 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //	NSLog(@"logPath = %@", logPath);
 	return [logPath stringByAppendingString:kLogFileExt];
 }
-
+-(NSString*) generateZipFilePath {
+    NSString* logPath;
+    NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
+    logPath = [FileUtils getFullFileName:_logSubdir];
+    [FileUtils ensureDirExists:logPath];
+    logPath = [logPath stringByAppendingPathComponent:_logName];
+    logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
+    logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
+    logPath = [logPath stringByAppendingString:infoType];
+    //	NSLog(@"logPath = %@", logPath);
+    return [logPath stringByAppendingString:@".zip"];
+}
 //--------------------------------------------------------------
 #pragma mark Logging state
 //--------------------------------------------------------------
@@ -713,14 +734,24 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
     _isEnding = YES;
 //    NSLog(@"ENDING! The thread making this call is: %@", [NSThread currentThread]);
 	@synchronized(self) {
-            [self pauseLog];
-            _shouldAppendToLog = NO;
-            _linesInLog = 0;
-            _samplesSinceWriting = 0;
-            NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[_logPath lastPathComponent]];
-//            NSLog(@"Writing to file %@",dbPath);
-            [[DropboxUploader sharedUploader] addFileToUpload:_logPath toPath:dbPath];
-            [[DropboxUploader sharedUploader] tryUploadingFiles];	//will auto-try later anyway
+        [self pauseLog];
+        _shouldAppendToLog = NO;
+        _linesInLog = 0;
+        _samplesSinceWriting = 0;
+        NSString *zipPath = [self generateZipFilePath];
+        NSString *pw = [self getEncodePW];
+        NSLog(@"The password is: %@", pw);
+        ZipFile *zipFile = [[ZipFile alloc] initWithFileName:zipPath mode:ZipFileModeCreate];
+        NSData *data = [NSData dataWithContentsOfFile:_logPath];
+        unsigned long result = crc32(0, data.bytes, (unsigned int)data.length);
+        ZipWriteStream *zip_stream = [zipFile writeFileInZipWithName:[_logPath lastPathComponent] fileDate:[NSDate date] compressionLevel:ZipCompressionLevelBest password:pw crc32:result];
+        [zip_stream writeData:data];
+        [zip_stream finishedWriting];
+        [zipFile close];
+        NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[zipPath lastPathComponent]];
+        NSLog(@"Writing to file %@",dbPath);
+        [[DropboxUploader sharedUploader] addFileToUpload:zipPath toPath:dbPath];
+        [[DropboxUploader sharedUploader] tryUploadingFiles];	//will auto-try later anyway
         _isEnding=NO;
 	}
 }

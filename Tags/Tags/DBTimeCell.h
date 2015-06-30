@@ -9,5 +9,6 @@
 #import "DBTagCell.h"
 
 @interface DBTimeCell : DBTagCell
+@property(strong, nonatomic) NSString* identifier;
 
 @end
