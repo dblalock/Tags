@@ -9,7 +9,7 @@
 #import "TimeUtils.h"
 
 #import <Foundation/Foundation.h>
-#import <NSDate+Escort.h>
+#import "NSDate+Escort.h"
 
 // ================================================================
 // timestamp_t funcs

@@ -8,8 +8,8 @@
 
 #import "DBTimeRangeItem.h"
 
-#import <RMMapper.h>	// to exclude properties
-#import <NSDate+Escort.h>
+#import "RMMapper.h"	// to exclude properties
+#import "NSDate+Escort.h"
 
 #import "Tag.h"
 #import "Typ.h"

@@ -9,7 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import <SSKeychain.h>
+//#import "Tags-Swift.h"
+#import "SSKeychain.h"
+#import "SSKeychain/SSKeychain.h"
+
 
 NSString* getAppName() {
 	return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleNameKey];

@@ -3,7 +3,7 @@
 //  iOSense
 //
 //  Created by DB on 1/18/15.
-//  Copyright (c) 2015 Rafael Aguayo. All rights reserved.
+//  Copyright (c) 2015 Davis Blalock. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -31,6 +31,8 @@ extern NSString *const kNotificationPebbleDisconnected;
 @end
 
 NSDictionary* pebbleDefaultValuesDict();
+
+float convertPebbleAccelToGs(int accelVal);
 
 // utility func for stuff receiving notification data as a userinfo dict
 void extractPebbleData(NSDictionary* userinfo, int* x, int* y, int* z, timestamp_t* t);

@@ -8,6 +8,7 @@
 
 #import "DBPebbleMonitor.h"
 
+#import <UIKit/UIAlertView.h>
 #import <PebbleKit/PebbleKit.h>
 
 static NSString *const kPebbleAppUUID = @"00674CB5-AFEE-464D-B791-5CDBA233EA93";
@@ -84,19 +85,29 @@ NSDictionary* pebbleDefaultValuesDict() {
 //--------------------------------
 
 - (void)setPebbleUUID:(NSString*)uuidStr {
-	uuid_t myAppUUIDbytes;
 	NSUUID *myAppUUID = [[NSUUID alloc] initWithUUIDString:uuidStr];
-	[myAppUUID getUUIDBytes:myAppUUIDbytes];
-	[[PBPebbleCentral defaultCentral] setAppUUID:[NSData dataWithBytes:myAppUUIDbytes length:16]];
+//	NSLog(@"Setting app uuid to %@", kPebbleAppUUID);
+	[[PBPebbleCentral defaultCentral] setAppUUID:myAppUUID];
 }
 
 - (void)setupPebble {
-	[[PBPebbleCentral defaultCentral] setDelegate:self];
-	[PBPebbleCentral setDebugLogsEnabled:YES];
+	[PBPebbleCentral setLogLevel:PBPebbleKitLogLevelDebug];
+//	[PBPebbleCentral setLogLevel:PBPebbleKitLogLevelError];
 	[self setPebbleUUID:kPebbleAppUUID];
+	[[PBPebbleCentral defaultCentral] setDelegate:self];
+	[[PBPebbleCentral defaultCentral] run];
+	
 	self.myWatch = [[PBPebbleCentral defaultCentral] lastConnectedWatch];
 	_connectedPebbleName = self.myWatch.name;
 	NSLog(@"Last connected watch: %@", self.myWatch);
+	
+	NSArray* connectedWatches = [[PBPebbleCentral defaultCentral] connectedWatches];
+	for (NSString* watch in connectedWatches) {
+		NSLog(@"%@", watch);
+	}
+	if ([connectedWatches count] == 0) {
+		NSLog(@"No connected watches...");
+	}
 }
 
 - (void)startWatchApp {
@@ -110,10 +121,17 @@ NSDictionary* pebbleDefaultValuesDict() {
 	}];
 	
 //	__block int counter = 0;
-	if (_launchedApp) return;	//only do this once
-	_launchedApp = YES;
+	NSLog(@"PebbleMonitor: subscribing to updates");
+	
+	// subscribe to updates once; subscribing will fail if there aren't
+	// any connected watches, so don't store that we've subscribed until
+	// it will actually work
+	if (_launchedApp) return;
+	if ([[[PBPebbleCentral defaultCentral] connectedWatches] count]) {
+		_launchedApp = YES;
+	}
+	NSLog(@"PebbleMonitor: actually subscribing to updates because we hadn't before");
 	[self.myWatch appMessagesAddReceiveUpdateHandler:^BOOL(PBWatch *watch, NSDictionary *update) {
-//		counter++;
 		[self logUpdate:update fromWatch:watch];
 		return YES;
 	}];
@@ -171,6 +189,10 @@ NSDictionary* pebbleDefaultValuesDict() {
 // Data processing
 //--------------------------------
 
+float convertPebbleAccelToGs(int accelVal) {
+	return accelVal / 64.f;
+}
+
 void extractPebbleData(NSDictionary* data, int*x, int*y, int*z, timestamp_t* t) {
 	*x = [data[kKeyPebbleX] intValue];
 	*y = [data[kKeyPebbleY] intValue];
@@ -184,6 +206,8 @@ void extractPebbleData(NSDictionary* data, int*x, int*y, int*z, timestamp_t* t) 
 	int numBytes = (int) [[update objectForKey:@(kKeyNumBytes)] integerValue];
 	NSData* accelData = [update objectForKey:@(kKeyData)];
 	const int8_t* dataAr = (const int8_t*) [accelData bytes];
+	
+//	NSLog(@"PebbleMonitor: received %d bytes\n", numBytes);
 	
 	// compute start time of this buffer
 	uint numSamples = numBytes / 3;

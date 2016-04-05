@@ -11,6 +11,12 @@
 
 @implementation DBTypItem
 
+//-(instancetype) init {
+//	[NSException raise:@"Cannot initialize TypItem without Typ"
+//				format:@"In TypItem"];
+//	return nil;
+//}
+
 -(instancetype) initWithName:(NSString *)name children:(NSArray *)array {
 	[NSException raise:@"Cannot initialize TypItem without Typ"
 				format:@"In TypItem with name %@", name];
