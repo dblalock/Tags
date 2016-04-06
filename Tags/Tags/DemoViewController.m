@@ -41,6 +41,8 @@ static const NSUInteger kHistoryLen = 512;
 @property (strong, nonatomic) NSMutableArray* accelHistoryX;
 @property (strong, nonatomic) NSMutableArray* accelHistoryY;
 @property (strong, nonatomic) NSMutableArray* accelHistoryZ;
+@property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
+@property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
 
 //--------------------------------
 // View properties
@@ -83,8 +85,8 @@ static const NSUInteger kHistoryLen = 512;
 	
 	ChartYAxis *leftAxis = _dataGraph.leftAxis;
 	leftAxis.labelTextColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
-	leftAxis.axisMaxValue = 3.0;
-	leftAxis.axisMinValue = -3.0;
+	leftAxis.axisMaxValue = 2.0;
+	leftAxis.axisMinValue = -2.0;
 	leftAxis.drawGridLinesEnabled = YES;
 	leftAxis.drawZeroLineEnabled = NO;
 	leftAxis.granularityEnabled = YES;
@@ -93,9 +95,15 @@ static const NSUInteger kHistoryLen = 512;
 	_dataGraph.rightAxis.enabled = NO;
 //	_dataGraph.descriptionText = @"Behold, acceleration values";
 	_dataGraph.descriptionText = @"";
-	_dataGraph.noDataTextDescription = @"Ze chart, she needs ze datas!.";
+	_dataGraph.noDataTextDescription = @"Ze chart, she needs ze datas!";
 	
-	[_dataGraph animateWithXAxisDuration:3.0];
+	[_dataGraph animateWithXAxisDuration:1.0];
+	
+	
+	// instances of repeating pattern
+	_instanceStartIdxs = [NSMutableArray array];
+	_instanceEndIdxs = [NSMutableArray array];
+	
 	
 	[self updatePlot];
 //	[_dataGraph reloa
@@ -152,6 +160,49 @@ static const NSUInteger kHistoryLen = 512;
 //	return …; // The value of the point on the Y-Axis for the index.
 //}
 
+void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
+								 NSUInteger dataLength, NSMutableArray *dataSets) {
+	
+//	NSAssert([startIdxs count] == [endIdxs count],
+//			 @"must have same number of start and end idxs!");
+	
+	NSMutableArray* dummyData = [NSMutableArray arrayWithCapacity:dataLength];
+	for (int i = 0; i < dataLength; i++) {
+		dummyData[i] = @(0.0);
+	}
+	for (int i = 0; i < [startIdxs count]; i++) {
+		int start = [startIdxs[i] intValue];
+		int end = [endIdxs[i] intValue];
+		for (int j = start; j < end; j++) {
+			dummyData[j] = @(2.0);
+		}
+	}
+	
+	// create an array of ChartDataEntries
+	for (int d = 0; d < 2; d++) {
+		NSMutableArray *vals = [[NSMutableArray alloc] init];
+		for (int i = 0; i < [dummyData count]; i++) {
+			//		for (int i = 0; i < 100; i++) {
+			double val = [dummyData[i] doubleValue];
+			if (d == 1) {
+				val = -val; // flip it below x axis
+			}
+			//			double val = (double) (arc4random_uniform(i)) + i / 100;
+			[vals addObject:[[ChartDataEntry alloc] initWithValue:val xIndex:i]];
+		}
+		NSString* label = d == 0 ? @"Instances" : @"";
+		LineChartDataSet* dataset = [[LineChartDataSet alloc] initWithYVals:vals label:label];
+		UIColor* color = [UIColor grayColor];
+		[dataset setColor:color];
+		dataset.fillAlpha = .5f;
+		dataset.fillColor = color;
+		dataset.drawFilledEnabled = YES;
+		dataset.drawCirclesEnabled = NO;
+		dataset.drawSteppedEnabled = YES;
+		[dataSets addObject:dataset];
+	}
+}
+
 - (void)updatePlot {
 //	LineChartDataSet* x = [[LineChartDataSet alloc] initWithYVals:_accelHistoryX label:@"X accel"];
 //	LineChartDataSet* y = [[LineChartDataSet alloc] initWithYVals:_accelHistoryY label:@"Y accel"];
@@ -178,22 +229,32 @@ static const NSUInteger kHistoryLen = 512;
 	NSArray* histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ];
 	NSArray* names = @[@"x", @"y", @"z"];
 	for (int j = 0; j < 3; j++) {
+		// create a dataset object from each of x, y, z, acceleration
 		NSArray* ar = histories[j];
 		NSMutableArray *vals = [[NSMutableArray alloc] init];
 		for (int i = 0; i < [ar count]; i++) {
-//		for (int i = 0; i < 100; i++) {
 			double val = [ar[i] doubleValue];
 //			double val = (double) (arc4random_uniform(i)) + i / 100;
 			[vals addObject:[[ChartDataEntry alloc] initWithValue:val xIndex:i]];
 		}
 		LineChartDataSet* dataset = [[LineChartDataSet alloc] initWithYVals:vals label:names[j]];
+		
 		UIColor* color = colors[j];
 		[dataset setColor:color];
 		dataset.circleRadius = .5f;
 		dataset.circleHoleColor = color;
 		dataset.lineWidth = 3.0f;
 		[dataset setCircleColor:color];
+		
 		[dataSets addObject:dataset];
+	}
+	
+	// plot boundaries of pattern instances
+	// TODO remove after debug
+	if (count > 100) {
+		NSArray* fakeStarts = @[@(20), @(70)];
+		NSArray* fakeEnds = @[@(50), @(90)];
+		addDummyDataForStartEndIdxs(fakeStarts, fakeEnds, count, dataSets);
 	}
 	
 	// 1 fake dataset works
@@ -212,6 +273,9 @@ static const NSUInteger kHistoryLen = 512;
 }
 
 - (void)plotAccelX:(int8_t)x Y:(int8_t)y Z:(int8_t)z {
+	
+	// TODO modify the ChartDataSet objects directly
+	
 	NSArray* histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ];
 	NSArray* vals = @[@(convertPebbleAccelToGs(x)),
 					  @(convertPebbleAccelToGs(y)),
