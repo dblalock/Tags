@@ -10,6 +10,9 @@
 
 #import "TimeUtils.h"	// just for timestamp_t--could just say int64_t
 
+extern const NSUInteger kPebbleAccelHz;
+extern const NSUInteger kPebbleAccelPeriodMs;
+
 extern NSString *const kKeyPebbleX;
 extern NSString *const kKeyPebbleY;
 extern NSString *const kKeyPebbleZ;

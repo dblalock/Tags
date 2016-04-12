@@ -1,0 +1,51 @@
+import os
+import fnmatch
+
+Import('env')
+
+print '------------------------ src'
+
+matches = []
+# for root, dirnames, filenames in os.walk(os.getcwd()):	# fails
+# for root, dirnames, filenames in os.walk("."):	# fails
+# root, dirnames, filenames = os.walk(".").next()
+# for i in range(1):
+	#WTF dirnames is only returning some of the dirs...
+
+# print("current dir:")
+# print(os.getcwd())	# always src/
+
+# print("dir contents:")
+# print(os.listdir(os.getcwd()))
+# print(os.listdir('.'))
+# print("-------------------------------")
+
+# for obj in os.walk('.'): print(obj)
+
+for root, dirnames, filenames in os.walk("./"):
+	print root, dirnames, filenames
+	# print("current dir:")
+	# print(os.getcwd() )
+	# print("dir names:")
+	# print(dirnames)
+
+	# TODO ah, so this is just walking over the last dir in the path, not
+	# the full relative path from the current working dir
+
+	for dirname in dirnames:
+		globStr = "%s/*.c*" % dirname
+		matches.append(Glob(globStr))
+		relpath = os.path.join(root, dirname)
+		abspath = os.path.abspath(relpath)
+		# print('src: adding dir to path: {} ({})'.format(relpath, abspath))
+		# print("src: --appending: {}".format(Glob(globStr)))
+		env.Append(CPPPATH=[relpath])
+
+
+# absolute paths for xcode integration (abandoned...couldn't get to work)
+# env['CXXCOM'] = env['CXXCOM'].replace('$SOURCES', '${SOURCES.abspath}')
+# env['CCCOM']  = env['CCCOM'].replace('$SOURCES', '${SOURCES.abspath}')
+
+print "src: matches: ", matches
+
+env.SharedLibrary('../bin/dig', matches)

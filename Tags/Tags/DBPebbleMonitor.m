@@ -11,9 +11,10 @@
 #import <UIKit/UIAlertView.h>
 #import <PebbleKit/PebbleKit.h>
 
+const NSUInteger kPebbleAccelHz = 20;
+const NSUInteger kPebbleAccelPeriodMs = 1000 / kPebbleAccelHz;
+
 static NSString *const kPebbleAppUUID = @"00674CB5-AFEE-464D-B791-5CDBA233EA93";
-static const NSUInteger kPebbleAccelHz = 20;
-static const NSUInteger kPebbleAccelPeriodMs = 1000 / kPebbleAccelHz;
 
 // keys in dict the pebble app sends
 //static const uint8_t KEY_TRANSACTION_ID = 0x1;	//unused

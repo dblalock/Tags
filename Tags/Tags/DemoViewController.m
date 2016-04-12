@@ -12,9 +12,11 @@
 #import "DBPebbleMonitor.h"
 #import "DropboxUploader.h"
 #import "MiscUtils.h"
+#import "CppWrapper.h"
 
 //#import "BEMSimpleLineGraphView.h"
-#import "Tags-Swift.h"
+
+//#import "Tags-Swift.h"
 
 //#import <Charts/Charts.h>
 //#import "Charts.h"
@@ -43,14 +45,17 @@ static const NSUInteger kHistoryLen = 512;
 @property (strong, nonatomic) NSMutableArray* accelHistoryZ;
 @property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
 @property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
+@property (strong, nonatomic) CppWrapper* cpp;
 
 //--------------------------------
 // View properties
 //--------------------------------
 
-@property (weak, nonatomic) IBOutlet UITextField *userIdText;
-@property (weak, nonatomic) IBOutlet UITextField *actionNameText;
-@property (weak, nonatomic) IBOutlet UITextField *actionCountText;
+@property (weak, nonatomic) IBOutlet UITextField* userIdText;
+@property (weak, nonatomic) IBOutlet UITextField* actionNameText;
+@property (weak, nonatomic) IBOutlet UISwitch* recordingSwitch;
+//@property (weak, nonatomic) IBOutlet UISlider* recordingBtn;
+//@property (weak, nonatomic) IBOutlet UITextField *actionCountText;
 //@property (weak, nonatomic) IBOutlet BEMSimpleLineGraphView *dataGraph;
 @property (weak, nonatomic) IBOutlet LineChartView *dataGraph;
 
@@ -75,6 +80,9 @@ static const NSUInteger kHistoryLen = 512;
 											 selector:@selector(notifiedPebbleData:)
 												 name:kNotificationPebbleData
 											   object:nil];
+	// cpp code
+	_cpp = [[CppWrapper alloc] init];
+	
 	// plot
 	_accelHistoryX = [NSMutableArray array];
 	_accelHistoryY = [NSMutableArray array];
@@ -90,6 +98,19 @@ static const NSUInteger kHistoryLen = 512;
 	leftAxis.drawGridLinesEnabled = YES;
 	leftAxis.drawZeroLineEnabled = NO;
 	leftAxis.granularityEnabled = YES;
+	NSNumberFormatter* fmtr = [[NSNumberFormatter alloc] init];
+	[fmtr setNegativeFormat:@"0.##g"];
+	[fmtr setPositiveFormat:@"0.##g"];
+	leftAxis.valueFormatter = fmtr;
+	
+	// TODO formatting x axis seems to require a ChartDefaultXAxisValueFormatter
+	// object or something; below yields a warning and crashes at runtime
+//	ChartXAxis *xAxis = _dataGraph.xAxis;
+//	NSNumberFormatter* xfmtr = [[NSNumberFormatter alloc] init];
+//	[xfmtr setNegativeFormat:@"0g"];
+//	[xfmtr setPositiveFormat:@"0g"];
+//	_dataGraph.xAxis.valueFormatter = xfmtr;
+//	xAxis.valueFormatter = xfmtr;
 	
 	_dataGraph.drawGridBackgroundEnabled = NO;
 	_dataGraph.rightAxis.enabled = NO;
@@ -135,11 +156,14 @@ static const NSUInteger kHistoryLen = 512;
 
 -(void) notifiedPebbleData:(NSNotification*)notification {
 	if ([notification name] != kNotificationPebbleData) return;
-//	if (! _recording) return;
+	if (! _recording) return;
 	
 	int x, y, z;
 	timestamp_t t;
 	extractPebbleData(notification.userInfo, &x, &y, &z, &t);
+	
+	
+	[_cpp pushX:x Y:y Z:z];
 	
 //	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 	
@@ -194,11 +218,13 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 		LineChartDataSet* dataset = [[LineChartDataSet alloc] initWithYVals:vals label:label];
 		UIColor* color = [UIColor grayColor];
 		[dataset setColor:color];
+//		[dataset setColor:[UIColor blackColor]];
 		dataset.fillAlpha = .5f;
 		dataset.fillColor = color;
 		dataset.drawFilledEnabled = YES;
 		dataset.drawCirclesEnabled = NO;
 		dataset.drawSteppedEnabled = YES;
+//		dataset.lineWidth = 1;
 		[dataSets addObject:dataset];
 	}
 }
@@ -213,7 +239,13 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	NSUInteger count = [_accelHistoryX count];
 //	NSUInteger count = 100;
 	for (int i = 0; i < count; i++) {
-		[xVals addObject:[@(i) stringValue]];
+		long samplesToEnd = count - i - 1;
+		float msToEnd = -(samplesToEnd / (float) kPebbleAccelHz);
+//		NSString* lbl = [NSString stringWithFormat:@"%@s",
+//						 [@(msToEnd) stringValue]];
+		// TODO uncomment above
+		NSString* lbl = [NSString stringWithFormat:@"%d", i];
+		[xVals addObject:lbl];
 	}
 	
 	NSMutableArray *dataSets = [[NSMutableArray alloc] init];
@@ -252,9 +284,16 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	// plot boundaries of pattern instances
 	// TODO remove after debug
 	if (count > 100) {
-		NSArray* fakeStarts = @[@(20), @(70)];
-		NSArray* fakeEnds = @[@(50), @(90)];
-		addDummyDataForStartEndIdxs(fakeStarts, fakeEnds, count, dataSets);
+//		NSArray* fakeStarts = @[@(20), @(70)];
+//		NSArray* fakeEnds = @[@(50), @(90)];
+//		addDummyDataForStartEndIdxs(fakeStarts, fakeEnds, count, dataSets);
+//		[CppWrapper updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs];
+		
+		// TODO set Lmin and Lmax based on approx # of instances, and/or have
+		// flock try different pairs of (Lmin, Lmax)
+//		[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs historyLen:(int)count Lmin:.1 Lmax:.2];
+		
+		addDummyDataForStartEndIdxs(_instanceStartIdxs, _instanceEndIdxs, count, dataSets);
 	}
 	
 	// 1 fake dataset works
@@ -290,5 +329,39 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 
 	[self updatePlot];
 }
+
+//===============================================================
+// UI elements
+//===============================================================
+
+- (void)clearHistory {
+	[_accelHistoryX removeAllObjects];
+	[_accelHistoryY removeAllObjects];
+	[_accelHistoryZ removeAllObjects];
+	[_instanceStartIdxs removeAllObjects];
+	[_instanceEndIdxs removeAllObjects];
+}
+
+- (IBAction)switchChanged:(id)sender {
+	if ([sender isOn] && !_recording) {
+		_recording = YES;
+		[self clearHistory];
+		[_cpp clearHistory];
+	} else if (![sender isOn] && _recording) {
+		_recording = NO;
+		int count = (int)[_accelHistoryX count];
+		dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			// Add code here to do background processing
+			[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs
+					   historyLen:count Lmin:.15 Lmax:.3];
+			dispatch_async( dispatch_get_main_queue(), ^{
+				// Add code here to update the UI/send notifications based on the
+				// results of the background processing
+				[self updatePlot];
+			});
+		});
+	}
+}
+
 
 @end
