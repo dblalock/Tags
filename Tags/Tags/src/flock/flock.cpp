@@ -96,7 +96,7 @@ vector<double> seedScores(CMatrix T, length_t Lmin, length_t Lmax) {
 //			PRINT_VAR(n);
 //			PRINT_VAR(subseqLen);
 			// assert(ar::all(scores_tmp, n - subseqLen));
-			assert(ar::all(scores_tmp, n - subseqLen - 1));
+			assert(ar::all_positive(scores_tmp, n - subseqLen - 1));
 
 			// scale scores to max of 1 in place, then add to combined scores
 			normalize_max_inplace(scores_tmp, n);

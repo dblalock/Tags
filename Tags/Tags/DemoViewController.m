@@ -10,27 +10,27 @@
 
 //#import "GraphView.h"
 #import "DBPebbleMonitor.h"
+//#import "DBDataLogger.h"
+//#import "DBLoggingManager.h" // just for DATALOGGING_PERIOD_MS
 #import "DropboxUploader.h"
+#import "FileUtils.h"
 #import "MiscUtils.h"
 #import "CppWrapper.h"
-
-//#import "BEMSimpleLineGraphView.h"
-
-//#import "Tags-Swift.h"
-
-//#import <Charts/Charts.h>
-//#import "Charts.h"
-//#import "Charts/Charts.h"
 
 // magical *pair* of lines of code to get it importing the swift lib
 #include "Charts-Swift.h"
 @import Charts;
 
-static const NSUInteger kHistoryLen = 512;
+const NSUInteger kHistoryLen = 512;
+const int kUpdatePlotEvery = 20; // once/second at 20Hz sampling
+
+NSString* kRecordBtnTextOff = @"Start Recording";
+NSString* kRecordBtnTextOn = @"Stop Recording";
+NSString *const kLogSubdir = @"recordings/";
 
 //===============================================================
 //===============================================================
-@interface DemoViewController () <ChartViewDelegate>
+@interface DemoViewController () <ChartViewDelegate, UITextFieldDelegate>
 //<BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
 //===============================================================
 //===============================================================
@@ -39,6 +39,7 @@ static const NSUInteger kHistoryLen = 512;
 // Non-View properties
 //--------------------------------
 
+@property (atomic) int numSamplesSeen;
 @property (nonatomic) BOOL recording;
 @property (strong, nonatomic) NSMutableArray* accelHistoryX;
 @property (strong, nonatomic) NSMutableArray* accelHistoryY;
@@ -46,6 +47,8 @@ static const NSUInteger kHistoryLen = 512;
 @property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
 @property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
 @property (strong, nonatomic) CppWrapper* cpp;
+//@property (strong, nonatomic) DBDataLogger* logger;
+@property (strong, nonatomic) NSOutputStream* outStream;
 
 //--------------------------------
 // View properties
@@ -53,11 +56,12 @@ static const NSUInteger kHistoryLen = 512;
 
 @property (weak, nonatomic) IBOutlet UITextField* userIdText;
 @property (weak, nonatomic) IBOutlet UITextField* actionNameText;
-@property (weak, nonatomic) IBOutlet UISwitch* recordingSwitch;
-//@property (weak, nonatomic) IBOutlet UISlider* recordingBtn;
-//@property (weak, nonatomic) IBOutlet UITextField *actionCountText;
-//@property (weak, nonatomic) IBOutlet BEMSimpleLineGraphView *dataGraph;
-@property (weak, nonatomic) IBOutlet LineChartView *dataGraph;
+// @property (weak, nonatomic) IBOutlet UISwitch* recordingSwitch;
+@property (weak, nonatomic) IBOutlet UITextField* exampleNumText;
+@property (weak, nonatomic) IBOutlet LineChartView* dataGraph;
+@property (weak, nonatomic) IBOutlet UIButton* saveBtn;
+@property (weak, nonatomic) IBOutlet UIButton* recordBtn;
+@property (weak, nonatomic) IBOutlet UIStepper* exampleNumStepr;
 
 @end
 
@@ -74,6 +78,7 @@ static const NSUInteger kHistoryLen = 512;
 	
 	// state flags
 	_recording = NO;
+	_numSamplesSeen = 0;
 	
 	// pebble
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -112,6 +117,7 @@ static const NSUInteger kHistoryLen = 512;
 //	_dataGraph.xAxis.valueFormatter = xfmtr;
 //	xAxis.valueFormatter = xfmtr;
 	
+	
 	_dataGraph.drawGridBackgroundEnabled = NO;
 	_dataGraph.rightAxis.enabled = NO;
 //	_dataGraph.descriptionText = @"Behold, acceleration values";
@@ -125,9 +131,14 @@ static const NSUInteger kHistoryLen = 512;
 	_instanceStartIdxs = [NSMutableArray array];
 	_instanceEndIdxs = [NSMutableArray array];
 	
+	// data logger for acceleration data
+//	_logger = [[DBDataLogger alloc] initWithSignalNames:[pebbleDefaultValuesDict() allKeys]
+//															defaultValues:[pebbleDefaultValuesDict() allValues]
+//															samplePeriod:DATALOGGING_PERIOD_MS
+//																dataType:@"PebbleAccel"];
+//	
 	
-	[self updatePlot];
-//	[_dataGraph reloa
+	[self updatePlot:YES]; // yes = force update
 }
 
 - (void)didReceiveMemoryWarning {
@@ -151,8 +162,16 @@ static const NSUInteger kHistoryLen = 512;
 }
 
 //===============================================================
-#pragma mark Pebble
+#pragma mark - Pebble
 //===============================================================
+
+//-(void) logAccelX:(double)x Y:(double)y Z:(double)z timeStamp:(timestamp_t)sampleTime {
+//	//Logs pebble data
+//	NSDictionary* kvPairs = @{kKeyPebbleX: @(convertPebbleAccelToGs(x)),
+//							  kKeyPebbleY: @(convertPebbleAccelToGs(y)),
+//							  kKeyPebbleZ: @(convertPebbleAccelToGs(z))};
+//	[_logger logData:kvPairs withTimeStamp:sampleTime];
+//}
 
 -(void) notifiedPebbleData:(NSNotification*)notification {
 	if ([notification name] != kNotificationPebbleData) return;
@@ -162,27 +181,19 @@ static const NSUInteger kHistoryLen = 512;
 	timestamp_t t;
 	extractPebbleData(notification.userInfo, &x, &y, &z, &t);
 	
-	
+//	[self logAccelX:x Y:y Z:z timeStamp:t];
 	[_cpp pushX:x Y:y Z:z];
 	
-//	NSLog(@"received pebble data %d, %d, %d", x, y, z);
+	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 	
 //	[self logAccelX:x Y:y Z:z timeStamp:t];
-	[self plotAccelX:x Y:y Z:z];
+	[self storeAccelX:x Y:y Z:z];
+	[self updatePlot:NO]; // no = don't force update
 }
 
 //===============================================================
-#pragma mark Plotting
+#pragma mark - Plotting
 //===============================================================
-
-// -------------------------- BEMSimpleLineGraphDelegate
-
-//- (NSInteger)numberOfPointsInLineGraph:(BEMSimpleLineGraphView *)graph {
-//	return [_accelHistory count];
-//}
-//- (CGFloat)lineGraph:(BEMSimpleLineGraphView *)graph valueForPointAtIndex:(NSInteger)index {
-//	return …; // The value of the point on the Y-Axis for the index.
-//}
 
 void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 								 NSUInteger dataLength, NSMutableArray *dataSets) {
@@ -229,7 +240,14 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	}
 }
 
-- (void)updatePlot {
+- (void)updatePlot:(BOOL)force {
+	
+	assert(_numSamplesSeen == [_accelHistoryX count] || _numSamplesSeen > kHistoryLen);
+	BOOL shouldUpdate = force || (_numSamplesSeen % kUpdatePlotEvery == 0);
+	if (!shouldUpdate) {
+		return;
+	}
+	
 //	LineChartDataSet* x = [[LineChartDataSet alloc] initWithYVals:_accelHistoryX label:@"X accel"];
 //	LineChartDataSet* y = [[LineChartDataSet alloc] initWithYVals:_accelHistoryY label:@"Y accel"];
 //	LineChartDataSet* z = [[LineChartDataSet alloc] initWithYVals:_accelHistoryZ label:@"Z accel"];
@@ -282,39 +300,22 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	}
 	
 	// plot boundaries of pattern instances
-	// TODO remove after debug
+	// TODO remove "if" after debug
 	if (count > 100) {
-//		NSArray* fakeStarts = @[@(20), @(70)];
-//		NSArray* fakeEnds = @[@(50), @(90)];
-//		addDummyDataForStartEndIdxs(fakeStarts, fakeEnds, count, dataSets);
-//		[CppWrapper updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs];
-		
-		// TODO set Lmin and Lmax based on approx # of instances, and/or have
-		// flock try different pairs of (Lmin, Lmax)
-//		[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs historyLen:(int)count Lmin:.1 Lmax:.2];
-		
 		addDummyDataForStartEndIdxs(_instanceStartIdxs, _instanceEndIdxs, count, dataSets);
 	}
-	
-	// 1 fake dataset works
-//	NSMutableArray *yVals = [[NSMutableArray alloc] init];
-//	for (int i = 0; i < 100; i++) {
-//		double val = (double) (arc4random_uniform(i)) + i / 100;
-//		[yVals addObject:[[ChartDataEntry alloc] initWithValue:val xIndex:i]];
-//	}
-	
-//	LineChartDataSet* yDataset = [[LineChartDataSet alloc] initWithYVals:yVals label:@"random"];
-//	[yDataset setAxisDependency:AxisDependencyLeft];
-//	[dataSets addObject:yDataset];
-	
+
 	LineChartData *data = [[LineChartData alloc] initWithXVals:xVals dataSets:dataSets];
 	_dataGraph.data = data;
 }
 
-- (void)plotAccelX:(int8_t)x Y:(int8_t)y Z:(int8_t)z {
+//-(void)
+
+- (void)storeAccelX:(int8_t)x Y:(int8_t)y Z:(int8_t)z {
 	
 	// TODO modify the ChartDataSet objects directly
 	
+	_numSamplesSeen++;
 	NSArray* histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ];
 	NSArray* vals = @[@(convertPebbleAccelToGs(x)),
 					  @(convertPebbleAccelToGs(y)),
@@ -326,15 +327,48 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 			[ar removeObjectAtIndex:0];
 		}
 	}
+}
 
-	[self updatePlot];
+//==============================================================
+#pragma mark - Logging
+//===============================================================
+
+- (NSString*)generateFileName {
+	NSString* fileName = [NSString stringWithFormat:@"%@_%@_%@.csv",
+						  [_userIdText text],
+						  [_actionNameText text],
+						  [_exampleNumText text]];
+//						  currentTimeStr()];
+	return [FileUtils getFullFileName:fileName];
+}
+
+- (void)saveCurrentRecording {
+	NSString* fileName = [self generateFileName];
+	NSMutableString* outStr = [NSMutableString string];
+	for (int i = 0; i < [_accelHistoryX count]; i++) {
+		NSString* line = [NSString stringWithFormat:@"%@,%@,%@\n",
+						  _accelHistoryX[i],
+						  _accelHistoryY[i],
+						  _accelHistoryZ[i]];
+		[outStr appendString:line];
+	}
+	[FileUtils writeString:outStr toFile:fileName];
+	NSString* dbPath = [kLogSubdir stringByAppendingPathComponent:[fileName lastPathComponent]];
+	[[DropboxUploader sharedUploader] addFileToUpload:fileName toPath:dbPath];
+	[[DropboxUploader sharedUploader] tryUploadingFiles];
 }
 
 //===============================================================
-// UI elements
+#pragma mark - UI
 //===============================================================
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return NO;
+}
+
 - (void)clearHistory {
+	_numSamplesSeen = 0;
 	[_accelHistoryX removeAllObjects];
 	[_accelHistoryY removeAllObjects];
 	[_accelHistoryZ removeAllObjects];
@@ -342,26 +376,85 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	[_instanceEndIdxs removeAllObjects];
 }
 
-- (IBAction)switchChanged:(id)sender {
-	if ([sender isOn] && !_recording) {
-		_recording = YES;
-		[self clearHistory];
-		[_cpp clearHistory];
-	} else if (![sender isOn] && _recording) {
+//- (IBAction)switchChanged:(id)sender {
+//	if ([sender isOn] && !_recording) {
+//		_recording = YES;
+//		[_saveBtn setEnabled:NO];
+//		[self clearHistory];
+//		[_cpp clearHistory];
+//	} else if (![sender isOn] && _recording) {
+//		_recording = NO;
+//		[_saveBtn setEnabled:NO];
+//		int count = (int)[_accelHistoryX count];
+//		dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//			// Add code here to do background processing
+//			[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs
+//					   historyLen:count Lmin:.15 Lmax:.3];
+//			dispatch_async( dispatch_get_main_queue(), ^{
+//				// Add code here to update the UI/send notifications based on the
+//				// results of the background processing
+//				[self updatePlot:NO];
+//			});
+//		});
+//	}
+//}
+
+
+void setButtonTitle(UIButton* btn, NSString *const title) {
+	[btn setTitle: title forState: UIControlStateNormal];
+//	[btn setTitle: title forState: UIControlStateApplication];
+//	[btn setTitle: title forState: UIControlStateHighlighted];
+//	[btn setTitle: title forState: UIControlStateReserved];
+//	[btn setTitle: title forState: UIControlStateSelected];
+//	[btn setTitle: title forState: UIControlStateDisabled];
+}
+
+- (IBAction)recordingBtnPressed:(id)sender {
+	if (_recording) { // stop recording
 		_recording = NO;
+		
+		[_saveBtn setEnabled:YES];
+		setButtonTitle(_saveBtn, @"Save Data");
+		setButtonTitle(_recordBtn, kRecordBtnTextOff);
+		
 		int count = (int)[_accelHistoryX count];
+		if (count < 100) {
+			NSLog(@"ignoring recording: too short");
+			return;
+		}
+		
 		dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			// Add code here to do background processing
 			[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs
 					   historyLen:count Lmin:.15 Lmax:.3];
+			
 			dispatch_async( dispatch_get_main_queue(), ^{
 				// Add code here to update the UI/send notifications based on the
 				// results of the background processing
-				[self updatePlot];
+				[self updatePlot:YES]; // YES = force update
 			});
 		});
+	} else { // start recording
+		_recording = YES;
+		
+		[_saveBtn setEnabled:NO];
+		setButtonTitle(_recordBtn, kRecordBtnTextOn);
+		
+		[self clearHistory];
+		[_cpp clearHistory];
 	}
 }
 
+- (IBAction)saveBtnPressed:(id)sender {
+	[_saveBtn setEnabled:NO];
+	setButtonTitle(_saveBtn, @"Data Saved!");
+	[self saveCurrentRecording];
+}
+
+-(IBAction)motionNumberChanged:(id)sender {
+	int num = round([_exampleNumStepr value]);
+	NSString* valueStr = [NSString stringWithFormat:@"%d", num];
+	[_exampleNumText setText:valueStr];
+}
 
 @end

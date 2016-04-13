@@ -16,10 +16,7 @@
 #import "TimeUtils.h"
 #import "MiscUtils.h"
 #import "DropboxUploader.h"
-//#import "objective-zip/crc32.h"
-//#import "objective-zip/OZZipFile.h"
-//#import "objective-zip/OZZipWriteStream.h"
-#import "Objective-Zip.h"
+#import "SSZipArchive.h"
 
 #define LOG_DIFFERENTIAL_TIMESTAMPS
 
@@ -743,15 +740,21 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
         NSString *zipPath = [self generateZipFilePath];
         NSString *pw = [self getEncodePW];
         NSLog(@"The password is: %@", pw);
-        OZZipFile *zipFile = [[OZZipFile alloc] initWithFileName:zipPath mode:OZZipFileModeCreate];
-        NSData *data = [NSData dataWithContentsOfFile:_logPath];
+		
+		BOOL success = [SSZipArchive createZipFileAtPath:zipPath withFilesAtPaths:@[_logPath] withPassword:pw];
+		if (!success) {
+			NSLog(@"Error! Failed to write zip %@ from log file %@!", zipPath, _logPath);
+		}
+//        OZZipFile *zipFile = [[OZZipFile alloc] initWithFileName:zipPath mode:OZZipFileModeCreate];
+//        NSData *data = [NSData dataWithContentsOfFile:_logPath];
 //        unsigned long result = crc32(0, data.bytes, (unsigned int)data.length);
-//        OZZipWriteStream *zip_stream = [zipFile writeFileInZipWithName:[_logPath lastPathComponent] fileDate:[NSDate date] compressionLevel:ZipCompressionLevelBest password:pw crc32:result];
-		OZZipWriteStream* zip_stream = [zipFile writeFileInZipWithName:[_logPath lastPathComponent]
-												  compressionLevel:OZZipCompressionLevelBest];
-        [zip_stream writeData:data];
-        [zip_stream finishedWriting];
-        [zipFile close];
+//        OZZipWriteStream *zip_stream = [zipFile writeFileInZipWithName:[_logPath lastPathComponent] fileDate:[NSDate date] compressionLevel:OZZipCompressionLevelBest password:pw crc32:result];
+////		OZZipWriteStream* zip_stream = [zipFile writeFileInZipWithName:[_logPath lastPathComponent]
+////												  compressionLevel:OZZipCompressionLevelBest];
+//        [zip_stream writeData:data];
+//        [zip_stream finishedWriting];
+//        [zipFile close];
+		
         NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[zipPath lastPathComponent]];
         NSLog(@"Writing to file %@", dbPath);
         [[DropboxUploader sharedUploader] addFileToUpload:zipPath toPath:dbPath];

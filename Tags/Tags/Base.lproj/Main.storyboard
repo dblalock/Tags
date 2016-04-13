@@ -80,44 +80,71 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Cpm-wG-2FK">
-                                <rect key="frame" x="20" y="340" width="51" height="31"/>
-                                <connections>
-                                    <action selector="switchChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="a7K-29-1Oq"/>
-                                </connections>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Start Recording" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l98-tq-CEe">
-                                <rect key="frame" x="77" y="345" width="120" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qxI-eh-i1P" customClass="LineChartView" customModule="Charts">
-                                <rect key="frame" x="20" y="386" width="327" height="165"/>
+                                <rect key="frame" x="7" y="167" width="360" height="165"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="GOh-LW-jag">
-                                <rect key="frame" x="20" y="302" width="134" height="30"/>
+                                <rect key="frame" x="20" y="49" width="207" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="SjH-cb-ygb" id="bWi-Qn-ZVu"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="1" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OEo-mQ-ZjF">
+                                <rect key="frame" x="235" y="123" width="39" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mAv-cm-ye7">
-                                <rect key="frame" x="162" y="302" width="134" height="30"/>
+                                <rect key="frame" x="22" y="123" width="205" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="SjH-cb-ygb" id="Ngn-nr-FNb"/>
+                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="User ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMm-JH-GSh">
-                                <rect key="frame" x="20" y="273" width="57" height="21"/>
+                                <rect key="frame" x="20" y="20" width="57" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Example #" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zcM-sn-htq">
+                                <rect key="frame" x="233" y="94" width="80" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Action Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Rl-hd-Guw">
-                                <rect key="frame" x="162" y="273" width="98" height="21"/>
+                                <rect key="frame" x="22" y="94" width="98" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3nQ-l9-I6Q">
+                                <rect key="frame" x="87" y="403" width="187" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <state key="normal" title="Start Recording"/>
+                                <connections>
+                                    <action selector="recordingBtnPressed:" destination="SjH-cb-ygb" eventType="touchUpInside" id="nXc-QY-05a"/>
+                                </connections>
+                            </button>
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ntg-H4-0ZH">
+                                <rect key="frame" x="273" y="123" width="94" height="29"/>
+                                <connections>
+                                    <action selector="motionNumberChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="ufO-a2-IX4"/>
+                                </connections>
+                            </stepper>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fkG-7m-wYZ">
+                                <rect key="frame" x="80" y="462" width="200" height="39"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <state key="normal" title="Save Data"/>
+                                <connections>
+                                    <action selector="saveBtnPressed:" destination="SjH-cb-ygb" eventType="touchUpInside" id="xel-gd-QSc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -125,7 +152,10 @@
                     <connections>
                         <outlet property="actionNameText" destination="mAv-cm-ye7" id="GFu-Ts-oBS"/>
                         <outlet property="dataGraph" destination="qxI-eh-i1P" id="q09-cw-qJz"/>
-                        <outlet property="recordingSwitch" destination="Cpm-wG-2FK" id="Y65-7t-hz3"/>
+                        <outlet property="exampleNumStepr" destination="ntg-H4-0ZH" id="g12-lL-rqa"/>
+                        <outlet property="exampleNumText" destination="OEo-mQ-ZjF" id="TyM-Ws-akg"/>
+                        <outlet property="recordBtn" destination="3nQ-l9-I6Q" id="Vfi-ol-8F1"/>
+                        <outlet property="saveBtn" destination="fkG-7m-wYZ" id="yg6-XB-Qgy"/>
                         <outlet property="userIdText" destination="GOh-LW-jag" id="QS9-U3-emB"/>
                     </connections>
                 </viewController>

@@ -36,7 +36,7 @@ namespace ar {
 
 typedef int64_t length_t;
 
-static const double kDefaultNonzeroThresh = .001;
+static const double kDefaultNonzeroThresh = .00001;
 
 // TODO support for negative strides / asserts where they can't be negative
 
