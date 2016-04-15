@@ -44,6 +44,7 @@ NSString *const kLogSubdir = @"recordings/";
 @property (strong, nonatomic) NSMutableArray* accelHistoryX;
 @property (strong, nonatomic) NSMutableArray* accelHistoryY;
 @property (strong, nonatomic) NSMutableArray* accelHistoryZ;
+@property (strong, nonatomic) NSMutableArray* timestampHistory;
 @property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
 @property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
 @property (strong, nonatomic) CppWrapper* cpp;
@@ -92,6 +93,7 @@ NSString *const kLogSubdir = @"recordings/";
 	_accelHistoryX = [NSMutableArray array];
 	_accelHistoryY = [NSMutableArray array];
 	_accelHistoryZ = [NSMutableArray array];
+	_timestampHistory = [NSMutableArray array];
 	_dataGraph.delegate = self;
 	_dataGraph.backgroundColor = [UIColor colorWithWhite:204/255.f alpha:1.f];
 	
@@ -187,7 +189,7 @@ NSString *const kLogSubdir = @"recordings/";
 	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 	
 //	[self logAccelX:x Y:y Z:z timeStamp:t];
-	[self storeAccelX:x Y:y Z:z];
+	[self storeAccelX:x Y:y Z:z time:t];
 	[self updatePlot:NO]; // no = don't force update
 }
 
@@ -311,15 +313,17 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 
 //-(void)
 
-- (void)storeAccelX:(int8_t)x Y:(int8_t)y Z:(int8_t)z {
+- (void)storeAccelX:(int8_t)x Y:(int8_t)y Z:(int8_t)z time:(timestamp_t)time {
 	
 	// TODO modify the ChartDataSet objects directly
 	
 	_numSamplesSeen++;
-	NSArray* histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ];
+	NSArray* histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ,
+						   _timestampHistory];
 	NSArray* vals = @[@(convertPebbleAccelToGs(x)),
 					  @(convertPebbleAccelToGs(y)),
-					  @(convertPebbleAccelToGs(z))];
+					  @(convertPebbleAccelToGs(z)),
+					  @(time)];
 	for (int i = 0; i < [histories count]; i++) {
 		NSMutableArray* ar = histories[i];
 		[ar addObject:vals[i]];
@@ -346,10 +350,12 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	NSString* fileName = [self generateFileName];
 	NSMutableString* outStr = [NSMutableString string];
 	for (int i = 0; i < [_accelHistoryX count]; i++) {
-		NSString* line = [NSString stringWithFormat:@"%@,%@,%@\n",
+		NSString* line = [NSString stringWithFormat:@"%lld,%@,%@,%@\n",
+						  (timestamp_t)[_timestampHistory[i] longLongValue],
 						  _accelHistoryX[i],
 						  _accelHistoryY[i],
 						  _accelHistoryZ[i]];
+//		NSLog(@"line: %@", line);
 		[outStr appendString:line];
 	}
 	[FileUtils writeString:outStr toFile:fileName];
@@ -372,6 +378,7 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	[_accelHistoryX removeAllObjects];
 	[_accelHistoryY removeAllObjects];
 	[_accelHistoryZ removeAllObjects];
+	[_timestampHistory removeAllObjects];
 	[_instanceStartIdxs removeAllObjects];
 	[_instanceEndIdxs removeAllObjects];
 }
