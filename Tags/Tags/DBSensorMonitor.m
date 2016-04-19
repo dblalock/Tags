@@ -571,7 +571,9 @@ NSArray* defaultValuesHeading(){
 	_motionManager = [[CMMotionManager alloc] init];
 
 	_motionManager.deviceMotionUpdateInterval = kMotionSamplingPeriod;
-	[_motionManager startDeviceMotionUpdatesToQueue:_queue
+	// could use reference frame CMAttitudeReferenceFrameXArbitraryZVertical
+	// for lower yaw accuracy but apparently decreased CPU usage
+	[_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:_queue
 	withHandler:^(CMDeviceMotion *motion, NSError *error) {
 		[self sendMotion:motion];
    }];
