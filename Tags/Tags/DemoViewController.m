@@ -10,7 +10,8 @@
 
 //#import "GraphView.h"
 #import "DBPebbleMonitor.h"
-//#import "DBDataLogger.h"
+#import "DBDataLogger.h"
+#import "DBSensorMonitor.h"
 //#import "DBLoggingManager.h" // just for DATALOGGING_PERIOD_MS
 #import "DropboxUploader.h"
 #import "FileUtils.h"
@@ -29,6 +30,17 @@ NSString* kRecordBtnTextOn = @"Stop Recording";
 NSString *const kLogSubdir = @"recordings/";
 
 //===============================================================
+// Logging setup funcs
+//===============================================================
+
+NSDictionary* allSignalsNamesToDefaultVals() {
+	NSMutableDictionary* dict = [pebbleDefaultValuesDict() mutableCopy];
+	[dict addEntriesFromDictionary:defaultsDictMotion()];
+	return dict;
+}
+
+
+//===============================================================
 //===============================================================
 @interface DemoViewController () <ChartViewDelegate, UITextFieldDelegate>
 //<BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
@@ -41,15 +53,19 @@ NSString *const kLogSubdir = @"recordings/";
 
 @property (atomic) int numSamplesSeen;
 @property (nonatomic) BOOL recording;
+
 @property (strong, nonatomic) NSMutableArray* accelHistoryX;
 @property (strong, nonatomic) NSMutableArray* accelHistoryY;
 @property (strong, nonatomic) NSMutableArray* accelHistoryZ;
 @property (strong, nonatomic) NSMutableArray* timestampHistory;
+//@property (strong, nonatomic) NSArray* histories;
+
 @property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
 @property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
 @property (strong, nonatomic) CppWrapper* cpp;
-//@property (strong, nonatomic) DBDataLogger* logger;
-@property (strong, nonatomic) NSOutputStream* outStream;
+@property (strong, nonatomic) DBSensorMonitor* sensorMonitor;
+@property (strong, nonatomic) DBDataLogger* logger;
+//@property (strong, nonatomic) NSOutputStream* outStream;
 
 //--------------------------------
 // View properties
@@ -94,9 +110,11 @@ NSString *const kLogSubdir = @"recordings/";
 	_accelHistoryY = [NSMutableArray array];
 	_accelHistoryZ = [NSMutableArray array];
 	_timestampHistory = [NSMutableArray array];
+//	_histories = @[_accelHistoryX, _accelHistoryY, _accelHistoryZ,
+//				   _timestampHistory];
+	
 	_dataGraph.delegate = self;
 	_dataGraph.backgroundColor = [UIColor colorWithWhite:204/255.f alpha:1.f];
-	
 	
 	ChartYAxis *leftAxis = _dataGraph.leftAxis;
 	leftAxis.labelTextColor = [UIColor colorWithRed:51/255.f green:181/255.f blue:229/255.f alpha:1.f];
@@ -119,6 +137,27 @@ NSString *const kLogSubdir = @"recordings/";
 //	_dataGraph.xAxis.valueFormatter = xfmtr;
 //	xAxis.valueFormatter = xfmtr;
 	
+	NSDictionary* defaultsDict = allSignalsNamesToDefaultVals();
+	_logger = [[DBDataLogger alloc] initWithSignalDefaultsDict:defaultsDict
+										   samplePeriod:50]; // 50ms = 20Hz
+
+//	_logger = [[DBDataLogger alloc] initWithSignalNames:[defaultsDict allKeys]
+//										  defaultValues:[defaultsDict allValues]
+//										   samplePeriod:50 // 50ms = 20Hz
+//											   dataType:@"recording"];
+	_logger.logSubdir = kLogSubdir;
+	_logger.omitDuplicates = NO; // write every line even if same as previous
+	_sensorMonitor = [[DBSensorMonitor alloc] initWithDataReceivedHandler:^
+		void(NSDictionary *data, timestamp_t timestamp, NSString *type) {
+			dispatch_async(dispatch_get_main_queue(), ^{	//main thread
+//				NSLog(@"received data from sensor monitor");
+				if([type isEqualToString:@"motion"]) {
+//					NSLog(@"...and it was motion data");
+					[_logger logData:data withTimeStamp:timestamp];
+				}
+			});
+		}
+	];
 	
 	_dataGraph.drawGridBackgroundEnabled = NO;
 	_dataGraph.rightAxis.enabled = NO;
@@ -138,7 +177,9 @@ NSString *const kLogSubdir = @"recordings/";
 //															defaultValues:[pebbleDefaultValuesDict() allValues]
 //															samplePeriod:DATALOGGING_PERIOD_MS
 //																dataType:@"PebbleAccel"];
-//	
+
+	// ensure this gets created so that phone will try to connect to pebble
+	[DBPebbleMonitor sharedInstance];
 	
 	[self updatePlot:YES]; // yes = force update
 }
@@ -167,13 +208,16 @@ NSString *const kLogSubdir = @"recordings/";
 #pragma mark - Pebble
 //===============================================================
 
-//-(void) logAccelX:(double)x Y:(double)y Z:(double)z timeStamp:(timestamp_t)sampleTime {
-//	//Logs pebble data
-//	NSDictionary* kvPairs = @{kKeyPebbleX: @(convertPebbleAccelToGs(x)),
-//							  kKeyPebbleY: @(convertPebbleAccelToGs(y)),
-//							  kKeyPebbleZ: @(convertPebbleAccelToGs(z))};
-//	[_logger logData:kvPairs withTimeStamp:sampleTime];
-//}
+-(void) logAccelX:(double)x Y:(double)y Z:(double)z timeStamp:(timestamp_t)sampleTime {
+	//Logs pebble data
+	NSDictionary* kvPairs = @{kKeyPebbleX: @(convertPebbleAccelToGs(x)),
+							  kKeyPebbleY: @(convertPebbleAccelToGs(y)),
+							  kKeyPebbleZ: @(convertPebbleAccelToGs(z))};
+//	NSDictionary* kvPairs = @{kKeyPebbleX: @(x),
+//							  kKeyPebbleY: @(y),
+//							  kKeyPebbleZ: @(z)};
+	[_logger logData:kvPairs withTimeStamp:sampleTime];
+}
 
 -(void) notifiedPebbleData:(NSNotification*)notification {
 	if ([notification name] != kNotificationPebbleData) return;
@@ -183,12 +227,11 @@ NSString *const kLogSubdir = @"recordings/";
 	timestamp_t t;
 	extractPebbleData(notification.userInfo, &x, &y, &z, &t);
 	
-//	[self logAccelX:x Y:y Z:z timeStamp:t];
 	[_cpp pushX:x Y:y Z:z];
 	
-	NSLog(@"received pebble data %d, %d, %d", x, y, z);
+//	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 	
-//	[self logAccelX:x Y:y Z:z timeStamp:t];
+	[self logAccelX:x Y:y Z:z timeStamp:t];
 	[self storeAccelX:x Y:y Z:z time:t];
 	[self updatePlot:NO]; // no = don't force update
 }
@@ -337,6 +380,15 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 #pragma mark - Logging
 //===============================================================
 
+-(NSString*) generateLogFileName {
+	return [NSString stringWithFormat:@"%@_%@_%@",
+						  [_userIdText text],
+						  [_actionNameText text],
+						  [_exampleNumText text]];
+	
+//	return [kLogSubdir stringByAppendingPathComponent:dirName];
+}
+
 - (NSString*)generateFileName {
 	NSString* fileName = [NSString stringWithFormat:@"%@_%@_%@.csv",
 						  [_userIdText text],
@@ -381,6 +433,7 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 	[_timestampHistory removeAllObjects];
 	[_instanceStartIdxs removeAllObjects];
 	[_instanceEndIdxs removeAllObjects];
+//	[_logger endLog];
 }
 
 //- (IBAction)switchChanged:(id)sender {
@@ -424,6 +477,9 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 		setButtonTitle(_saveBtn, @"Save Data");
 		setButtonTitle(_recordBtn, kRecordBtnTextOff);
 		
+		[_logger endLog]; // saves file immediately
+//		[_logger pauseLog];
+		
 		int count = (int)[_accelHistoryX count];
 		if (count < 100) {
 			NSLog(@"ignoring recording: too short");
@@ -449,6 +505,10 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 		
 		[self clearHistory];
 		[_cpp clearHistory];
+		
+//		_logger.logSubdir = [self generateSubdirName];
+		_logger.logName = [self generateLogFileName];
+		[_logger startLog];
 	}
 }
 
@@ -456,6 +516,7 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 	[_saveBtn setEnabled:NO];
 	setButtonTitle(_saveBtn, @"Data Saved!");
 	[self saveCurrentRecording];
+//	[_logger endLog]; // saves file for data logger
 }
 
 -(IBAction)motionNumberChanged:(id)sender {

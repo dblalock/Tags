@@ -21,11 +21,14 @@
 @property(nonatomic) timestamp_t gapThresholdMs;
 @property(strong, nonatomic) NSString* logName;
 @property(strong, nonatomic) NSString* logSubdir;
+@property(nonatomic) BOOL omitDuplicates;
 
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+					samplePeriod:(NSUInteger)ms;
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
 			 samplePeriod:(NSUInteger)ms
-                 dataType:(NSString*)type;
+                 dataType:(NSString*)type NS_DESIGNATED_INITIALIZER;
 
 -(void) logData:(NSDictionary*)kvPairs withTimeStamp:(timestamp_t)ms;
 -(void) logData:(NSDictionary*)kvPairs;
@@ -34,10 +37,10 @@
 	 finalTimeStamp:(timestamp_t)ms;
 -(void) logDataBuff:(NSArray*)sampleDicts
   withSampleSpacing:(NSUInteger)periodMs;
+
 -(void) startLog;
 -(void) pauseLog;
 -(void) endLog;
-//-(void) handleLongLog;
 -(void) deleteLog;
 
 -(void) flushUpToTimeStamp:(timestamp_t)ms;

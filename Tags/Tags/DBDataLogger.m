@@ -35,7 +35,7 @@ static NSString *const kFloatFormat = @"%.3f";	// log only 3 decimal places
 static NSString *const kIntFormat = @"%d";
 static const timestamp_t kDefaultGapThresholdMs = 2*1000;	//2s
 static const timestamp_t kDefaultTimeStamp = -1;
-static const NSUInteger kMaxLinesInLog = 100;	// ~4MB
+static const NSUInteger kMaxLinesInLog = 1024;	// ~40MB
 
 @interface DBDataLogger ()
 
@@ -143,6 +143,19 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 #pragma mark init()
 //--------------------------------------------------------------
 
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults samplePeriod:(NSUInteger)ms {
+	
+	NSArray *sortedKeys = [[names2defaults allKeys] sortedArrayUsingSelector: @selector(compare:)];
+	NSMutableArray *sortedValues = [NSMutableArray array];
+	for (NSString *key in sortedKeys)
+		[sortedValues addObject: names2defaults[key]];
+	return [self initWithSignalNames:sortedKeys
+				defaultValues:sortedValues
+				 samplePeriod:ms
+					 dataType:@""];
+	
+}
+
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
 			   samplePeriod:(NSUInteger)ms
@@ -187,9 +200,10 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 		_data = [NSMutableArray array];
 		_prevWrittenVals = [NSMutableArray array];
 		
-		// file stuff
+		// file stuff / configuration
 		_logName = kDefaultLogName;
 		_logSubdir = kDefaultLogSubdir;
+		_omitDuplicates = YES;
 		
 		_lastSampleWrittenTime = 0;	// yields absolute timestamp for 1st row
 		_linesInLog = 0;
@@ -375,8 +389,8 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 			// write it differently based on what type of data it is
 			id valToWrite = valToWriteForVal(val);
 			
-			// only write differences
-			if ([valToWrite isEqual: prevVal]) {
+			// only write differences unless forced to write everything
+			if ([valToWrite isEqual: prevVal] && !force) {
 				valToWrite = kNoChangeStr;
 			} else {
 				numChangedVals++;
@@ -429,7 +443,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 }
 
 -(void) writeSampleValues:(NSArray*)values toStream:(NSOutputStream*)stream {
-	[self writeSampleValues:values toStream:stream forceWrite:NO];
+	[self writeSampleValues:values toStream:stream forceWrite:!_omitDuplicates];
 }
 
 //--------------------------------------------------------------
@@ -451,6 +465,8 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 // assumes that samples are sorted by increasing timestamp
 -(void)writeData:(NSArray*)samples {
 	if (! [samples count]) return;
+	
+//	NSLog(@"writeData: writing %ld samples", [samples count]);
 	
 	NSMutableArray* prevSampleValues;// = _currentSampleValues;
 	timestamp_t tprev;
@@ -557,11 +573,10 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	_prevLastSampleTimeWritten = t;
 
 	// start a new log file once this one is too long
-            if (_linesInLog >= kMaxLinesInLog) {
-                [self endLog];
-                [self startLog];
-            }
-
+	if (_linesInLog >= kMaxLinesInLog) {
+		[self endLog];
+		[self startLog];
+	}
 }
 
 //--------------------------------------------------------------
@@ -656,7 +671,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 		}
 	}
 }
--(NSString*) getEncodePW {
+-(NSString*) getEncodePW { // TODO place pw.txt in app so we have a password
     NSString *filePath = @"pw";
     NSString* fileRoot = [[NSBundle mainBundle]
                           pathForResource:filePath ofType:@"txt"];
@@ -665,30 +680,37 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
                               encoding:NSUTF8StringEncoding error:nil];
     return fileContents;
 }
--(NSString*) generateLogFilePath {
-	NSString* logPath;
-    NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
-	logPath = [FileUtils getFullFileName:_logSubdir];
+-(NSString*) generateLogFilePathNoExt {
+	NSString* logPath = [FileUtils getFullFileName:_logSubdir];
 	[FileUtils ensureDirExists:logPath];
+	
+	if ([_dataType length]) { // subdir for datatype, if specified
+		logPath = [logPath stringByAppendingPathComponent:_dataType];
+	}
+	
 	logPath = [logPath stringByAppendingPathComponent:_logName];
 	logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
-	logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
-    logPath = [logPath stringByAppendingString:infoType];
-//	NSLog(@"logPath = %@", logPath);
-	return [logPath stringByAppendingString:kLogFileExt];
+	return [logPath stringByAppendingString:currentTimeStrForFileName()];
 }
+
+-(NSString*) generateLogFilePath {
+	return [[self generateLogFilePathNoExt] stringByAppendingString:kLogFileExt];
+}
+
 -(NSString*) generateZipFilePath {
-    NSString* logPath;
-    NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
-    logPath = [FileUtils getFullFileName:_logSubdir];
-    [FileUtils ensureDirExists:logPath];
-    logPath = [logPath stringByAppendingPathComponent:_logName];
-    logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
-    logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
-    logPath = [logPath stringByAppendingString:infoType];
-    //	NSLog(@"logPath = %@", logPath);
-    return [logPath stringByAppendingString:@".zip"];
+	return [[self generateLogFilePathNoExt] stringByAppendingString:@".zip"];
 }
+//    NSString* logPath;
+//    NSString* infoType = [NSString stringWithFormat:@".%@",_dataType];
+//    logPath = [FileUtils getFullFileName:_logSubdir];
+//    [FileUtils ensureDirExists:logPath];
+//    logPath = [logPath stringByAppendingPathComponent:_logName];
+//    logPath = [logPath stringByAppendingString:kLogNameAndDateSeparator];
+//    logPath = [logPath stringByAppendingString:currentTimeStrForFileName()];
+//    logPath = [logPath stringByAppendingString:infoType];
+//	NSLog(@"dataLogger logPath = %@", logPath);
+//    return [logPath stringByAppendingString:@".zip"];
+//}
 //--------------------------------------------------------------
 #pragma mark Logging state
 //--------------------------------------------------------------
@@ -703,6 +725,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //        NSLog(@"Starting the log");
 		_isLogging = YES;
 		_logPath = [self generateLogFilePath];
+		NSLog(@"dataLogger starting to log at logPath = %@", _logPath);
         _stream = [[NSOutputStream alloc] initToFileAtPath:_logPath append:_shouldAppendToLog];
         [_stream open];
 		// write signal names as first line
@@ -740,6 +763,8 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
         NSString *zipPath = [self generateZipFilePath];
         NSString *pw = [self getEncodePW];
         NSLog(@"The password is: %@", pw);
+		
+		NSLog(@"dataLogger writing zip file at path = %@", zipPath);
 		
 		BOOL success = [SSZipArchive createZipFileAtPath:zipPath withFilesAtPaths:@[_logPath] withPassword:pw];
 		if (!success) {
