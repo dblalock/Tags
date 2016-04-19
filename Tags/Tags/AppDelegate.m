@@ -21,7 +21,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Override point for customization after application launch.
 	
-	[DBLoggingManager sharedInstance].recording = YES;
+	// TODO uncomment after demo debug
+//	[DBLoggingManager sharedInstance].recording = YES;
 	
 	return YES;
 }
