@@ -27,6 +27,8 @@ const int kUpdatePlotEvery = 20; // once/second at 20Hz sampling
 
 NSString* kRecordBtnTextOff = @"Start Recording";
 NSString* kRecordBtnTextOn = @"Stop Recording";
+//NSString* kDeleteBtnTextOff = @"Start Recording";
+//NSString* kDeleteBtnTextOn = @"Stop Recording";
 NSString *const kLogSubdir = @"recordings/";
 
 //===============================================================
@@ -76,7 +78,9 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 // @property (weak, nonatomic) IBOutlet UISwitch* recordingSwitch;
 @property (weak, nonatomic) IBOutlet UITextField* exampleNumText;
 @property (weak, nonatomic) IBOutlet LineChartView* dataGraph;
-@property (weak, nonatomic) IBOutlet UIButton* saveBtn;
+//@property (weak, nonatomic) IBOutlet UIButton* saveBtn;
+@property (weak, nonatomic) IBOutlet UIButton* learnBtn;
+@property (weak, nonatomic) IBOutlet UIButton* deleteBtn;
 @property (weak, nonatomic) IBOutlet UIButton* recordBtn;
 @property (weak, nonatomic) IBOutlet UIStepper* exampleNumStepr;
 
@@ -469,57 +473,80 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 //	[btn setTitle: title forState: UIControlStateDisabled];
 }
 
-- (IBAction)recordingBtnPressed:(id)sender {
-	if (_recording) { // stop recording
-		_recording = NO;
+-(void) learnPattern {
+	int count = (int)[_accelHistoryX count];
+	if (count < 100) {
+		NSLog(@"ignoring recording: too short");
+		return;
+	}
+	if (count > kHistoryLen) {
+		count = kHistoryLen;
+	}
+	
+	dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		// Add code here to do background processing
+		[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs
+				   historyLen:count Lmin:.15 Lmax:.3];
 		
-		[_saveBtn setEnabled:YES];
-		setButtonTitle(_saveBtn, @"Save Data");
-		setButtonTitle(_recordBtn, kRecordBtnTextOff);
-		
-		[_logger endLog]; // saves file immediately
-//		[_logger pauseLog];
-		
-		int count = (int)[_accelHistoryX count];
-		if (count < 100) {
-			NSLog(@"ignoring recording: too short");
-			return;
-		}
-		if (count > kHistoryLen) {
-			count = kHistoryLen;
-		}
-		
-		dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			// Add code here to do background processing
-			[_cpp updateStartIdxs:_instanceStartIdxs endIdxs:_instanceEndIdxs
-					   historyLen:count Lmin:.15 Lmax:.3];
-			
-			dispatch_async( dispatch_get_main_queue(), ^{
-				// Add code here to update the UI/send notifications based on the
-				// results of the background processing
-				[self updatePlot:YES]; // YES = force update
-			});
+		dispatch_async( dispatch_get_main_queue(), ^{
+			// Add code here to update the UI/send notifications based on the
+			// results of the background processing
+			[self updatePlot:YES]; // YES = force update
 		});
-	} else { // start recording
-		_recording = YES;
-		
-		[_saveBtn setEnabled:NO];
-		setButtonTitle(_recordBtn, kRecordBtnTextOn);
-		
-		[self clearHistory];
-		[_cpp clearHistory];
-		
-//		_logger.logSubdir = [self generateSubdirName];
-		_logger.logName = [self generateLogFileName];
-		[_logger startLog];
+	});
+}
+
+-(void) stopRecording:(BOOL)save {
+	_recording = NO;
+	
+	[_learnBtn setEnabled:YES];
+	setButtonTitle(_recordBtn, kRecordBtnTextOff);
+	
+	if (save) {
+		[_logger endLog]; // saves file immediately
+	} else {
+		[_logger cancelLog];
+	}
+}
+-(void) startRecording {
+	_recording = YES;
+
+	[_deleteBtn setEnabled:YES];
+	[_learnBtn setEnabled:NO];
+	setButtonTitle(_recordBtn, kRecordBtnTextOn);
+	
+	[self clearHistory];
+	[_cpp clearHistory];
+	
+	_logger.logName = [self generateLogFileName];
+	[_logger startLog];
+}
+
+
+- (IBAction)recordingBtnPressed:(id)sender {
+	if (_recording) {
+		[_deleteBtn setEnabled:YES];
+		[self stopRecording:YES];
+	} else {
+		[self startRecording];
 	}
 }
 
-- (IBAction)saveBtnPressed:(id)sender {
-	[_saveBtn setEnabled:NO];
-	setButtonTitle(_saveBtn, @"Data Saved!");
-	[self saveCurrentRecording];
-//	[_logger endLog]; // saves file for data logger
+- (IBAction)learnBtnPressed:(id)sender {
+	[sender setEnabled:NO];
+	[self learnPattern];
+}
+
+- (IBAction)deleteBtnPressed:(id)sender {
+	[sender setEnabled:NO];
+	NSLog(@"delete btn pressed");
+	if (_recording) {
+		NSLog(@"delete btn stopping recording");
+		[self stopRecording:NO];
+	} else {
+		NSLog(@"delete btn not stopping recording cuz already stopped");
+		[_logger deleteLog];
+	}
 }
 
 -(IBAction)motionNumberChanged:(id)sender {

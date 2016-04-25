@@ -59,6 +59,7 @@ static const NSUInteger kMaxLinesInLog = 1024;	// ~40MB
 @property(nonatomic) timestamp_t prevLastSampleTimeWritten;
 
 @property(strong, nonatomic) NSString* logPath;
+@property(strong, nonatomic) NSString* zipPath;
 @property(strong, nonatomic) NSOutputStream* stream;
 
 @property(nonatomic) BOOL isLogging;
@@ -682,6 +683,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 }
 -(NSString*) generateLogFilePathNoExt {
 	NSString* logPath = [FileUtils getFullFileName:_logSubdir];
+//	[FileUtils deleteFile:logPath]; // uncomment to force wipe old logs
 	[FileUtils ensureDirExists:logPath];
 	
 	if ([_dataType length]) { // subdir for datatype, if specified
@@ -749,7 +751,7 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 	}
 //    NSLog(@"Finished the pause operation");
 }
--(void) endLog {
+-(void) endLog:(BOOL)save {
     if(_isEnding){
         return;
     }
@@ -760,15 +762,20 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
         _shouldAppendToLog = NO;
         _linesInLog = 0;
         _samplesSinceWriting = 0;
-        NSString *zipPath = [self generateZipFilePath];
+		
+		if (!save) {
+			[FileUtils deleteFile:_logPath];
+			return;
+		}
+        _zipPath = [self generateZipFilePath];
         NSString *pw = [self getEncodePW];
         NSLog(@"The password is: %@", pw);
 		
-		NSLog(@"dataLogger writing zip file at path = %@", zipPath);
+		NSLog(@"dataLogger writing zip file at path = %@", _zipPath);
 		
-		BOOL success = [SSZipArchive createZipFileAtPath:zipPath withFilesAtPaths:@[_logPath] withPassword:pw];
+		BOOL success = [SSZipArchive createZipFileAtPath:_zipPath withFilesAtPaths:@[_logPath] withPassword:pw];
 		if (!success) {
-			NSLog(@"Error! Failed to write zip %@ from log file %@!", zipPath, _logPath);
+			NSLog(@"Error! Failed to write zip %@ from log file %@!", _zipPath, _logPath);
 		}
 //        OZZipFile *zipFile = [[OZZipFile alloc] initWithFileName:zipPath mode:OZZipFileModeCreate];
 //        NSData *data = [NSData dataWithContentsOfFile:_logPath];
@@ -780,13 +787,18 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //        [zip_stream finishedWriting];
 //        [zipFile close];
 		
-        NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[zipPath lastPathComponent]];
+        NSString* dbPath = [_logSubdir stringByAppendingPathComponent:[_zipPath lastPathComponent]];
         NSLog(@"Writing to file %@", dbPath);
-        [[DropboxUploader sharedUploader] addFileToUpload:zipPath toPath:dbPath];
+        [[DropboxUploader sharedUploader] addFileToUpload:_zipPath toPath:dbPath];
         [[DropboxUploader sharedUploader] tryUploadingFiles];	//will auto-try later anyway
         _isEnding=NO;
+		[FileUtils deleteFile:_logPath];
 	}
 }
+-(void) endLog {
+	[self endLog:YES]; // save log by default
+}
+
 //-(void) handleLongLog {
 //    @synchronized(self){
 //        if (_linesInLog >= kMaxLinesInLog) {
@@ -797,10 +809,18 @@ void writeArrayToStream(NSArray* ar, NSOutputStream* stream) {
 //            
 //    }
 //}
--(void) deleteLog {
+-(void) cancelLog {
 //    NSLog(@"Deleting Log");
-	[self endLog];
-	[FileUtils deleteFile:[self generateLogFilePath]];
+	[self endLog:NO]; // NO = don't save
+//	[FileUtils deleteFile:[self generateLogFilePath]];
 }
 
+-(void) deleteLog {
+	if (_isLogging) {
+		[self cancelLog];
+	} else {
+		[FileUtils deleteFile:_logPath]; // should be unnecessary
+		[FileUtils deleteFile:_zipPath];
+	}
+}
 @end

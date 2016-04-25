@@ -41,7 +41,8 @@
 -(void) startLog;
 -(void) pauseLog;
 -(void) endLog;
--(void) deleteLog;
+-(void) cancelLog;
+-(void) deleteLog; // no guarantee it hasn't already been uploaded, though
 
 -(void) flushUpToTimeStamp:(timestamp_t)ms;
 -(void) flush;
