@@ -137,9 +137,8 @@
                                     <action selector="motionNumberChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="ufO-a2-IX4"/>
                                 </connections>
                             </stepper>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fkG-7m-wYZ">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fkG-7m-wYZ">
                                 <rect key="frame" x="80" y="462" width="200" height="39"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <state key="normal" title="Save Data"/>
                                 <connections>
                                     <action selector="saveBtnPressed:" destination="SjH-cb-ygb" eventType="touchUpInside" id="xel-gd-QSc"/>

@@ -55,10 +55,11 @@ public:
 
 private:
 	void copyToContiguous(int useHistoryLen) {
-		assert(useHistoryLen < N);
+		assert(useHistoryLen <= N);
 		for (int d = 0; d < D; d++) {
 			auto buff = _circ_arrays[d];
-			auto readFrom = buff.data();
+//			auto readFrom = buff.data();
+			auto readFrom = buff.end() - useHistoryLen;
 			T* writeTo = _ar.data() + (d * useHistoryLen);
 			ar::copy(readFrom, useHistoryLen, writeTo);
 		}

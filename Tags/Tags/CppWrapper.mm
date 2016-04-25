@@ -15,8 +15,11 @@
 
 using std::vector;
 
+const int kNumDims = 3;
+const int kHistoryLen = 512;
+
 @interface CppWrapper () {
-	BatchFlockLearner<double, 3, 512>* _learner;
+	BatchFlockLearner<double, kNumDims, kHistoryLen>* _learner;
 }
 
 @end
@@ -25,7 +28,7 @@ using std::vector;
 
 - (instancetype)init {
 	if (self = [super init]) {
-		_learner = new BatchFlockLearner<double, 3, 512>();
+		_learner = new BatchFlockLearner<double, kNumDims, kHistoryLen>();
 	}
 	return self;
 }
@@ -61,6 +64,8 @@ using std::vector;
 //	vector<int> endIdxsVect;
 //	updateStartEndIdxs(startIdxsVect, endIdxsVect);
 
+//	NSLog(@"CppWrapper: using history len %d", useHistoryLen); // TODO remove
+	
 	_learner->learn(useHistoryLen, Lmin, Lmax);
 //	_learner->dummyLearn();
 	vector<int64_t> startIdxsVect = _learner->getStartIdxs();

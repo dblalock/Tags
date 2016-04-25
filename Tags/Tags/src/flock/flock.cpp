@@ -117,7 +117,9 @@ vector<double> seedScores(CMatrix T, length_t Lmin, length_t Lmax) {
 //			PRINT_VAR(ar::to_string(scores_tmp, n));
 //			PRINT_VAR(ar::to_string(out, n));
 
-			assert(ar::all(scores_tmp, n - subseqLen - 1));
+			length_t numSubseqs = n - subseqLen - 1;
+			assert(ar::any(scores_tmp, numSubseqs));
+			assert(ar::all_nonnegative(scores_tmp, numSubseqs));
 			assert(max(scores_tmp, n) == 1.0);
 			assert(min(scores_tmp, n) >= 0);
 			assert(ar::all_positive(scores_tmp, n));

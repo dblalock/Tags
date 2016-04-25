@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "array_utils.hpp"
+#include "debug_utils.hpp" // TODO remove
 
 using std::string;
 
@@ -41,13 +42,20 @@ static void plot_array(data_t* data, length_t length, int nlevels=8,
 		yBin = (maxVal - minVal) / nlevels;
 	}
 	nlevels = static_cast<int>(range / yBin) + 2;
-
+	assert(nlevels > 0);
+	
+//	PRINT_VAR(yBin);
+//	PRINT_VAR(nlevels);
+	
 	// create string in which to write plot
 	int nrows = nlevels;
 	int ncols = static_cast<int>(length);
 	int stringLen = nrows * ncols;
 	string s(stringLen, ' '); // whitespace
 
+//	PRINT_VAR(ncols);
+//	PRINT_VAR(stringLen);
+	
 	// compute offset so that y axis labels are multiples of yBin
 	double offset = yBin * static_cast<int>(floor(minVal / yBin));
 
@@ -68,6 +76,8 @@ static void plot_array(data_t* data, length_t length, int nlevels=8,
 		double lb = i * yBin + offset;
 		snprintf(axLabel, 31, "%6.2f", lb);
 		string lbl(axLabel);
+//		PRINT_VAR(i);
+//		PRINT_VAR(ncols);
 		std::cout << lbl << " " << s.substr(i * ncols, ncols) << "\n";
 	}
 }

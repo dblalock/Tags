@@ -227,7 +227,7 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 	timestamp_t t;
 	extractPebbleData(notification.userInfo, &x, &y, &z, &t);
 	
-	[_cpp pushX:x Y:y Z:z];
+	[_cpp pushX:x Y:y Z:z]; // TODO uncomment after debug
 	
 //	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 	
@@ -484,6 +484,9 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 		if (count < 100) {
 			NSLog(@"ignoring recording: too short");
 			return;
+		}
+		if (count > kHistoryLen) {
+			count = kHistoryLen;
 		}
 		
 		dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

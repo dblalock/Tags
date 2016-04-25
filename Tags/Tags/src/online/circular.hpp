@@ -45,11 +45,14 @@ public:
 	// accessors
 	// ------------------------------------------------
 
+	size_type size() const { return _size; }
+	
 	pointer last() { return _ar.data() + _last_idx; }
 	const_pointer last() const { return _ar.data() + _last_idx; }
-	// pointer end() const { return last() + 1; } // stl convention of 1 past end
-
-	size_type size() const { return _size; }
+	
+	pointer end() { return last() + 1; } // stl convention of 1 past end
+	const_pointer end() const { return last() + 1; }
+	
 	pointer data() { return last() - _size + 1; }
 	const_pointer data() const { return last() - _size + 1; }
 
