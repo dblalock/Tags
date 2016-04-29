@@ -14,6 +14,9 @@
 // DBLogger
 // ================================================================
 
+static const NSUInteger kDefaultLoggingSampleRateHz = 20;
+static const NSUInteger kDefaultLoggingSamplePeriodMs = 50;
+
 // nothing here is threadsafe, so need to access it only from main thread
 @interface DBDataLogger : NSObject
 
@@ -25,6 +28,11 @@
 
 -(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
 					samplePeriod:(NSUInteger)ms;
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+						dataType:(NSString*)type;
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+					samplePeriod:(NSUInteger)ms
+						dataType:(NSString*)type;
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
 			 samplePeriod:(NSUInteger)ms

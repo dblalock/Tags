@@ -123,22 +123,32 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ntg-H4-0ZH">
+                                <rect key="frame" x="273" y="124" width="94" height="29"/>
+                                <connections>
+                                    <action selector="motionNumberChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="ufO-a2-IX4"/>
+                                </connections>
+                            </stepper>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="0tx-5f-21c">
+                                <rect key="frame" x="102" y="340" width="170" height="29"/>
+                                <segments>
+                                    <segment title="Pebble"/>
+                                    <segment title="MS Band"/>
+                                </segments>
+                                <connections>
+                                    <action selector="dataSourceChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="5R7-sE-GAT"/>
+                                </connections>
+                            </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3nQ-l9-I6Q">
-                                <rect key="frame" x="94" y="378" width="187" height="30"/>
+                                <rect key="frame" x="94" y="391" width="187" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <state key="normal" title="Start Recording"/>
                                 <connections>
                                     <action selector="recordingBtnPressed:" destination="SjH-cb-ygb" eventType="touchUpInside" id="nXc-QY-05a"/>
                                 </connections>
                             </button>
-                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ntg-H4-0ZH">
-                                <rect key="frame" x="273" y="123" width="94" height="29"/>
-                                <connections>
-                                    <action selector="motionNumberChanged:" destination="SjH-cb-ygb" eventType="valueChanged" id="ufO-a2-IX4"/>
-                                </connections>
-                            </stepper>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fkG-7m-wYZ">
-                                <rect key="frame" x="87" y="491" width="200" height="39"/>
+                                <rect key="frame" x="87" y="504" width="200" height="39"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <state key="normal" title="Delete Recording">
                                     <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -151,7 +161,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="laP-wa-iZT">
-                                <rect key="frame" x="87" y="432" width="200" height="39"/>
+                                <rect key="frame" x="87" y="445" width="200" height="39"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <state key="normal" title="Find Pattern"/>
                                 <connections>
@@ -165,6 +175,7 @@
                     <connections>
                         <outlet property="actionNameText" destination="mAv-cm-ye7" id="GFu-Ts-oBS"/>
                         <outlet property="dataGraph" destination="qxI-eh-i1P" id="q09-cw-qJz"/>
+                        <outlet property="dataSrcControl" destination="0tx-5f-21c" id="XJq-Re-i9w"/>
                         <outlet property="deleteBtn" destination="fkG-7m-wYZ" id="Dji-en-EnH"/>
                         <outlet property="exampleNumStepr" destination="ntg-H4-0ZH" id="g12-lL-rqa"/>
                         <outlet property="exampleNumText" destination="OEo-mQ-ZjF" id="TyM-Ws-akg"/>

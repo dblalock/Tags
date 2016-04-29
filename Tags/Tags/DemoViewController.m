@@ -25,12 +25,19 @@
 
 const NSUInteger kHistoryLen = 512;
 const int kUpdatePlotEvery = 20; // once/second at 20Hz sampling
+const NSUInteger kLoggerPeriodMs = 50; // 50 ms = 20Hz = pebble sample rate
 
 NSString* kRecordBtnTextOff = @"Start Recording";
 NSString* kRecordBtnTextOn = @"Stop Recording";
 //NSString* kDeleteBtnTextOff = @"Start Recording";
 //NSString* kDeleteBtnTextOn = @"Stop Recording";
 NSString *const kLogSubdir = @"recordings/";
+
+
+typedef NS_ENUM(NSInteger, DemoDataSource) {
+	DataSourcePebble,
+	DataSourceMSBand
+};
 
 //===============================================================
 // Logging setup funcs
@@ -39,6 +46,7 @@ NSString *const kLogSubdir = @"recordings/";
 NSDictionary* allSignalsNamesToDefaultVals() {
 	NSMutableDictionary* dict = [pebbleDefaultValuesDict() mutableCopy];
 	[dict addEntriesFromDictionary:defaultsDictMotion()];
+	[dict addEntriesFromDictionary:msBandDefaultValuesDict()];
 	return dict;
 }
 
@@ -61,6 +69,7 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 @property (strong, nonatomic) NSMutableArray* accelHistoryY;
 @property (strong, nonatomic) NSMutableArray* accelHistoryZ;
 @property (strong, nonatomic) NSMutableArray* timestampHistory;
+@property (nonatomic) DemoDataSource plotWhichData;
 
 @property (strong, nonatomic) NSMutableArray* instanceStartIdxs;
 @property (strong, nonatomic) NSMutableArray* instanceEndIdxs;
@@ -80,6 +89,7 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 @property (weak, nonatomic) IBOutlet UIButton* deleteBtn;
 @property (weak, nonatomic) IBOutlet UIButton* recordBtn;
 @property (weak, nonatomic) IBOutlet UIStepper* exampleNumStepr;
+@property (weak, nonatomic) IBOutlet UISegmentedControl* dataSrcControl;
 
 @end
 
@@ -88,18 +98,6 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 @implementation DemoViewController
 //===============================================================
 //===============================================================
-
-
-
-
-
-
-// TODO get MSBand stuff logged (and plotted?); also get DBLoggingManager to use it
-
-
-
-
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -155,7 +153,7 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 
 	NSDictionary* defaultsDict = allSignalsNamesToDefaultVals();
 	_logger = [[DBDataLogger alloc] initWithSignalDefaultsDict:defaultsDict
-										   samplePeriod:50]; // 50ms = 20Hz
+										   samplePeriod:kLoggerPeriodMs];
 
 //	_logger = [[DBDataLogger alloc] initWithSignalNames:[defaultsDict allKeys]
 //										  defaultValues:[defaultsDict allValues]
@@ -174,25 +172,20 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 			});
 		}
 	];
+	
+	_plotWhichData = DataSourcePebble; // plot pebble data by default
 
 	_dataGraph.drawGridBackgroundEnabled = NO;
 	_dataGraph.rightAxis.enabled = NO;
 //	_dataGraph.descriptionText = @"Behold, acceleration values";
 	_dataGraph.descriptionText = @"";
 	_dataGraph.noDataTextDescription = @"Ze chart, she needs ze datas!";
-
+	
 	[_dataGraph animateWithXAxisDuration:1.0];
-
 
 	// instances of repeating pattern
 	_instanceStartIdxs = [NSMutableArray array];
 	_instanceEndIdxs = [NSMutableArray array];
-
-	// data logger for acceleration data
-//	_logger = [[DBDataLogger alloc] initWithSignalNames:[pebbleDefaultValuesDict() allKeys]
-//															defaultValues:[pebbleDefaultValuesDict() allValues]
-//															samplePeriod:DATALOGGING_PERIOD_MS
-//																dataType:@"PebbleAccel"];
 
 	// ensure these get created so that phone will try to connect to watches
 	[DBPebbleMonitor sharedInstance];
@@ -247,13 +240,15 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 	[_cpp pushX:x Y:y Z:z];
 
 	double xd = convertPebbleAccelToGs(x);
-	double yd = convertPebbleAccelToGs(x);
-	double zd = convertPebbleAccelToGs(x);
+	double yd = convertPebbleAccelToGs(y);
+	double zd = convertPebbleAccelToGs(z);
 
 //	NSLog(@"received pebble data %d, %d, %d", x, y, z);
 
 	[self logPebbleAccelX:xd Y:yd Z:zd timeStamp:t];
-//	[self storeAccelX:xd Y:yd Z:zd time:t]; // TODO uncomment after msband test
+	if (_plotWhichData == DataSourcePebble) {
+		[self storeAccelX:xd Y:yd Z:zd time:t];
+	}
 	[self updatePlot:NO]; // no = don't force update
 }
 
@@ -280,10 +275,12 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 	timestamp_t t;
 	extractMSBandData(notification.userInfo, &x, &y, &z, &t);
 
-	NSLog(@"received ms band data %.3f, %.3f, %.3f, %lld", x, y, z, t);
+//	NSLog(@"received ms band data %.3f, %.3f, %.3f, %lld", x, y, z, t);
 
 	[self logMSBandAccelX:x Y:y Z:z timeStamp:t];
-	[self storeAccelX:x Y:y Z:z time:t];
+	if (_plotWhichData == DataSourceMSBand) {
+		[self storeAccelX:x Y:y Z:z time:t];
+	}
 	[self updatePlot:NO]; // no = don't force update
 }
 
@@ -598,6 +595,14 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 	int num = round([_exampleNumStepr value]);
 	NSString* valueStr = [NSString stringWithFormat:@"%d", num];
 	[_exampleNumText setText:valueStr];
+}
+
+-(IBAction)dataSourceChanged:(id)sender {
+	if (_dataSrcControl.selectedSegmentIndex == 0) {
+		_plotWhichData = DataSourcePebble;
+	} else {
+		_plotWhichData = DataSourceMSBand;
+	}
 }
 
 @end

@@ -11,7 +11,7 @@
 #import <MicrosoftBandKit_iOS/MicrosoftBandKit_iOS.h>
 
 
-const NSUInteger kMSBandAccelHz = 20;
+const NSUInteger kMSBandAccelHz = 31;
 const NSUInteger kMSBandAccelPeriodMs = 1000 / kMSBandAccelHz;
 
 const float kTrySubscribeAccelEverySecs = 2.0f;

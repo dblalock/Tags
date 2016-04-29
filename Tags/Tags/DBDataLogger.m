@@ -144,23 +144,37 @@ NSArray* sortedByTimeStamp(NSArray* data) {
 #pragma mark init()
 //--------------------------------------------------------------
 
--(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults samplePeriod:(NSUInteger)ms {
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+					samplePeriod:(NSUInteger)ms {
+	return [self initWithSignalDefaultsDict:names2defaults samplePeriod:ms
+								   dataType:@""];
+}
+
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+						dataType:(NSString*)type {
+	return [self initWithSignalDefaultsDict:names2defaults
+							   samplePeriod:kDefaultLoggingSamplePeriodMs
+								   dataType:type];
+}
+
+-(id) initWithSignalDefaultsDict:(NSDictionary*)names2defaults
+					samplePeriod:(NSUInteger)ms
+						dataType:(NSString*)type {
 	
 	NSArray *sortedKeys = [[names2defaults allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	NSMutableArray *sortedValues = [NSMutableArray array];
 	for (NSString *key in sortedKeys)
 		[sortedValues addObject: names2defaults[key]];
 	return [self initWithSignalNames:sortedKeys
-				defaultValues:sortedValues
-				 samplePeriod:ms
-					 dataType:@""];
-	
+					   defaultValues:sortedValues
+						samplePeriod:ms
+							dataType:type];
 }
 
 -(id) initWithSignalNames:(NSArray*)names
 			defaultValues:(NSArray*)defaults
 			   samplePeriod:(NSUInteger)ms
-                 dataType:(NSString*)type{
+                 dataType:(NSString*)type {
 	if (self = [super init]) {
         _dataType = type;
 //        if ([_dataType isEqualToString:@"Pebble"]) {
