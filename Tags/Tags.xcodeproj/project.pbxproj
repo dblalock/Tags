@@ -135,6 +135,8 @@
 		72D3C0121A7323DC00648A67 /* DBTreeCellAddNew.m in Sources */ = {isa = PBXBuildFile; fileRef = 72D3C0111A7323DC00648A67 /* DBTreeCellAddNew.m */; };
 		72E205BC1A7FE82000D4CA24 /* bg_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */; };
 		72E205BF1A7FEA4500D4CA24 /* DBBackgrounder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */; };
+		72FBD3541CD29D29000D0F42 /* DBMicrosoftBandMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FBD3531CD29D29000D0F42 /* DBMicrosoftBandMonitor.m */; };
+		72FBD3561CD2A9FD000D0F42 /* MicrosoftBandKit_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72FBD3551CD2A9FD000D0F42 /* MicrosoftBandKit_iOS.framework */; };
 		72FDB60D1A812D1F00721B3C /* MZDay.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB6081A812D1F00721B3C /* MZDay.m */; };
 		72FDB60E1A812D1F00721B3C /* MZDayPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB60A1A812D1F00721B3C /* MZDayPicker.m */; };
 		72FDB60F1A812D1F00721B3C /* MZDayPickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 72FDB60C1A812D1F00721B3C /* MZDayPickerCell.m */; };
@@ -602,6 +604,9 @@
 		72E205BB1A7FE82000D4CA24 /* bg_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bg_sound.mp3; sourceTree = "<group>"; };
 		72E205BD1A7FEA4500D4CA24 /* DBBackgrounder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBBackgrounder.h; sourceTree = "<group>"; };
 		72E205BE1A7FEA4500D4CA24 /* DBBackgrounder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBBackgrounder.m; sourceTree = "<group>"; };
+		72FBD3521CD29D29000D0F42 /* DBMicrosoftBandMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBMicrosoftBandMonitor.h; sourceTree = "<group>"; };
+		72FBD3531CD29D29000D0F42 /* DBMicrosoftBandMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBMicrosoftBandMonitor.m; sourceTree = "<group>"; };
+		72FBD3551CD2A9FD000D0F42 /* MicrosoftBandKit_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MicrosoftBandKit_iOS.framework; sourceTree = "<group>"; };
 		72FDB6071A812D1F00721B3C /* MZDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZDay.h; sourceTree = "<group>"; };
 		72FDB6081A812D1F00721B3C /* MZDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZDay.m; sourceTree = "<group>"; };
 		72FDB6091A812D1F00721B3C /* MZDayPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZDayPicker.h; sourceTree = "<group>"; };
@@ -625,6 +630,7 @@
 				727563D71A7ABCCD00C31329 /* CoreMotion.framework in Frameworks */,
 				727563D41A7ABCA200C31329 /* ExternalAccessory.framework in Frameworks */,
 				CAD13579825207164AD74CAC /* Pods.framework in Frameworks */,
+				72FBD3561CD2A9FD000D0F42 /* MicrosoftBandKit_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1416,6 +1422,8 @@
 			children = (
 				727563CC1A7AB83800C31329 /* DBPebbleMonitor.h */,
 				727563CD1A7AB83800C31329 /* DBPebbleMonitor.m */,
+				72FBD3521CD29D29000D0F42 /* DBMicrosoftBandMonitor.h */,
+				72FBD3531CD29D29000D0F42 /* DBMicrosoftBandMonitor.m */,
 				727563CE1A7AB83800C31329 /* DBSensorMonitor.h */,
 				727563CF1A7AB83800C31329 /* DBSensorMonitor.m */,
 			);
@@ -1425,6 +1433,7 @@
 		72D3BFB61A70053800648A67 = {
 			isa = PBXGroup;
 			children = (
+				72FBD3551CD2A9FD000D0F42 /* MicrosoftBandKit_iOS.framework */,
 				7261229A1CB438130055FBF2 /* Charts.framework */,
 				72D3BFC11A70053800648A67 /* Tags */,
 				72D3BFDE1A70053800648A67 /* TagsTests */,
@@ -1822,6 +1831,7 @@
 				72D3BFED1A7005A500648A67 /* Typ.m in Sources */,
 				72E205BF1A7FEA4500D4CA24 /* DBBackgrounder.m in Sources */,
 				727563BA1A7A9FCF00C31329 /* FileUtils.m in Sources */,
+				72FBD3541CD29D29000D0F42 /* DBMicrosoftBandMonitor.m in Sources */,
 				72D3BFC51A70053800648A67 /* main.m in Sources */,
 				72667FD11CBC2AF6001726CA /* flock.cpp in Sources */,
 				727563961A7820A700C31329 /* DBTagItem.m in Sources */,
@@ -1967,6 +1977,10 @@
 				CODE_SIGN_ENTITLEMENTS = Tags/Tags.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_OPTIMIZATION_LEVEL = 1;
 				INFOPLIST_FILE = Tags/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1987,6 +2001,10 @@
 				CODE_SIGN_ENTITLEMENTS = Tags/Tags.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Tags/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.mit.dblalock.$(PRODUCT_NAME:rfc1034identifier)";
