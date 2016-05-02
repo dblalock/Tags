@@ -84,12 +84,17 @@ NSDictionary* allSignalsNamesToDefaultVals() {
 @property (weak, nonatomic) IBOutlet UITextField* userIdText;
 @property (weak, nonatomic) IBOutlet UITextField* actionNameText;
 @property (weak, nonatomic) IBOutlet UITextField* exampleNumText;
+@property (weak, nonatomic) IBOutlet UITextField* numRepsText;
+@property (weak, nonatomic) IBOutlet UISlider* numRepsSlider;
+@property (weak, nonatomic) IBOutlet UIStepper* exampleNumStepr;
+
 @property (weak, nonatomic) IBOutlet LineChartView* dataGraph;
+@property (weak, nonatomic) IBOutlet UISegmentedControl* dataSrcControl;
+
 @property (weak, nonatomic) IBOutlet UIButton* learnBtn;
 @property (weak, nonatomic) IBOutlet UIButton* deleteBtn;
 @property (weak, nonatomic) IBOutlet UIButton* recordBtn;
-@property (weak, nonatomic) IBOutlet UIStepper* exampleNumStepr;
-@property (weak, nonatomic) IBOutlet UISegmentedControl* dataSrcControl;
+
 
 @end
 
@@ -426,20 +431,31 @@ void addDummyDataForStartEndIdxs(NSArray* startIdxs, NSArray* endIdxs,
 #pragma mark - Logging
 //===============================================================
 
--(NSString*) generateLogFileName {
-	return [NSString stringWithFormat:@"%@_%@_%@",
-						  [_userIdText text],
-						  [_actionNameText text],
-						  [_exampleNumText text]];
+NSString* getSanitizedText(UITextField* field) {
+	NSString* text = [field text];
+	return [text stringByReplacingOccurrencesOfString:@"_"
+		withString:@"-"];
+}
 
+-(NSString*) generateRecordingName {
+	return [NSString stringWithFormat:@"%@_%@_x%@_%@",
+			getSanitizedText(_userIdText),
+			getSanitizedText(_actionNameText),
+			getSanitizedText(_numRepsText),
+			getSanitizedText(_exampleNumText)];
+//						  [_userIdText text] stringByRepl,
+//						  [_actionNameText text],
+//						  [_numRepsText text],
+//						  [_exampleNumText text]];
 //	return [kLogSubdir stringByAppendingPathComponent:dirName];
 }
 
 - (NSString*)generateFileName {
-	NSString* fileName = [NSString stringWithFormat:@"%@_%@_%@.csv",
-						  [_userIdText text],
-						  [_actionNameText text],
-						  [_exampleNumText text]];
+	NSString* fileName = [NSString stringWithFormat:@"%@.csv", [self generateRecordingName] ];
+//	NSString* fileName = [NSString stringWithFormat:@"%@_%@_%@.csv",
+//						  [_userIdText text],
+//						  [_actionNameText text],
+//						  [_exampleNumText text]];
 //						  currentTimeStr()];
 	return [FileUtils getFullFileName:fileName];
 }
@@ -560,7 +576,7 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 	[self clearHistory];
 	[_cpp clearHistory];
 
-	_logger.logName = [self generateLogFileName];
+	_logger.logName = [self generateRecordingName];
 	[_logger startLog];
 }
 
@@ -603,6 +619,18 @@ void setButtonTitle(UIButton* btn, NSString *const title) {
 	} else {
 		_plotWhichData = DataSourceMSBand;
 	}
+}
+
+
+- (IBAction)numRepsSliderChanged:(id)sender {
+	[_numRepsText setText:[NSString stringWithFormat:@"%d", (int)_numRepsSlider.value]];
+}
+
+// have keyboard close when you touch outside of it
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	[_actionNameText endEditing:YES];
+	[_userIdText endEditing:YES];
+	[_numRepsText endEditing:YES];
 }
 
 @end
